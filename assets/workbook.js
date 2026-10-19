@@ -1,7 +1,16 @@
 /* RESET, run before anything else so every write is seen.
-   - Storage.setItem/removeItem are wrapped. A wb:* key written while a session page shows slide N is
-     recorded in the registry wb:reg:s<N> (JSON: slide index -> keys). Nav and registry keys are not recorded.
-   - "Reset this activity" (footer) removes that slide's registered keys and reloads at the same hash.
+   - Storage.getItem/setItem/removeItem are wrapped. A wb:* key written while a session page shows slide N is
+     recorded in the registry wb:reg:s<N> (JSON: slide id -> keys; every session slide has a stable id). Nav and registry keys are not recorded.
+   - A key belongs to the slide that first wrote it. A later write from another slide never reassigns it.
+   - A slide may declare the keys it owns with data-reset-keys="key1 key2" on its <section>. That overrides
+     inference: Reset clears exactly the declared keys, and writes from that slide are not registered.
+     Use data-reset-keys="" on a slide that only reads or updates another slide's data.
+   - window.wbOwned(el, fn): writes made inside fn belong to the slide that contains el. Use it for writes from
+     timers and animations that can fire after the user has navigated away.
+   - Writes made while a navigation is in progress (show()) are not registered.
+   - Storage failures (quota, private mode): the value is kept in an in-memory map for this page session, reads
+     prefer that map, and one quiet note is added to the footer. Typing is never blocked.
+   - "Reset this activity" (footer) removes that slide's keys and reloads at the same hash.
    - Shift+R resets the current slide, same as the button. Ignored while focus is in an input,
      textarea or contenteditable.
    - ?fresh: loading a session page with ?fresh (e.g. session-2.html?fresh#2) clears ALL of that
@@ -12,33 +21,80 @@
   var LS = null;
   try { LS = window.localStorage; } catch (e) {}
   var proto = window.Storage ? Storage.prototype : null;
-  var rawSet = proto && proto.setItem, rawRemove = proto && proto.removeItem;
+  var rawGet = proto && proto.getItem, rawSet = proto && proto.setItem, rawRemove = proto && proto.removeItem;
+  var mem = {};          /* writes that failed, kept for this page session (see the top of this file) */
+  var navigating = false;
+  var owner = null;      /* element whose slide owns the write in progress (see wbOwned) */
+  var noteShown = false;
 
   function sessionOf() { return document.body ? document.body.getAttribute('data-session') : null; }
+  function hasMem(k) { return Object.prototype.hasOwnProperty.call(mem, k); }
+  /* registry entries are keyed by slide id ("id:<slide id>") only. Every session slide has a stable id.
+     Legacy entries (bare numbers from the oldest builds, and "ix:<n>" position keys from builds where some
+     slides had no id) are dropped on read, so the next write rewrites the registry without them. Only the
+     registry entry is dropped: the participant notes they pointed at stay in storage, unowned until rewritten. */
   function readReg(s) {
+    var out = {}, o;
     try {
-      var v = LS.getItem('wb:reg:s' + s), o = v ? JSON.parse(v) : null;
-      return o && typeof o === 'object' ? o : {};
-    } catch (e) { return {}; }
+      var v = LS.getItem('wb:reg:s' + s);
+      o = v ? JSON.parse(v) : null;
+    } catch (e) { o = null; }
+    if (o && typeof o === 'object') Object.keys(o).forEach(function (k) {
+      if (k.indexOf('id:') === 0 && Array.isArray(o[k])) out[k] = o[k];
+    });
+    return out;
   }
-  function writeReg(s, reg) { try { rawSet.call(LS, 'wb:reg:s' + s, JSON.stringify(reg)); } catch (e) {} }
+  /* the registry key of slide i, or null when the slide has no id (such a slide registers nothing) */
+  function keyOf(i) {
+    var el = slideEls()[i];
+    return el && el.id ? 'id:' + el.id : null;
+  }
+  function writeReg(s, reg) { try { LS.setItem('wb:reg:s' + s, JSON.stringify(reg)); } catch (e) {} }
   function isTracked(k) {
     return typeof k === 'string' && k.indexOf('wb:') === 0 && k.indexOf('wb:reg:') !== 0 && k !== 'wb:nav';
   }
+  function slideEls() { return document.querySelectorAll('.stage > .slide'); }
   function slideIndex() {
-    var all = document.querySelectorAll('.stage > .slide');
+    var all = slideEls();
     for (var i = 0; i < all.length; i++) if (all[i].classList.contains('on')) return i;
     return -1;
   }
+  /* the slide that owns the write: the slide containing the wbOwned element, else the current slide */
+  function ownerIndex() {
+    var all = slideEls(), el = owner && owner.closest ? owner.closest('.stage > .slide') : null, i;
+    if (el) for (i = 0; i < all.length; i++) if (all[i] === el) return i;
+    return slideIndex();
+  }
+  /* data-reset-keys on a slide: an array of its declared keys, or null when the slide does not declare any */
+  function declaredKeys(i) {
+    var el = slideEls()[i];
+    if (!el || !el.hasAttribute('data-reset-keys')) return null;
+    return el.getAttribute('data-reset-keys').split(/\s+/).filter(Boolean);
+  }
+  function saveNote() {
+    if (noteShown) return;
+    var foot = document.querySelector('.foot');
+    if (!foot) return;
+    noteShown = true;
+    var n = document.createElement('p');
+    n.className = 'save-note';
+    n.setAttribute('role', 'status');
+    n.textContent = 'Saving is unavailable in this browser. Keep this page open and copy your notes.';
+    foot.appendChild(n);
+  }
   function track(k) {
-    var s = sessionOf(), i;
-    if (!s || !isTracked(k)) return;
-    i = slideIndex();
-    if (i < 0) return;
-    var reg = readReg(s), list = reg[i] || [];
-    if (list.indexOf(k) > -1) return;
-    list.push(k);
-    reg[i] = list;
+    var s = sessionOf(), i, reg, j;
+    if (!s || !isTracked(k) || navigating) return;
+    i = ownerIndex();
+    if (i < 0 || declaredKeys(i) !== null) return;
+    var at = keyOf(i);
+    if (!at) return;
+    reg = readReg(s);
+    /* first writer wins: a key already registered to any slide stays where it is */
+    for (j in reg) {
+      if (reg[j].indexOf(k) > -1) return;
+    }
+    reg[at] = (reg[at] || []).concat([k]);
     writeReg(s, reg);
     document.dispatchEvent(new Event('wb:registry'));
   }
@@ -47,23 +103,53 @@
     if (!s || !isTracked(k)) return;
     var reg = readReg(s), changed = false;
     Object.keys(reg).forEach(function (i) {
-      var list = reg[i], at = list.indexOf(k);
+      var list = reg[i];
+      if (!Array.isArray(list)) return;
+      var at = list.indexOf(k);
       if (at > -1) { list.splice(at, 1); changed = true; if (!list.length) delete reg[i]; }
     });
     if (changed) { writeReg(s, reg); document.dispatchEvent(new Event('wb:registry')); }
   }
-  if (proto && rawSet && rawRemove) {
+  if (proto && rawGet && rawSet && rawRemove) {
+    proto.getItem = function (k) {
+      if (this === LS && hasMem(k)) return mem[k];
+      return rawGet.apply(this, arguments);
+    };
     proto.setItem = function (k, v) {
-      var r = rawSet.apply(this, arguments);
-      if (this === LS) track(k);
-      return r;
+      if (this !== LS) return rawSet.apply(this, arguments);
+      try {
+        rawSet.apply(this, arguments);
+      } catch (e) {
+        mem[k] = String(v);
+        saveNote();
+        return undefined;
+      }
+      delete mem[k];
+      try { track(k); } catch (e) {}
+      return undefined;
     };
     proto.removeItem = function (k) {
-      var r = rawRemove.apply(this, arguments);
-      if (this === LS) untrack(k);
-      return r;
+      if (this !== LS) return rawRemove.apply(this, arguments);
+      delete mem[k];
+      try { rawRemove.apply(this, arguments); } catch (e) {}
+      untrack(k);
     };
   }
+
+  /* writes inside fn belong to the slide that contains el (for timers and animations) */
+  window.wbOwned = function (el, fn) {
+    var prev = owner;
+    owner = el || null;
+    try { return fn(); } finally { owner = prev; }
+  };
+  /* runs fn with registration paused (used while a slide is being shown) */
+  window.wbQuiet = function (fn) {
+    var prev = navigating;
+    navigating = true;
+    try { return fn(); } finally { navigating = prev; }
+  };
+  /* keys whose last write failed and that live only in memory for this page */
+  window.wbFallbackKeys = function () { return Object.keys(mem); };
 
   /* ?fresh: clear this session's state before any slide script reads it */
   (function freshStart() {
@@ -98,15 +184,22 @@
     if (v === null) return d;
     try { return JSON.parse(v); } catch (e) { return d; }
   }
-  function clearWb() {
+  /* every wb:* key in storage, plus keys held only in memory after a failed write */
+  function wbKeys(keepNav) {
+    var keys = [], i;
     try {
-      var keys = [], i;
       for (i = 0; i < localStorage.length; i++) {
         var k = localStorage.key(i);
         if (k && k.indexOf('wb:') === 0) keys.push(k);
       }
-      keys.forEach(function (k) { localStorage.removeItem(k); });
     } catch (e) {}
+    (window.wbFallbackKeys ? window.wbFallbackKeys() : []).forEach(function (k) {
+      if (k.indexOf('wb:') === 0 && keys.indexOf(k) < 0) keys.push(k);
+    });
+    return keepNav ? keys.filter(function (k) { return k !== 'wb:nav'; }) : keys;
+  }
+  function clearWb() {
+    wbKeys(false).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
   }
 
   var body = document.body;
@@ -167,14 +260,8 @@
       live.textContent = '';
     }
     function resetAllActivities() {
-      var keys = [], i;
-      try {
-        for (i = 0; i < localStorage.length; i++) {
-          var k = localStorage.key(i);
-          if (k && k.indexOf('wb:') === 0 && k !== 'wb:nav') keys.push(k);
-        }
-        keys.forEach(function (k) { localStorage.removeItem(k); });
-      } catch (e) {}
+      var keys = wbKeys(false), i;
+      keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
       location.reload();
     }
     btn.addEventListener('click', function () {
@@ -204,7 +291,13 @@
   function applySteps(i) {
     var n = revealed[i] || 0;
     var steps = stepsOf(i);
-    steps.forEach(function (s, k) { s.classList.toggle('on', k < n); });
+    steps.forEach(function (s, k) {
+      var on = k < n;
+      s.classList.toggle('on', on);
+      /* unrevealed content is out of the accessibility tree and cannot take focus */
+      s.inert = !on;
+      if (on) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true');
+    });
     markSteps(i, steps);
   }
   /* emphasis follows attention: the newest revealed step is em-current, earlier ones em-done.
@@ -212,12 +305,19 @@
   function markSteps(i, steps) {
     if (slides[i].getAttribute('data-em') === 'off') return;
     var shown = steps.filter(function (s) { return s.classList.contains('on'); });
-    steps.forEach(function (s) { s.classList.remove('em-current', 'em-done'); });
+    /* an unrevealed step carries no emphasis: stale em-context/em-done would otherwise style it */
+    steps.forEach(function (s) {
+      if (!s.classList.contains('on')) s.classList.remove('em-current', 'em-done', 'em-context');
+      else s.classList.remove('em-current', 'em-done');
+    });
     shown.forEach(function (s, k) { s.classList.add(k === shown.length - 1 ? 'em-current' : 'em-done'); });
   }
 
   function show(p, dir) {
     if (!slides.length) return;
+    window.wbQuiet(function () { showNow(p, dir); });
+  }
+  function showNow(p, dir) {
     pos = Math.max(0, Math.min(slides.length - 1, p));
     slides.forEach(function (el, i) {
       var on = i === pos;
@@ -263,7 +363,21 @@
     }
     go(pos + 1, 1);
   }
-  function prev() { go(pos - 1, -1); }
+  /* steps a slide starts with: none for data-steps-start, otherwise the first one */
+  function startOf(i) {
+    var n = stepsOf(i).length;
+    return Math.min(slides[i].hasAttribute('data-steps-start') ? 0 : 1, n);
+  }
+  /* Back hides the last revealed step while the slide has any beyond its starting state, then leaves the slide */
+  function prev() {
+    var n = slides.length ? stepsOf(pos).length : 0;
+    if (n && (revealed[pos] || 0) > startOf(pos)) {
+      revealed[pos] -= 1;
+      applySteps(pos);
+      return;
+    }
+    go(pos - 1, -1);
+  }
 
   function buildPips() {
     var box = $('#pips');
@@ -279,21 +393,34 @@
   }
 
   /* ---------- reset this activity (see the RESET notes at the top of this file) ---------- */
+  function declaredKeys(i) {
+    var el = slides[i];
+    if (!el || !el.hasAttribute('data-reset-keys')) return null;
+    return el.getAttribute('data-reset-keys').split(/\s+/).filter(Boolean);
+  }
+  /* same rule as readReg in the first block: only id-keyed entries survive; legacy entries are dropped */
   function regFor(i) {
-    var s = body.getAttribute('data-session');
-    var reg = s ? loadJSON('wb:reg:s' + s, {}) : {};
-    if (!reg || typeof reg !== 'object') reg = {};
-    return { session: s, reg: reg, keys: Array.isArray(reg[i]) ? reg[i] : [] };
+    var s = body.getAttribute('data-session'), raw = s ? loadJSON('wb:reg:s' + s, {}) : {}, reg = {}, key = null;
+    if (raw && typeof raw === 'object') Object.keys(raw).forEach(function (k) {
+      if (k.indexOf('id:') === 0 && Array.isArray(raw[k])) reg[k] = raw[k];
+    });
+    var decl = declaredKeys(i);
+    if (slides[i] && slides[i].id) key = 'id:' + slides[i].id;
+    return { session: s, reg: reg, key: key, keys: decl !== null ? decl : (key && Array.isArray(reg[key]) ? reg[key] : []) };
   }
   function canReset(i) {
-    return !!slides[i] && (regFor(i).keys.length > 0 || !!slides[i].querySelector(WIDGET_SEL));
+    if (!slides[i]) return false;
+    if (regFor(i).keys.length > 0 || slides[i].hasAttribute('data-reset-hook')) return true;
+    return declaredKeys(i) === null && !!slides[i].querySelector(WIDGET_SEL);
   }
   function resetSlide(i) {
     var info = regFor(i);
+    /* a slide with data-reset-hook clears its own part of shared data in a wb:reset listener */
+    if (slides[i]) slides[i].dispatchEvent(new CustomEvent('wb:reset'));
     /* removeItem is wrapped, so each removed key also leaves the registry */
     info.keys.slice().forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
     var fresh = regFor(i);
-    delete fresh.reg[i];
+    if (fresh.key) delete fresh.reg[fresh.key];
     if (fresh.session) storeJSON('wb:reg:s' + fresh.session, fresh.reg);
     location.reload();
   }
@@ -313,7 +440,9 @@
     resetBtn.className = 'reset';
     resetBtn.id = 'reset';
     resetBtn.hidden = true;
-    resetBtn.textContent = 'Reset this activity';
+    resetBtn.setAttribute('aria-label', 'Reset this activity');
+    resetBtn.setAttribute('title', 'Reset this activity');
+    resetBtn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13.5 8a5.5 5.5 0 1 1-1.61-3.89"/><polyline points="13.5 2.5 13.5 5.5 10.5 5.5"/></svg><span class="reset-label">Reset this activity</span>';
     resetBtn.addEventListener('click', function () { resetSlide(pos); });
     mid.appendChild(resetBtn);
   }
@@ -334,6 +463,9 @@
       if (target === pos) return;
       show(target, target < pos ? -1 : 1);
     });
+    var pb0 = $('#prev'), nb0 = $('#next');
+    if (pb0) pb0.setAttribute('aria-label', 'Back to previous slide');
+    if (nb0) nb0.setAttribute('aria-label', 'Next slide');
     var start = parseInt(location.hash.slice(1), 10);
     show(start ? start - 1 : 0, 0);
     try { history.replaceState(null, '', '#' + (pos + 1)); } catch (e) {}
@@ -467,7 +599,10 @@
   function initQs(root) {
     var sess = body.getAttribute('data-session') || '0';
     var key = 'wb:s' + sess + ':q:' + root.getAttribute('data-qs');
-    var record = root.getAttribute('data-qs-mode') === 'record';
+    var mode = root.getAttribute('data-qs-mode');
+    var record = mode === 'record';
+    /* predict: the participant is guessing. No check, x, confetti or lean; the summary states the prediction and the result */
+    var predict = mode === 'predict';
     var items = $$('.qs-item', root);
     var done = $('.qs-done', root);
     var count = $('.qs-count', root);
@@ -500,7 +635,7 @@
       var rv = $('.qs-reveal', items[i]);
       if (!rv) return '';
       var c = rv.cloneNode(true);
-      if (hit(i) || unsure(i)) $$('.lean', c).forEach(function (n) { n.parentNode.removeChild(n); });
+      if (hit(i) || unsure(i) || predict) $$('.lean', c).forEach(function (n) { n.parentNode.removeChild(n); });
       return c.innerHTML;
     }
     function paint(i) {
@@ -518,19 +653,27 @@
       done.innerHTML = '';
       var latest = st.cur - 1;
       items.slice(0, st.cur).forEach(function (it, i) {
-        var ok = !record && hit(i);
+        var ok = !record && !predict && hit(i);
         var li = document.createElement('li');
         li.className = 'qs-sum em-done' +
           (i === latest ? ' latest' : '') +
           (i === fresh ? ' fresh' : '') +
-          (record || unsure(i) ? '' : (ok ? ' ok' : ' no'));
+          (predict ? ' predict' : (record || unsure(i) ? '' : (ok ? ' ok' : ' no')));
         var qq = document.createElement('span'); qq.className = 'qs-q'; qq.textContent = it.getAttribute('data-short');
-        var you = document.createElement('span'); you.className = 'qs-you'; you.textContent = label(i);
+        var you = document.createElement('span'); you.className = 'qs-you';
+        if (predict) {
+          /* neutral: no judgement of the guess, just what was guessed and what the result was */
+          var dot = document.createElement('span'); dot.className = 'qs-dot'; dot.setAttribute('aria-hidden', 'true');
+          you.appendChild(dot);
+          you.appendChild(document.createTextNode('You predicted: ' + label(i) + ' · Result: ' + answerLabel(i)));
+        } else {
+          you.textContent = label(i);
+        }
         /* when someone differs from us, show our answer too */
-        var ours = (!record && !ok && !unsure(i)) ? answerLabel(i) : '';
+        var ours = (!record && !predict && !ok && !unsure(i)) ? answerLabel(i) : '';
         if (ours) { var o = document.createElement('span'); o.className = 'qs-ours'; o.textContent = 'Our answer: ' + ours; you.appendChild(document.createElement('br')); you.appendChild(o); }
         li.appendChild(qq); li.appendChild(you);
-        if (!record && !unsure(i)) {
+        if (!record && !predict && !unsure(i)) {
           var mk = document.createElement('span');
           mk.className = 'qs-mark';
           mk.setAttribute('role', 'img');
@@ -538,7 +681,7 @@
           mk.innerHTML = ok ? CHECK_SVG : CROSS_SVG;
           li.appendChild(mk);
         }
-        if (!record && i === latest && reveal(i)) {
+        if ((!record || predict) && i === latest && reveal(i)) {
           var note = document.createElement('div');
           note.className = 'qs-note';
           note.innerHTML = reveal(i);

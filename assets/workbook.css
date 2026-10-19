@@ -122,6 +122,9 @@ html.preload .nav-toggle svg{transition:none}
 .reset{position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:12px;padding:4px 2px;background:none;border:0;font:500 13px/1.2 var(--c-font);letter-spacing:.02em;color:var(--c-mute);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer}
 .reset:hover,.reset:focus-visible{color:var(--c-signal)}
 .reset[hidden]{display:none}
+.reset svg{display:block;flex:none;margin-right:6px}
+/* one-time note when storage fails: sits above the footer, outside its grid, and never blocks typing */
+.foot .save-note{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin:0 0 6px;font-size:12px;line-height:1.3;color:var(--c-mute);white-space:nowrap;pointer-events:none}
 .pip{width:26px;height:26px;padding:0;border:0;border-radius:50%;background:none;display:grid;place-items:center}
 .pip::before{content:"";width:10px;height:10px;border-radius:50%;border:1.5px solid var(--c-frame);box-sizing:border-box;transition:transform .2s var(--ease),border-color .2s,background-color .2s}
 .pip:hover::before{border-color:var(--lane);transform:scale(1.25)}
@@ -151,6 +154,8 @@ html.preload .nav-toggle svg{transition:none}
 /* step reveals: hidden until the JS adds .on */
 .step{opacity:0;transform:translateY(6px);transition:opacity .25s linear,transform .25s linear}
 .step.on{opacity:1;transform:none}
+/* unrevealed steps stay hidden whatever emphasis classes they carry (em-context etc.) */
+.step:not(.on){opacity:0;pointer-events:none}
 
 /* ---------- emphasis follows attention (claude_work/design-decisions.md) ----------
    One state class on the element that carries the text:
@@ -206,6 +211,8 @@ html.preload .nav-toggle svg{transition:none}
 .qs-sum{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule);font-size:15px;line-height:1.3}
 .qs-sum .qs-q{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mute)}
 .qs-sum .qs-you{white-space:nowrap}
+.qs-sum.predict .qs-you{white-space:normal}
+.qs-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mute);margin-right:9px;vertical-align:.12em}
 .qs-mark{position:relative;display:inline-grid;place-items:center;width:22px;height:22px;flex:none}
 .qs-mark svg{width:22px;height:22px;overflow:visible;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .qs-sum.ok .qs-mark svg{stroke:var(--c-ok)}
@@ -368,6 +375,23 @@ html.preload .nav-toggle svg{transition:none}
   .foot{padding:10px 16px 14px}
 }
 
+/* narrow footer: Back and Next stay on row 1; the pips row (scrollable if it must) and the Reset link sit on row 2.
+   Touch targets keep their size. Reset moves into normal flow beside the pips. */
+@media (max-width:820px){
+  .foot{grid-template-columns:auto 1fr auto;row-gap:6px}
+  .foot #prev{grid-column:1;grid-row:1}
+  .foot #next{grid-column:3;grid-row:1}
+  .foot .mid{grid-column:1/-1;grid-row:2;justify-self:stretch;width:100%;min-width:0;gap:6px}
+  .foot .mid .pips{min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:4px 2px;scrollbar-width:thin}
+  .reset{position:static;transform:none;margin:0;flex:none;padding:6px}
+  .reset svg{margin-right:0}
+  .reset .reset-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;padding:0;margin:-1px}
+}
+@media (max-width:600px){
+  .foot{padding-left:12px;padding-right:12px}
+  .foot > .save-note{font-size:11px}
+}
+
 /* build-an-agent: fewer parts = easier to build */
 .build-meter{margin:10px auto 0;max-width:360px;width:100%}
 .bm-track{display:block;height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
@@ -419,3 +443,17 @@ html.nav-c .app .nav-top{justify-content:center;padding-left:0;padding-right:0}
 html.nav-c .app .sess{grid-template-columns:1fr;justify-items:center;padding:12px 0}
 html.nav-c .app .sess .label{display:none}
 html.nav-c .app .sess .n{font-size:22px}
+
+/* appendix: a sixth entry at the foot of the side nav, set apart from the five sessions by a rule and muted styling. No lane colour, and "A" in the number slot. */
+.sessions.appx{margin-top:10px;border-top:1px solid var(--c-frame)}
+.sessions.appx .sess{border-top:0;color:var(--c-mute)}
+.sessions.appx .sess::before{display:none}
+.sessions.appx .sess .n{color:var(--c-mute);font-weight:700}
+.sessions.appx .sess:not([aria-current]):hover{background:var(--c-soft);color:var(--c-ink)}
+.sessions.appx .sess[aria-current]{background:var(--c-active-bg);color:var(--c-active-ink)}
+.sessions.appx .sess[aria-current] .n{color:var(--c-active-ink)}
+/* index page: the appendix sits below the five sessions, in the same list style but quieter */
+.home-list li.appx{margin-top:26px}
+.home-list a.appx-link{font-size:clamp(20px,2.2vw,30px);font-weight:600;color:var(--c-mute);border-top:1px solid var(--c-rule)}
+.home-list a.appx-link::before{display:none}
+.home-list a.appx-link:hover{color:var(--c-signal)}

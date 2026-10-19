@@ -3,205 +3,414 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Session 4 printable · Workbook</title>
+<title>Session 4 printables · Support desk</title>
 <style>
-/* Printable fallback for session 4. Plain black on white. No navigation; the screen bar is hidden in print. */
-:root{--ink:#141311;--mute:#5b574f;--rule:#c9c4b8}
+/* Session 4 printables: the support desk. US Letter, black and white.
+   Distinctions use dash patterns, weights and boxes, never colour. */
 *{box-sizing:border-box}
-body{margin:0;background:#f2efe8;color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;font-size:16px;line-height:1.35}
-.screen-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:820px;margin:0 auto;padding:18px 20px;border-bottom:1px solid var(--ink)}
-.screen-bar a{color:var(--ink);font-size:15px}
-.screen-bar button{padding:10px 16px;background:var(--ink);color:#f2efe8;border:0;font:700 16px "Helvetica Neue",Helvetica,Arial,sans-serif;cursor:pointer}
-.screen-bar button:hover{background:#e8461e;color:var(--ink)}
-.wrap{max-width:820px;margin:0 auto;padding:0 20px 40px}
-.page{padding:28px 0 36px;border-bottom:1px dashed var(--rule)}
-.page:last-child{border-bottom:0}
-.page h2{margin:0 0 18px;font-size:20px;font-weight:700;letter-spacing:-.01em}
-.page .sub{margin:0 0 14px;color:var(--mute);font-size:15px}
+html,body{margin:0;background:#e9e6df;color:#000}
+body{font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;font-size:14px;line-height:1.35;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-/* setup */
-.setup{list-style:none;margin:0;padding:0;font-size:22px;line-height:1.35;font-weight:500}
-.setup li{padding:10px 0;border-top:1px solid var(--ink)}
-.setup li:last-child{border-bottom:1px solid var(--ink)}
-.setup b{font-weight:800}
+/* screen only: intro and button */
+.screen-only{max-width:7.3in;margin:0 auto}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid #000}
+.bar a{color:#000;font-size:15px}
+.bar button{padding:10px 16px;background:#000;color:#fff;border:0;font:700 16px "Helvetica Neue",Helvetica,Arial,sans-serif;cursor:pointer}
+.bar button:hover{background:#333}
+.intro{padding:14px 0 0;font-size:15px;line-height:1.45}
+.intro p{margin:0 0 8px}
 
-/* flowchart: subway map, black and white. Each branch has its own dash pattern, so no colour is needed. */
-.sw{list-style:none;margin:0;padding:0;display:grid;max-width:700px}
-.sw-stop,.sw-end{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr) auto;align-items:stretch;min-height:72px}
-.sw-qw{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right;padding-right:6px}
-.sw-n{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-.sw-q{margin:0;font-size:18px;font-weight:600;line-height:1.2}
-.sw-rail{position:relative}
-.sw-rail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:8px;margin-left:-4px;background:var(--ink)}
-.sw-first .sw-rail::before{top:50%}
-.sw-end .sw-rail::before{bottom:50%}
-.sw-stn{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:3px solid var(--ink);border-radius:50%;background:#fff;box-sizing:border-box}
-.sw-no{position:absolute;left:calc(50% + 12px);top:calc(50% + 10px);font-size:13px;font-weight:800;letter-spacing:.1em}
-.sw-mid{position:relative;display:flex;align-items:center}
-.sw-mid svg{display:block;width:100%;height:10px;overflow:visible}
-.sw-mid line{stroke:#000;stroke-width:6px;stroke-linecap:butt}
-.b-deny line{stroke-dasharray:none}
-.b-refund line{stroke-dasharray:16 8}
-.b-replace line{stroke-dasharray:3 6}
-.b-cancel line{stroke-dasharray:22 6 3 6}
-.sw-yes{position:absolute;left:50%;bottom:50%;margin-bottom:6px;transform:translateX(-50%);font-size:13px;font-weight:800;letter-spacing:.1em}
-.sw-term{display:flex;align-items:center;gap:10px;padding-left:4px}
-.sw-tdot{flex:none;width:18px;height:18px;border-radius:50%;background:#000}
-.sw-tl{font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
-.sw-endstn{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border:4px solid var(--ink);border-radius:50%;background:#fff;box-sizing:border-box}
-.sw-endstn::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--ink)}
-.sw-endtxt{grid-column:3 / span 2;margin:0;align-self:center;padding-left:4px;font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
-.sw-legend{margin:14px 0 0;font-size:13px;color:var(--mute)}
-.sw-note{margin:8px 0 14px;font-size:14px;color:var(--mute)}
+/* each section is one printable block: exactly the printable area of a US Letter sheet at 0.6in margins */
+.sheet{width:7.3in;height:9.8in;margin:24px auto;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:visible}
+.sheet.last{margin-bottom:24px}
 
-/* ticket form fields */
-.pf{margin:auto 0 0;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;line-height:1.3;border-top:1px solid var(--ink);padding-top:8px}
-.pf b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800}
+/* small caps label at the top of every section, so the stacks don't get mixed up */
+.label{margin:0 0 .2in;padding-bottom:5px;border-bottom:2px solid #000;font-size:12pt;font-weight:800;letter-spacing:.12em;font-variant-caps:all-small-caps;flex:none}
+.title{margin:0 0 .06in;font-size:26pt;font-weight:800;line-height:1.1;letter-spacing:-.01em;flex:none}
+.sub{margin:0 0 .18in;font-size:15pt;font-weight:600;flex:none}
 
-/* brief */
-.brief{max-width:66ch;display:grid;gap:14px;border:2px solid var(--ink);padding:22px 26px;background:#fbfaf6}
-.brief .brief-label{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-.brief p{margin:0;font-size:24px;line-height:1.5;font-weight:500}
+/* setup note (the slide's small-groups wording) */
+.setup{margin:0 0 .22in;padding:.12in .16in;border:1.5px solid #000;font-size:13pt;line-height:1.42;flex:none}
+.setup p{margin:0}
+.setup p+p{margin-top:.06in}
 
-/* tickets: cut-out cards, 5 per page */
-.actions{margin:0 0 16px;font-size:16px;font-weight:600}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.card{border:1.5px dashed var(--ink);padding:14px 16px;min-height:150px;display:flex;flex-direction:column;gap:8px}
-.card .cn{margin:0;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-.card .ct{margin:0;font-size:19px;line-height:1.3;font-weight:500}
-.card:last-child:nth-child(odd){grid-column:1/-1;max-width:50%}
+/* 1. how to print */
+.plist{margin:.1in 0 0;padding:0 0 0 .25in;font-size:14pt;line-height:1.45}
+.plist li{margin:0 0 .1in}
+.ptable{width:100%;border-collapse:collapse;margin:.12in 0 .2in;font-size:13pt}
+.ptable th{text-align:left;font-size:11pt;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid #000;padding:6px 8px}
+.ptable td{padding:9px 8px;border-bottom:1px solid #000;vertical-align:top}
+.ptable td.n{text-align:right;white-space:nowrap;width:.9in;font-weight:700}
+.ptable tfoot td{border-top:2px solid #000;border-bottom:0;font-weight:800}
+.cutline{margin:.2in 0 0;padding:.14in .18in;border:2px solid #000;font-size:15pt;font-weight:700}
+.cutline::before{content:"\2702";margin-right:.1in;font-weight:400}
 
-/* debrief: blank table */
-.blank{width:100%;border-collapse:collapse;font-size:15px}
-.blank th{text-align:left;font-weight:700;padding:6px 8px;border-bottom:2px solid var(--ink)}
-.blank td{height:36px;border-bottom:1px solid var(--rule);padding:4px 8px;vertical-align:bottom}
-.blank td:first-child{width:24%;font-weight:600}
+/* 2. flowchart: subway map, filled to the page */
+.fc{flex:1;min-height:0;display:grid;grid-template-rows:repeat(5,minmax(1.12in,1fr));list-style:none;margin:0;padding:0}
+.fc li{display:grid;grid-template-columns:minmax(0,1.6fr) .5in minmax(0,1fr) minmax(0,1.35fr);position:relative;min-height:0}
+.fc .q{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right;padding-right:.16in;min-width:0}
+.stop{font-size:12pt;font-weight:800;letter-spacing:.12em;text-transform:uppercase;line-height:1.2}
+.qt{margin:.04in 0 0;font-size:19pt;font-weight:700;line-height:1.14}
+.rail{position:relative}
+.rail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:10px;margin-left:-5px;background:#000}
+.fc li:first-child .rail::before{top:50%}
+.fc li:last-child .rail::before{bottom:50%}
+.stn{position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border:4px solid #000;border-radius:50%;background:#fff;box-sizing:border-box}
+.endstn{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:4px solid #000;border-radius:50%;background:#000;box-sizing:border-box}
+.br{position:relative;display:flex;align-items:center}
+.yes{position:absolute;left:0;bottom:calc(50% + 9px);font-size:13pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.2}
+.no{position:absolute;left:calc(50% + 14px);top:calc(50% + 12px);font-size:13pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.2}
+.term{display:flex;align-items:center;gap:8px;padding-left:.12in;padding-right:.1in;min-width:0;font-size:15pt;font-weight:800;line-height:1.15}
+.term>span:not(.key){min-width:0;overflow-wrap:normal}
+.key{flex:none;display:block;width:.42in;height:12px}
+.dot{flex:none;width:22px;height:22px;border-radius:50%;background:#000}
+.endterm{grid-column:3 / span 2;display:flex;align-items:center;gap:12px;padding-left:.12in;padding-right:.1in;font-size:17pt;font-weight:800;text-transform:uppercase;letter-spacing:.03em;line-height:1.15;min-width:0}
 
-@media screen and (max-width:640px){
-  .cards{grid-template-columns:1fr}
-  .card:last-child:nth-child(odd){max-width:none}
-  .brief p{font-size:20px}
-  .setup{font-size:19px}
+/* the four branch patterns: solid, long dashes, dots, dash and dot */
+.p-deny{background:#000}
+.p-refund{background:repeating-linear-gradient(90deg,#000 0 28px,transparent 28px 42px)}
+.p-replace{background:radial-gradient(circle at 50% 50%,#000 0 4px,transparent 4.6px) 0 50%/16px 12px repeat-x}
+.p-cancel{background:repeating-linear-gradient(90deg,#000 0 26px,transparent 26px 34px,#000 34px 40px,transparent 40px 48px)}
+.ln{display:block;width:100%;height:12px}
+.fnote{margin:.14in 0 0;font-size:15pt;font-weight:800;flex:none}
+.fkey{margin:.06in 0 0;font-size:11pt;color:#000;flex:none}
+
+/* 3. prompt */
+.brief{flex:1;display:flex;flex-direction:column;justify-content:center;gap:.2in;border:3px solid #000;padding:.32in .45in;min-height:0}
+.brief .bl{font-size:12pt;font-weight:800;letter-spacing:.12em;font-variant-caps:all-small-caps;border-bottom:1.5px solid #000;padding-bottom:6px;align-self:flex-start}
+.brief p{margin:0;font-size:24pt;line-height:1.34;font-weight:500}
+
+/* 4. ticket deck: 4 cards per page, dashed cut lines */
+.deck{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:.25in;margin:0}
+.card{position:relative;border:1.5px dashed #000;padding:.15in .17in;display:flex;flex-direction:column;gap:.1in;min-height:0;overflow:hidden}
+.card.solo{grid-row:1}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid #000;padding-bottom:6px}
+.cnum{font-size:20pt;font-weight:800;line-height:1}
+.cnum .sc{font-size:14pt;font-weight:400;margin-right:6px}
+.cform{font-size:8.5pt;font-weight:800;letter-spacing:.08em;font-variant-caps:all-small-caps;text-align:right}
+.fields{display:grid;gap:.06in}
+.fld{display:grid;grid-template-columns:1.05in minmax(0,1fr);align-items:baseline;border-bottom:1px solid #000;padding-bottom:3px}
+.fk{font-size:9pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.fv{font-size:14pt;font-weight:600}
+.msg{flex:1;margin:0;font-size:15pt;line-height:1.3;display:flex;align-items:center;min-height:0}
+.acts{flex:none;border-top:1px solid #000;padding-top:.08in}
+.acts .al{font-size:8.5pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.06in}
+.acts ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.06in .12in;font-size:11.5pt;line-height:1.2}
+.acts li{display:flex;align-items:center;gap:7px}
+.tk{flex:none;display:inline-block;width:.16in;height:.16in;border:1.5px solid #000}
+
+/* 5. debrief key */
+.dtab{width:100%;border-collapse:collapse;font-size:11pt;flex:none}
+.dtab th{text-align:left;font-size:9.5pt;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid #000;padding:5px 6px}
+.dtab td{padding:5px 6px;border-bottom:1px solid #000;vertical-align:top;line-height:1.25}
+.dtab .tn{font-weight:800;font-size:11.5pt}
+.dtab .tc{display:block;font-size:10pt;font-weight:400;margin-top:2px}
+.mk{display:inline-block;min-width:.22in;font-size:15pt;font-weight:700;line-height:1;margin-right:4px;vertical-align:-1px;text-align:center}
+.mk.costly{font-weight:900;border:2.5px solid #000;padding:1px 3px;font-size:13pt;line-height:1;min-width:0;vertical-align:-1px}
+.dtab .sm{display:block;font-size:10pt;padding-left:.27in}
+.dtab tfoot td{border-top:2px solid #000;border-bottom:0;font-weight:800;font-size:11.5pt}
+.legend{margin:.12in 0 0;font-size:11pt;flex:none}
+.legend span{white-space:nowrap}
+.dq{margin:.2in 0 0;font-size:13pt;font-weight:700;flex:none}
+.dnote{margin:.06in 0 0;font-size:10.5pt;color:#555;flex:none}
+
+/* 6. tally */
+.tally{width:100%;border-collapse:collapse;font-size:11pt;flex:none}
+.tally th{font-size:9.5pt;letter-spacing:.06em;text-transform:uppercase;text-align:center;border-bottom:2px solid #000;padding:5px 3px}
+.tally th.tk-h{text-align:left;width:1.9in}
+.tally td{border-bottom:1px solid #000;border-left:1px solid #000;height:.5in;padding:3px 5px;vertical-align:bottom}
+.tally td:first-child{border-left:0;font-size:10.5pt;font-weight:600;vertical-align:middle;line-height:1.2}
+.tally tr.team td{height:auto;font-size:10pt;padding:4px 5px;vertical-align:middle}
+.tally td.team-box{white-space:nowrap}
+.tally td.team-box .tk{width:.13in;height:.13in;vertical-align:-2px;margin-right:3px}
+.notes{margin-top:.22in;flex:none}
+.notes p{margin:0 0 .14in;font-size:11pt;font-weight:800}
+.rule{border-bottom:1px solid #000;height:.36in}
+
+@media screen and (max-width:700px){
+  .sheet{width:auto;height:auto;padding:18px;margin:16px 0}
+  .deck{grid-template-columns:1fr;grid-template-rows:none}
+  .card{min-height:4.2in}
+  .fc{grid-template-rows:none}
+  .fc li{min-height:1.4in}
+  .screen-only{padding:0 14px}
 }
 
 @media print{
   @page{size:letter;margin:.6in}
-  html,body{background:#fff;color:#000;font-size:12pt}
-  .screen-bar{display:none!important}
-  .wrap{max-width:none;padding:0}
-  .page{break-after:page;page-break-after:always;padding:0 0 0;border-bottom:0}
-  .page:last-child{break-after:auto;page-break-after:auto}
-  .page h2{font-size:16pt;margin-bottom:12pt}
-  .page .sub{color:#000}
-  .setup{font-size:14pt}
-  .setup li{border-top-color:#000}
-  .setup li:last-child{border-bottom-color:#000}
-  .sw-stop,.sw-end{break-inside:avoid}
-  .sw-q,.sw-tl,.sw-endtxt{font-size:12pt}
-  .sw-mid line{stroke:#000}
-  .brief p{font-size:16pt;line-height:1.4}
-  .brief{border-color:#000;background:#fff}
-  .card{break-inside:avoid;min-height:2.3in;border-color:#000}
-  .card .ct{font-size:13pt}
-  .card:last-child:nth-child(odd){max-width:50%}
-  .blank th,.blank td{border-color:#000}
-  .blank td{height:0.42in}
-  a{color:#000;text-decoration:none}
+  html,body{background:#fff}
+  .screen-only,.noprint{display:none!important}
+  .sheet{width:auto;height:9.7in;margin:0;box-shadow:none;break-after:page;page-break-after:always;break-inside:avoid}
+  .sheet.last{break-after:auto;page-break-after:auto}
+  .card{break-inside:avoid}
+  .dtab tr,.tally tr{break-inside:avoid}
 }
 </style>
 </head>
 <body>
 
-<div class="screen-bar">
-  <a href="session-4.html">← Back to session 4</a>
-  <button type="button" id="printBtn">Print or save as PDF</button>
+<div class="screen-only">
+  <div class="bar">
+    <a href="session-4.html">← Back to session 4</a>
+    <button type="button" id="printBtn">Print or save as PDF</button>
+  </div>
+  <div class="intro">
+    <p>Session 4 printables: the support desk. Six sections, eight pages on US Letter, black and white.</p>
+    <p>Section 1 is for you. Sections 2 to 6 are the handouts, each starting on a new page. This note and the button don't print.</p>
+  </div>
 </div>
 
-<div class="wrap">
+<!-- 1. Facilitator: how to print -->
+<section class="sheet" aria-labelledby="s1">
+  <p class="label">Facilitator · how to print</p>
+  <h1 class="title" id="s1">Printing the support desk</h1>
+  <p class="sub">Eight pages in all, one copy of each section. For about 25 people in up to 6 groups, print these counts.</p>
+  <table class="ptable">
+    <thead><tr><th>Item</th><th>Pages</th><th>Copies</th><th>Sheets</th></tr></thead>
+    <tbody>
+      <tr><td>Team packet · Follow a flowchart</td><td class="n">1</td><td class="n">3</td><td class="n">3</td></tr>
+      <tr><td>Team packet · Follow a prompt</td><td class="n">1</td><td class="n">2</td><td class="n">2</td></tr>
+      <tr><td>Ticket deck (both teams), one per group</td><td class="n">3</td><td class="n">5</td><td class="n">15</td></tr>
+      <tr><td>Facilitator key · debrief</td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+      <tr><td>Facilitator · tally sheet</td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+    </tbody>
+    <tfoot><tr><td>Total</td><td></td><td></td><td class="n">22</td></tr></tfoot>
+  </table>
+  <ul class="plist">
+    <li>Each group needs one team packet and one ticket deck. Give the flowchart packets to three groups and the prompt packets to two.</li>
+    <li>Print on US Letter, black and white, single-sided, at 100% scale. Turn off “fit to page” and headers and footers.</li>
+    <li>Keep the facilitator key and tally sheet with you. Don’t hand them out.</li>
+  </ul>
+  <p class="cutline">Cut the ticket cards out along the dashed lines before the game starts.</p>
+</section>
 
-  <section class="page" aria-labelledby="p1">
-    <h2 id="p1">Session 4: the support desk</h2>
-    <ul class="setup">
-      <li><b>Follow a flowchart:</b> half the room follows the flowchart exactly.</li>
-      <li><b>Follow a prompt:</b> the other half follows a prompt and uses their judgment.</li>
-      <li>In each small group, one person has the flowchart or prompt ready to go, and everyone else handles the tickets.</li>
-      <li><b>Rules role:</b> has the flowchart or prompt ready and tells the group what it says.</li>
-      <li><b>Tickets role:</b> sorts each ticket with one action: Refund · Replace · Deny · Cancel subscription · Send to a person.</li>
-    </ul>
-  </section>
+<!-- 2. Team packet: Follow a flowchart -->
+<section class="sheet" aria-labelledby="s2">
+  <p class="label">Team packet · Follow a flowchart</p>
+  <h2 class="title" id="s2">The flowchart</h2>
+  <p class="sub">Follow it exactly, even when it feels wrong.</p>
+  <div class="setup">
+    <p>Work in small groups. Designate one person to have your flowchart or prompt ready to go.</p>
+    <p>Everyone else works through the customer messages and decides what to do.</p>
+  </div>
+  <ol class="fc" aria-label="The flowchart, as a subway map">
+    <li>
+      <div class="q"><span class="stop">Stop 1</span><p class="qt">Order date more than 30 days ago?</p></div>
+      <div class="rail"><span class="stn"></span><span class="no">No</span></div>
+      <div class="br"><span class="yes">Yes</span><span class="ln p-deny"></span></div>
+      <div class="term"><span class="key p-deny"></span>Deny</div>
+    </li>
+    <li>
+      <div class="q"><span class="stop">Stop 2</span><p class="qt">Issue type is Damaged or Missing?</p></div>
+      <div class="rail"><span class="stn"></span><span class="no">No</span></div>
+      <div class="br"><span class="yes">Yes</span><span class="ln p-refund"></span></div>
+      <div class="term"><span class="key p-refund"></span>Refund</div>
+    </li>
+    <li>
+      <div class="q"><span class="stop">Stop 3</span><p class="qt">Issue type is Taste?</p></div>
+      <div class="rail"><span class="stn"></span><span class="no">No</span></div>
+      <div class="br"><span class="yes">Yes</span><span class="ln p-replace"></span></div>
+      <div class="term"><span class="key p-replace"></span>Replace</div>
+    </li>
+    <li>
+      <div class="q"><span class="stop">Stop 4</span><p class="qt">Issue type is Cancel subscription?</p></div>
+      <div class="rail"><span class="stn"></span><span class="no">No</span></div>
+      <div class="br"><span class="yes">Yes</span><span class="ln p-cancel"></span></div>
+      <div class="term"><span class="key p-cancel"></span>Cancel subscription</div>
+    </li>
+    <li>
+      <div class="q"><span class="stop">None of the above</span></div>
+      <div class="rail"><span class="endstn"></span></div>
+      <div class="endterm">Send to a person</div>
+    </li>
+  </ol>
+  <p class="fnote">The flowchart only sees the form fields.</p>
+  <p class="fkey">Line keys: solid = Deny · long dashes = Refund · dots = Replace · dash and dot = Cancel subscription · filled circle = Send to a person.</p>
+</section>
 
-  <section class="page" aria-labelledby="p2">
-    <h2 id="p2">Follow a flowchart: the flowchart</h2>
-    <p class="sub">Follow it exactly, even when it feels wrong.</p>
-    <ol class="sw" aria-label="The flowchart, as a subway map">
-<li class="sw-stop sw-first"><div class="sw-qw"><span class="sw-n">Stop 1</span><p class="sw-q">Order date more than 30 days ago?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-deny" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-deny"><span class="sw-tdot"></span><span class="sw-tl">Deny</span></div></li>
-<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 2</span><p class="sw-q">Issue type is Damaged or Missing?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-refund" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-refund"><span class="sw-tdot"></span><span class="sw-tl">Refund</span></div></li>
-<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 3</span><p class="sw-q">Issue type is Taste?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-replace" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-replace"><span class="sw-tdot"></span><span class="sw-tl">Replace</span></div></li>
-<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 4</span><p class="sw-q">Issue type is Cancel subscription?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-cancel" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-cancel"><span class="sw-tdot"></span><span class="sw-tl">Cancel subscription</span></div></li>
-<li class="sw-end"><div class="sw-qw"><span class="sw-n">None of the above</span></div><div class="sw-rail"><span class="sw-endstn"></span></div><p class="sw-endtxt">Send to a person</p></li>
-    </ol>
-    <p class="sw-note">The flowchart only sees the form fields.</p>
-    <p class="sw-legend">Line styles: solid = Deny · long dashes = Refund · dots = Replace · dash and dot = Cancel subscription.</p>
-  </section>
+<!-- 3. Team packet: Follow a prompt -->
+<section class="sheet" aria-labelledby="s3">
+  <p class="label">Team packet · Follow a prompt</p>
+  <h2 class="title" id="s3">The prompt</h2>
+  <p class="sub">Use your judgment within it.</p>
+  <div class="setup">
+    <p>Work in small groups. Designate one person to have your flowchart or prompt ready to go.</p>
+    <p>Everyone else works through the customer messages and decides what to do.</p>
+  </div>
+  <div class="brief">
+    <p class="bl">The prompt</p>
+    <p>You answer customers for Brew Diligence, a coffee roaster.</p>
+    <p>Keep good customers happy and be fair to the business.</p>
+    <p>Refunds under $30 are fine if the story is believable.</p>
+    <p>Send anything about safety, legal threats, or a long-time customer who is upset to a person.</p>
+    <p>Don’t refund the same customer twice in 90 days.</p>
+  </div>
+</section>
 
-  <section class="page" aria-labelledby="p3">
-    <h2 id="p3">Follow a prompt: the prompt</h2>
-    <div class="brief">
-      <p class="brief-label">The prompt</p>
-      <p>You answer customers for Brew Diligence, a coffee roaster.</p>
-      <p>Keep good customers happy and be fair to the business.</p>
-      <p>Refunds under $30 are fine if the story is believable.</p>
-      <p>Send anything about safety, legal threats, or a long-time customer who is upset to a person.</p>
-      <p>Don’t refund the same customer twice in 90 days.</p>
+<!-- 4a. Ticket deck: tickets 1 to 4 -->
+<section class="sheet" aria-labelledby="s4a">
+  <p class="label">Ticket deck (both teams) · tickets 1–4 of 10</p>
+  <h2 class="title" id="s4a">Brew Diligence support tickets</h2>
+  <p class="sub">Cut along the dashed lines. Tick one action per ticket.</p>
+  <div class="deck">
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 1</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">3 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Damaged</span></div><div class="fld"><span class="fk">Order value</span><span class="fv">$18</span></div></div>
+      <p class="msg">“My bag arrived split open, beans everywhere.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
     </div>
-  </section>
-
-  <section class="page" aria-labelledby="p4">
-    <h2 id="p4">Tickets 1–5 (cut out)</h2>
-    <p class="actions">Refund · Replace · Deny · Cancel subscription · Send to a person</p>
-    <div class="cards">
-      <div class="card"><p class="cn">Ticket 1</p><p class="ct">“My bag arrived split open, beans everywhere.”</p><div class="pf"><span><b>Order date</b>3 days ago</span><span><b>Issue type</b>Damaged</span></div></div>
-      <div class="card"><p class="cn">Ticket 2</p><p class="ct">“Please cancel my subscription, moving abroad.”</p><div class="pf"><span><b>Order date</b>10 days ago</span><span><b>Issue type</b>Cancel subscription</span></div></div>
-      <div class="card"><p class="cn">Ticket 3</p><p class="ct">“Tastes burnt. Not what I expected from you.”</p><div class="pf"><span><b>Order date</b>5 days ago</span><span><b>Issue type</b>Taste</span></div></div>
-      <div class="card"><p class="cn">Ticket 4</p><p class="ct">“Ordered 34 days ago, only just opened it, it’s stale. I’ve subscribed for three years.”</p><div class="pf"><span><b>Order date</b>34 days ago</span><span><b>Issue type</b>Taste</span></div></div>
-      <div class="card"><p class="cn">Ticket 5</p><p class="ct">“Bag was damaged AND I want to cancel.”</p><div class="pf"><span><b>Order date</b>6 days ago</span><span><b>Issue type</b>Damaged</span></div></div>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 2</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">10 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Cancel subscription</span></div></div>
+      <p class="msg">“Please cancel my subscription, moving abroad.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
     </div>
-  </section>
-
-  <section class="page" aria-labelledby="p5">
-    <h2 id="p5">Tickets 6–10 (cut out)</h2>
-    <p class="actions">Refund · Replace · Deny · Cancel subscription · Send to a person</p>
-    <div class="cards">
-      <div class="card"><p class="cn">Ticket 6</p><p class="ct">“Found a small piece of glass in the bag.”</p><div class="pf"><span><b>Order date</b>4 days ago</span><span><b>Issue type</b>Damaged</span></div></div>
-      <div class="card"><p class="cn">Ticket 7</p><p class="ct">“Missing again. Third time this quarter, refund please.”</p><div class="pf"><span><b>Order date</b>8 days ago</span><span><b>Issue type</b>Missing</span></div></div>
-      <div class="card"><p class="cn">Ticket 8</p><p class="ct">“Was a gift, my friend hated it. Can I get my money back?”</p><div class="pf"><span><b>Order date</b>12 days ago</span><span><b>Issue type</b>Other</span></div></div>
-      <div class="card"><p class="cn">Ticket 9</p><p class="ct">“If this isn’t fixed I’m contacting my lawyer.”</p><div class="pf"><span><b>Order date</b>9 days ago</span><span><b>Issue type</b>Other</span></div></div>
-      <div class="card"><p class="cn">Ticket 10</p><p class="ct">“Love the beans! Can you do a decaf version?”</p><div class="pf"><span><b>Order date</b>2 days ago</span><span><b>Issue type</b>Other</span></div></div>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 3</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">5 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Taste</span></div></div>
+      <p class="msg">“Tastes burnt. Not what I expected from you.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
     </div>
-  </section>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 4</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">34 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Taste</span></div></div>
+      <p class="msg">“Ordered 34 days ago, only just opened it, it’s stale. I’ve subscribed for three years.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+  </div>
+</section>
 
-  <section class="page" aria-labelledby="p6">
-    <h2 id="p6">Debrief</h2>
-    <table class="blank">
-      <thead>
-        <tr><th>Ticket</th><th>Flowchart says</th><th>Prompt suggests</th><th>A careful person would</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td></td><td></td><td></td></tr>
-        <tr><td>2</td><td></td><td></td><td></td></tr>
-        <tr><td>3</td><td></td><td></td><td></td></tr>
-        <tr><td>4</td><td></td><td></td><td></td></tr>
-        <tr><td>5</td><td></td><td></td><td></td></tr>
-        <tr><td>6</td><td></td><td></td><td></td></tr>
-        <tr><td>7</td><td></td><td></td><td></td></tr>
-        <tr><td>8</td><td></td><td></td><td></td></tr>
-        <tr><td>9</td><td></td><td></td><td></td></tr>
-        <tr><td>10</td><td></td><td></td><td></td></tr>
-      </tbody>
-    </table>
-  </section>
+<!-- 4b. Ticket deck: tickets 5 to 8 -->
+<section class="sheet" aria-labelledby="s4b">
+  <p class="label">Ticket deck (both teams) · tickets 5–8 of 10</p>
+  <h2 class="title" id="s4b">Brew Diligence support tickets</h2>
+  <p class="sub">Cut along the dashed lines. Tick one action per ticket.</p>
+  <div class="deck">
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 5</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">6 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Damaged</span></div><div class="fld"><span class="fk">Order value</span><span class="fv">$26</span></div></div>
+      <p class="msg">“Bag was damaged AND I want to cancel.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 6</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">4 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Damaged</span></div></div>
+      <p class="msg">“Found a small piece of glass in the bag.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 7</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">8 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Missing</span></div><div class="fld"><span class="fk">Refund history</span><span class="fv">refunded twice this quarter</span></div></div>
+      <p class="msg">“Missing again. Third time this quarter, refund please.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 8</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">12 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Other</span></div><div class="fld"><span class="fk">Order value</span><span class="fv">$24</span></div></div>
+      <p class="msg">“Was a gift, my friend hated it. Can I get my money back?”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+  </div>
+</section>
 
-</div>
+<!-- 4c. Ticket deck: tickets 9 and 10 -->
+<section class="sheet" aria-labelledby="s4c">
+  <p class="label">Ticket deck (both teams) · tickets 9–10 of 10</p>
+  <h2 class="title" id="s4c">Brew Diligence support tickets</h2>
+  <p class="sub">Cut along the dashed lines. Tick one action per ticket.</p>
+  <div class="deck">
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 9</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">9 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Other</span></div></div>
+      <p class="msg">“If this isn’t fixed I’m contacting my lawyer.”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+    <div class="card">
+      <div class="chead"><span class="cnum"><span class="sc">✂</span>Ticket 10</span><span class="cform">Web form</span></div>
+      <div class="fields"><div class="fld"><span class="fk">Order date</span><span class="fv">2 days ago</span></div><div class="fld"><span class="fk">Issue type</span><span class="fv">Other</span></div></div>
+      <p class="msg">“Love the beans! Can you do a decaf version?”</p>
+      <div class="acts"><div class="al">Action (tick one)</div><ul>
+        <li><span class="tk"></span>Refund</li><li><span class="tk"></span>Replace</li><li><span class="tk"></span>Deny</li><li><span class="tk"></span>Cancel subscription</li><li><span class="tk"></span>Send to a person</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Facilitator key: debrief -->
+<section class="sheet" aria-labelledby="s5">
+  <p class="label">Facilitator key · debrief</p>
+  <h2 class="title" id="s5">The ten tickets: what a careful person does</h2>
+  <p class="sub">Flowchart and prompt columns show what each rule set did, and whether it matched.</p>
+  <table class="dtab">
+    <thead><tr><th style="width:36%">Ticket · careful answer</th><th style="width:32%">Flowchart</th><th>Prompt</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tn">1 · Bag arrived split open</span><span class="tc">Careful: Refund</span></td>
+        <td><span class="mk">✓</span>Refund (Damaged)</td><td><span class="mk">✓</span>Refund</td></tr>
+      <tr><td><span class="tn">2 · Cancel, moving abroad</span><span class="tc">Careful: Cancel</span></td>
+        <td><span class="mk">✓</span>Cancel (Cancel subscription)</td><td><span class="mk">✓</span>Cancel</td></tr>
+      <tr><td><span class="tn">3 · Tastes burnt</span><span class="tc">Careful: Replace</span></td>
+        <td><span class="mk">✓</span>Replace (Taste)</td><td><span class="mk">✓</span>Replace</td></tr>
+      <tr><td><span class="tn">4 · Ordered 34 days ago</span><span class="tc">Careful: Send to a person</span></td>
+        <td><span class="mk">✗</span>Deny (34 days, over 30): denies a three-year subscriber</td><td><span class="mk">✓</span>Send to a person, or refund</td></tr>
+      <tr><td><span class="tn">5 · Damaged bag and cancel</span><span class="tc">Careful: Refund and cancel</span></td>
+        <td><span class="mk">✗</span>Refund (Damaged); cancel missed</td><td><span class="mk">✗</span>Refund; cancel missed</td></tr>
+      <tr><td><span class="tn">6 · Glass in the bag</span><span class="tc">Careful: Send to a person</span></td>
+        <td><span class="mk costly">✗</span>Refund (Damaged): a safety issue, refunded and moved on</td><td><span class="mk">✓</span>Send to a person</td></tr>
+      <tr><td><span class="tn">7 · Missing again, third time</span><span class="tc">Careful: Deny the repeat refund</span></td>
+        <td><span class="mk costly">✗</span>Refund (Missing): repeat refunds go through, a fraud risk</td><td><span class="mk">✓</span>Deny the repeat refund</td></tr>
+      <tr><td><span class="tn">8 · Gift, friend hated it</span><span class="tc">Careful: Refund</span></td>
+        <td><span class="mk">✗</span>Send to a person (Other)</td><td><span class="mk">✓</span>Refund, if under $30</td></tr>
+      <tr><td><span class="tn">9 · Lawyer threat</span><span class="tc">Careful: Send to a person</span></td>
+        <td><span class="mk">✓</span>Send to a person (Other)</td><td><span class="mk">✓</span>Send to a person</td></tr>
+      <tr><td><span class="tn">10 · Decaf request</span><span class="tc">Careful: Answer; no action</span></td>
+        <td><span class="mk">✗</span>Send to a person (Other)</td><td><span class="mk">✗</span>No action fits (gap)</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><td>Totals</td><td>4 ✓ · 4 ✗ · 2 costly</td><td>8 ✓ · 2 ✗ · 0 costly</td></tr>
+    </tfoot>
+  </table>
+  <p class="legend"><span class="mk">✓</span> matches a careful person · <span class="mk">✗</span> wrong, recoverable · <span class="mk costly">✗</span> costly enough to question the process</p>
+<p class="dq">Which failures came from missing information, missing rules, or a need for judgment?</p>
+<p class="dnote">We changed the information and the policy as well as the approach, so these scores describe this exercise, not models in general.</p>
+</section>
+
+<!-- 6. Facilitator: tally sheet -->
+<section class="sheet last" aria-labelledby="s6">
+  <p class="label">Facilitator · tally sheet</p>
+  <h2 class="title" id="s6">What each group decided</h2>
+  <p class="sub">Write the action each group chose for each ticket: Refund, Replace, Deny, Cancel, or Person.</p>
+  <table class="tally">
+    <thead>
+      <tr><th class="tk-h">Ticket</th><th>Group 1</th><th>Group 2</th><th>Group 3</th><th>Group 4</th><th>Group 5</th><th>Group 6</th></tr>
+      <tr class="team"><td>Team (tick)</td>
+        <td class="team-box"><span class="tk"></span>F <span class="tk"></span>P</td><td class="team-box"><span class="tk"></span>F <span class="tk"></span>P</td><td class="team-box"><span class="tk"></span>F <span class="tk"></span>P</td><td class="team-box"><span class="tk"></span>F <span class="tk"></span>P</td><td class="team-box"><span class="tk"></span>F <span class="tk"></span>P</td><td class="team-box"><span class="tk"></span>F <span class="tk"></span>P</td></tr>
+    </thead>
+    <tbody>
+      <tr><td>1 · Bag split open</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2 · Cancel, moving abroad</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3 · Tastes burnt</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4 · Ordered 34 days ago</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5 · Damaged and cancel</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>6 · Glass in the bag</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>7 · Missing, third time</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>8 · Gift, friend hated it</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>9 · Lawyer threat</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>10 · Decaf request</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <div class="notes">
+    <p>Notes: where the room split, and what surprised people</p>
+    <div class="rule"></div><div class="rule"></div><div class="rule"></div><div class="rule"></div>
+  </div>
+</section>
 
 <script>
   (function () {

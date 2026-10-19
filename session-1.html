@@ -6,19 +6,40 @@
 <title>Session 1 · What is an agent? · Workbook</title>
 <link rel="stylesheet" href="assets/workbook.css">
 <style>
-/* same input, same output (session 1, slide 6). Each row repeats the input, then one output box. The outputs share a column so the eye can compare them. */
-.tech .cmp{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4vw,64px);max-width:1180px;align-items:start}
-.tech .cmp .col{display:grid;gap:clamp(12px,2vh,20px);align-content:start;min-width:0;border-top:2px solid var(--ink);padding-top:14px}
-.tech .cmp .col-title{margin:0;font-size:clamp(20px,1.9vw,26px);font-weight:600;letter-spacing:-.015em;line-height:1.1}
-.tech .cmp .runs{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
-.tech .cmp .runs li{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.3fr);align-items:center;gap:clamp(8px,1vw,14px);padding:clamp(6px,1.1vh,11px) 0;border-bottom:1px solid var(--rule)}
-.tech .cmp .chip{min-width:0;padding:4px 12px;border:1px dashed var(--mute);border-radius:12px;font-size:clamp(13px,1.1vw,15px);line-height:1.3;color:var(--mute);font-variant-numeric:tabular-nums}
-.tech .cmp .arr{font-size:18px;line-height:1;color:var(--mute)}
-.tech .cmp .out{min-width:0;padding:7px 12px;border:1.5px solid var(--ink);background:var(--card);font-size:clamp(16px,1.35vw,20px);line-height:1.25;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.tech .cmp .k{font-size:.72em;font-weight:500;letter-spacing:.04em;color:var(--mute);margin-right:.35em}
-.tech .cmp .cap{margin:4px 0 0;font-size:clamp(18px,1.6vw,22px);font-weight:500;line-height:1.3;text-wrap:balance}
-/* the earlier column becomes context, not done: this slide only */
-.tech .cmp .col.em-done.on{font-weight:var(--em-w-context)!important;color:var(--em-c-context)!important;opacity:var(--em-o-context)}
+/* same input, same output (session 1, slide 6). Two slot-machine cabinets, pulled by the reader. Persisted under wb:s1:reels. */
+.tech .rl{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4vw,64px);max-width:1180px;align-items:start}
+.tech .rl-col{display:grid;gap:clamp(10px,1.8vh,16px);align-content:start;min-width:0;border-top:2px solid var(--ink);padding-top:12px}
+.tech .rl-title{margin:0;font-size:clamp(20px,1.9vw,26px);font-weight:600;letter-spacing:-.015em;line-height:1.1}
+.rl-cab{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:18px;align-items:center;padding:14px 18px 16px;border-radius:24px;color:#fbf7ee;background:var(--c);box-shadow:0 8px 0 rgba(20,20,20,.9)}
+.rl-main{min-width:0;display:grid;gap:8px}
+.rl-kick{margin:0;font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.rl-chip{margin:0;padding:3px 12px;border-radius:999px;background:rgba(20,20,20,.22);font-size:13px;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-chip b{font-weight:700;opacity:.85}
+.rl-win{position:relative;height:60px;border-radius:14px;background:#fbf7ee;overflow:hidden;box-shadow:0 0 0 4px var(--ink)}
+.rl-win::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:14px;background:linear-gradient(rgba(20,20,20,.16),rgba(20,20,20,0) 30%,rgba(20,20,20,0) 70%,rgba(20,20,20,.16))}
+.rl-strip{position:absolute;left:0;top:0;width:100%}
+.rl-strip.spin{filter:blur(1.2px)}
+.rl-it{height:60px;display:flex;align-items:center;color:var(--ink);line-height:1.2}
+.rl-it.rl-num{justify-content:center;font-size:32px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.rl-it.rl-sum{padding:0 14px 0 20px;font-size:15px;border-left:12px solid var(--c)}
+.rl-it.rl-idle{justify-content:center;font-size:15px;color:#8a8478;font-style:italic}
+.rl-lever{justify-self:center;width:44px;padding:0;background:none;border:0;cursor:pointer;color:inherit}
+.rl-lever svg{display:block;width:44px;height:auto;overflow:visible}
+.rl-arm{transform-box:view-box;transform-origin:28px 190px;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.rl-lever.pulled .rl-arm{transform:rotate(34deg);transition:transform .22s ease-in}
+.rl-lever:focus-visible{outline:3px solid var(--ink);outline-offset:4px;border-radius:12px}
+.rl-cap{margin:0;min-height:2.6em;font-size:clamp(18px,1.6vw,22px);font-weight:500;line-height:1.3;text-wrap:balance}
+.rl-logh{display:flex;justify-content:space-between;align-items:baseline;margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.rl-v{font-size:15px;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:600}
+.rl-rows{margin-top:8px;height:98px;overflow:hidden}
+.rl-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;height:26px;margin-bottom:6px}
+.rl-row.old{opacity:.38}
+.rl-tile{height:26px;border-radius:8px;font-size:13px;font-weight:700;line-height:26px;text-align:center;font-variant-numeric:tabular-nums}
+.rl-tile.d{background:var(--ink);color:var(--paper)}
+.rl-tile.a{background:#e0a526;color:var(--ink)}
+.rl-tile.b{background:#2f5fa8;color:#fbf7ee}
+.rl-tile.c{background:#4d7046;color:#fbf7ee}
+@media (max-width:820px){.tech .rl{grid-template-columns:minmax(0,1fr)}}
 
 /* eyebrow: small, muted label above a block of text. Reusable. Lunch slide uses it to flag the unplugged table activity. */
 .eyebrow{margin:0;font-size:15px;font-weight:600;letter-spacing:.08em;font-variant-caps:all-small-caps;color:var(--mute)}
@@ -76,8 +97,11 @@
       <li><a class="sess" data-l="t" href="session-1.html" aria-current="page"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
       <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
       <li><a class="sess" data-l="m" href="session-3.html"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
-      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can we be more cost effective?</span></a></li>
       <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+    <ol class="sessions appx">
+      <li><a class="sess appx-link" href="appendix.html"><span class="n" aria-hidden="true">A</span><span class="label">Appendix</span></a></li>
     </ol>
   </aside>
 
@@ -91,7 +115,7 @@
     <div class="stage" id="stage">
 
       <!-- 1 Title [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-title" class="slide tech" data-attn="up">
         <div class="t-title">
           <p class="big" aria-hidden="true">1</p>
           <h1>What is an agent?</h1>
@@ -99,14 +123,14 @@
       </section>
 
       <!-- 2 Warm-up [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-warmup" class="slide tech" data-attn="up">
         <div class="t-stack">
           <p class="qline">What separates an “agent” from other AI?</p>
         </div>
       </section>
 
       <!-- 3 Build an agent [LAPTOP] -->
-      <section class="slide tech" data-attn="laptop">
+      <section id="s1-build" class="slide tech" data-attn="laptop">
         <h2 class="prompt em-context">Build an agent</h2>
         <div class="build" data-widget="build">
           <div class="b-left">
@@ -162,7 +186,7 @@
       </section>
 
       <!-- 4 Definition [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-definition" class="slide tech" data-attn="up">
         <div class="t-stack">
           <h2 class="defn-title em-context">What is an agent?</h2>
           <p class="defn">A model that decides its own next step, uses tools, and repeats until the job is done.</p>
@@ -171,7 +195,7 @@
       </section>
 
       <!-- 5 Text, code, harness [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-text-code-harness" class="slide tech" data-attn="up">
         <div class="t-stmt">
           <p class="line step">A model only ever writes text.</p>
           <p class="line step">Text can be code.</p>
@@ -179,33 +203,51 @@
         </div>
       </section>
 
-      <!-- 6 Same input, same output? [UP] -->
-      <section class="slide tech" data-attn="up">
+      <!-- 6 Same input, same output? [UP]: two slot-machine reels, pulled by the reader. Persisted under wb:s1:reels -->
+      <section class="slide tech" data-attn="up" id="s1-reels">
         <h2 class="prompt em-context">Same input, same output?</h2>
-        <div class="cmp">
-          <div class="col step" data-col="det">
-            <p class="col-title">Deterministic</p>
-            <ol class="runs">
-              <li><span class="chip"><span class="k">Input:</span> 1,240 × 12</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 1:</span> 14,880</span></li>
-              <li><span class="chip"><span class="k">Input:</span> 1,240 × 12</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 2:</span> 14,880</span></li>
-              <li><span class="chip"><span class="k">Input:</span> 1,240 × 12</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 3:</span> 14,880</span></li>
-            </ol>
-            <p class="cap">Same every time: a good task for harness code.</p>
+        <div class="rl" data-widget="reels">
+          <div class="rl-col" data-m="det">
+            <h3 class="rl-title">Deterministic</h3>
+            <div class="rl-cab" style="--c:#1f6f6a">
+              <div class="rl-main">
+                <p class="rl-kick">Code</p>
+                <p class="rl-chip">Input: <b>1,240 × 12</b></p>
+                <div class="rl-win"><div class="rl-strip"></div></div>
+                <div class="rl-win"><div class="rl-strip"></div></div>
+                <div class="rl-win"><div class="rl-strip"></div></div>
+              </div>
+              <button class="rl-lever" type="button" aria-label="Pull the code lever"><svg viewBox="0 0 56 206" aria-hidden="true"><rect x="12" y="186" width="32" height="14" rx="4" fill="#141414"/><g class="rl-arm"><rect x="24" y="40" width="8" height="150" rx="4" fill="#141414"/><circle cx="28" cy="34" r="19" fill="#e0a526" stroke="#141414" stroke-width="3"/></g></svg></button>
+            </div>
+            <p class="rl-cap"></p>
+            <div class="rl-log">
+              <p class="rl-logh"><span>Pulls</span><span class="rl-v">Pull the lever</span></p>
+              <div class="rl-rows"></div>
+            </div>
           </div>
-          <div class="col step" data-col="prob">
-            <p class="col-title">Probabilistic</p>
-            <ol class="runs">
-              <li><span class="chip"><span class="k">Input:</span> Summarize yesterday’s board meeting in one sentence.</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 1:</span> The board approved a price increase and paused hiring until the next review.</span></li>
-              <li><span class="chip"><span class="k">Input:</span> Summarize yesterday’s board meeting in one sentence.</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 2:</span> Directors backed higher prices next quarter and held off on new hires.</span></li>
-              <li><span class="chip"><span class="k">Input:</span> Summarize yesterday’s board meeting in one sentence.</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 3:</span> Yesterday the board agreed to raise prices and freeze hiring for now.</span></li>
-            </ol>
-            <p class="cap">Different each time, by design: a good task for an LLM.</p>
+          <div class="rl-col" data-m="prob">
+            <h3 class="rl-title">Probabilistic</h3>
+            <div class="rl-cab" style="--c:#e8481f">
+              <div class="rl-main">
+                <p class="rl-kick">Model</p>
+                <p class="rl-chip">Input: <b>Summarize yesterday’s board meeting.</b></p>
+                <div class="rl-win"><div class="rl-strip"></div></div>
+                <div class="rl-win"><div class="rl-strip"></div></div>
+                <div class="rl-win"><div class="rl-strip"></div></div>
+              </div>
+              <button class="rl-lever" type="button" aria-label="Pull the model lever"><svg viewBox="0 0 56 206" aria-hidden="true"><rect x="12" y="186" width="32" height="14" rx="4" fill="#141414"/><g class="rl-arm"><rect x="24" y="40" width="8" height="150" rx="4" fill="#141414"/><circle cx="28" cy="34" r="19" fill="#e0a526" stroke="#141414" stroke-width="3"/></g></svg></button>
+            </div>
+            <p class="rl-cap"></p>
+            <div class="rl-log">
+              <p class="rl-logh"><span>Pulls</span><span class="rl-v">Pull the lever</span></p>
+              <div class="rl-rows"></div>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- 7 LLM or harness code? [LAPTOP] -->
-      <section class="slide tech" data-attn="laptop">
+      <section id="s1-llm-or-code" class="slide tech" data-attn="laptop">
         <h2 class="prompt em-context">LLM or harness code?</h2>
         <p class="s1-instr em-context">For each task, would you hand it to the model, or to ordinary code that the harness runs?</p>
         <div class="qs" data-qs="llm">
@@ -264,7 +306,7 @@
       </section>
 
       <!-- 8 Lunch [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-lunch" class="slide tech" data-attn="up">
         <div class="t-stack">
           <p class="eyebrow">Table activity</p>
           <p class="qline em-context">Imagine you’re ordering lunch for everyone in this room, but you’ve left your phone and wallet at home.</p>
@@ -274,7 +316,7 @@
       </section>
 
       <!-- 9 Lunch, sorted [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-lunch-sorted" class="slide tech" data-attn="up">
         <h2 class="prompt em-context">Lunch, sorted</h2>
         <div class="board" id="s1-merge">
           <section class="zone zone-info" aria-label="Get information">
@@ -301,7 +343,7 @@
       </section>
 
       <!-- 10 You are the model [LAPTOP]: two parts per request (answer directly or use a tool, then which tool), one request at a time -->
-      <section class="slide tech" data-attn="laptop">
+      <section id="s1-model-role" class="slide tech" data-attn="laptop">
         <h2 class="prompt em-context">You are the model</h2>
         <p class="s1-instr em-context">Decide whether to answer from your <abbr title="What the model learned during training" tabindex="0">parametric memory</abbr>, or use a tool before responding. If you use one, pick which.</p>
         <div class="s1-model">
@@ -421,7 +463,7 @@
       </section>
 
       <!-- 11 Permissions [LAPTOP] -->
-      <section class="slide tech" data-attn="laptop">
+      <section id="s1-permissions" class="slide tech" data-attn="laptop">
         <h2 class="prompt em-context">Permissions</h2>
         <p class="s1-instr em-context">How much would you let an agent do in each system without checking with you first?</p>
         <div class="perm" data-widget="perm2">
@@ -446,7 +488,7 @@
       </section>
 
       <!-- 12 Takeaways [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s1-takeaways" class="slide tech" data-attn="up">
         <div class="take-wrap">
           <h2 class="take-title">Key takeaways</h2>
           <p class="take-ask">Check off the ones that feel clear to you.</p>
@@ -500,6 +542,177 @@
     });
   });
   render();
+})();
+</script>
+<script>
+/* session 1, slide 6: same input, same output. Two slot-machine reels. The deterministic reel always lands 14,880.
+   Pulls are saved under wb:s1:reels as { det: [...], prob: [...] }, one array of three landed values per pull (newest last).
+   Motion uses timers, not CSS animation or rAF. Every storage call is wrapped in try/catch. */
+(function () {
+  'use strict';
+  var root = document.querySelector('[data-widget="reels"]');
+  if (!root) return;
+  var KEY = 'wb:s1:reels', H = 60, TICK = 16, MAX_PULLS = 20;
+  var DET_FINAL = '14,880';
+  var DECOYS = ['13,920', '15,104', '14,112', '12,960', '14,600', '15,480'];
+  var SUMS = [
+    { k: 'A', c: 'a', col: '#e0a526', t: 'The board raised prices 4% and paused hiring until Q1.' },
+    { k: 'B', c: 'b', col: '#2f5fa8', t: 'Prices go up 4%, and hiring is on hold for now.' },
+    { k: 'C', c: 'c', col: '#4d7046', t: 'The board approved a price rise and froze new hires.' }
+  ];
+  var CAPS = {
+    det: 'Same every time: a good task for harness code.',
+    prob: 'Different each time, by design: a good task for an LLM.'
+  };
+  var VERDICT = {
+    det: 'Same every time.',
+    prob: 'Different every time. All fine.'
+  };
+  var timers = [];
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function rnd(n) { return Math.floor(Math.random() * n); }
+  function ease(p) { return 1 - Math.pow(1 - p, 4); }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function sumByKey(k) {
+    for (var i = 0; i < SUMS.length; i++) if (SUMS[i].k === k) return SUMS[i];
+    return null;
+  }
+  function isValid(key, arr) {
+    if (!Array.isArray(arr) || arr.length !== 3) return false;
+    return arr.every(function (v) { return key === 'det' ? v === DET_FINAL : !!sumByKey(v); });
+  }
+  function load() {
+    try {
+      var v = JSON.parse(localStorage.getItem(KEY));
+      var out = { det: [], prob: [] };
+      if (v && typeof v === 'object') {
+        if (Array.isArray(v.det)) out.det = v.det.filter(function (p) { return isValid('det', p); }).slice(-MAX_PULLS);
+        if (Array.isArray(v.prob)) out.prob = v.prob.filter(function (p) { return isValid('prob', p); }).slice(-MAX_PULLS);
+      }
+      return out;
+    } catch (e) { return { det: [], prob: [] }; }
+  }
+  function save() {
+    /* a pull lands after its spin, which may be after the reader has moved on: the write belongs to this slide */
+    window.wbOwned(root, function () { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} });
+  }
+
+  var state = load();
+  var machines = {};
+
+  function itemHTML(m, key) {
+    if (m.key === 'det') return '<div class="rl-it rl-num">' + key + '</div>';
+    var s = sumByKey(key);
+    return '<div class="rl-it rl-sum" style="--c:' + s.col + '">' + s.t + '</div>';
+  }
+  function idle(s) {
+    s.classList.remove('spin');
+    s.innerHTML = '<div class="rl-it rl-idle">Pull the lever</div>';
+    s.style.transform = 'translateY(0)';
+  }
+  function showFinal(m, keys) {
+    m.strips.forEach(function (s, j) {
+      s.classList.remove('spin');
+      s.innerHTML = itemHTML(m, keys[j]);
+      s.style.transform = 'translateY(0)';
+    });
+  }
+
+  // scroll one strip from its first item to its last with an ease-out, one timer tick at a time
+  function spinReel(s, m, finals, j, startDelay, dur, onDone) {
+    var pool = m.key === 'det' ? DECOYS.concat([DET_FINAL]) : SUMS.map(function (x) { return x.k; });
+    var keys = [];
+    for (var i = 0; i < 14; i++) keys.push(pool[rnd(pool.length)]);
+    keys.push(finals[j]);
+    s.innerHTML = keys.map(function (k) { return itemHTML(m, k); }).join('');
+    var total = (keys.length - 1) * H;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) dur = TICK * 2;
+    var steps = Math.round(dur / TICK), k = 0;
+    s.style.transform = 'translateY(0)';
+    s.classList.add('spin');
+    later(function run() {
+      k++;
+      var p = Math.min(1, k / steps);
+      s.style.transform = 'translateY(' + (-ease(p) * total).toFixed(2) + 'px)';
+      if (k < steps) later(run, TICK);
+      else { s.classList.remove('spin'); onDone(); }
+    }, startDelay);
+  }
+
+  function rowHTML(m, keys) {
+    return keys.map(function (v) {
+      if (m.key === 'det') return '<div class="rl-tile d">' + v + '</div>';
+      return '<div class="rl-tile ' + sumByKey(v).c + '">' + v + '</div>';
+    }).join('');
+  }
+  function renderLog(m) {
+    var pulls = state[m.key];
+    m.rows.innerHTML = '';
+    pulls.slice(-3).reverse().forEach(function (keys, i) {
+      var row = document.createElement('div');
+      row.className = 'rl-row' + (i > 0 ? ' old' : '');
+      row.innerHTML = rowHTML(m, keys);
+      m.rows.appendChild(row);
+    });
+    m.verdict.textContent = pulls.length === 0 ? 'Pull the lever' : pulls.length < 2 ? 'Pull it again' : VERDICT[m.key];
+    m.cap.textContent = pulls.length ? CAPS[m.key] : '';
+  }
+
+  function landed(m, finals) {
+    state[m.key].push(finals);
+    if (state[m.key].length > MAX_PULLS) state[m.key].shift();
+    save();
+    renderLog(m);
+  }
+
+  function pull(m) {
+    if (m.busy) return;
+    m.busy = true;
+    m.lever.classList.add('pulled');
+    later(function () { m.lever.classList.remove('pulled'); }, 240);
+    var finals;
+    if (m.key === 'det') {
+      finals = [DET_FINAL, DET_FINAL, DET_FINAL];
+    } else {
+      // three different summaries; never the same order twice in a row
+      var order;
+      do { order = shuffle(SUMS.map(function (x) { return x.k; })); }
+      while (m.prev && order.every(function (k, i) { return k === m.prev[i]; }));
+      finals = order;
+    }
+    m.prev = finals.slice();
+    var pending = 3;
+    m.strips.forEach(function (s, j) {
+      spinReel(s, m, finals, j, j * 140, 1300 + j * 450, function () {
+        pending--;
+        if (pending === 0) { m.busy = false; landed(m, finals); }
+      });
+    });
+  }
+
+  ['det', 'prob'].forEach(function (key) {
+    var col = root.querySelector('[data-m="' + key + '"]');
+    var m = {
+      key: key,
+      strips: [].slice.call(col.querySelectorAll('.rl-strip')),
+      lever: col.querySelector('.rl-lever'),
+      rows: col.querySelector('.rl-rows'),
+      verdict: col.querySelector('.rl-v'),
+      cap: col.querySelector('.rl-cap'),
+      busy: false,
+      prev: null
+    };
+    machines[key] = m;
+    m.lever.addEventListener('click', function () { pull(m); });
+    var last = state[key][state[key].length - 1];
+    if (last) showFinal(m, last); else m.strips.forEach(idle);
+    if (last) m.prev = last.slice();
+    renderLog(m);
+  });
 })();
 </script>
 <script>

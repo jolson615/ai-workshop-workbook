@@ -3,7 +3,7 @@
 <head><script>(function(){var d=document.documentElement,n=null;d.classList.add("preload");try{n=localStorage.getItem("wb:nav")}catch(e){}if(n!==null?n==="1":innerWidth<900)d.classList.add("nav-c")})()</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Session 4 · Can a cheaper model do the job? · Workbook</title>
+<title>Session 4 · Can we be more cost effective? · Workbook</title>
 <link rel="stylesheet" href="assets/workbook.css">
 <style>
 /* session 4 only: bars, flowchart, support desk, debrief table */
@@ -129,11 +129,11 @@
 
 /* debrief table: one mark per cell, the careful answer under each ticket */
 .s4-table{width:100%;max-width:1000px;border-collapse:collapse;font-size:clamp(15px,1.3vw,17px);line-height:1.3}
-.s4-table th{text-align:left;font-weight:700;padding:6px 10px;border-bottom:2px solid var(--ink)}
-.s4-table td{padding:4px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.s4-table th{text-align:left;font-weight:700;padding:3px 10px;border-bottom:2px solid var(--ink)}
+.s4-table td{padding:1px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
 .s4-table th:not(:first-child),.s4-table td:not(:first-child){width:19%}
 .s4-table td:first-child{font-weight:600}
-.s4-table tfoot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:600;padding-top:8px;white-space:nowrap;font-size:clamp(14px,1.2vw,16px)}
+.s4-table tfoot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:600;padding-top:4px;white-space:nowrap;font-size:clamp(14px,1.2vw,16px)}
 .s4-table tfoot .dm,.s4-table tfoot .dm svg{width:18px;height:18px}
 .s4-table .s4-you{display:none}
 .s4-table.played .s4-you{display:table-cell}
@@ -146,6 +146,8 @@
 .s4-legend{margin:12px 0 0;font-size:clamp(14px,1.2vw,16px);color:var(--mute);max-width:1000px}
 .s4-legend .dm{width:18px;height:18px;margin-right:2px}
 .s4-legend .dm svg{width:18px;height:18px}
+.s4-dq{margin:clamp(8px,1.6vh,16px) 0 0;font-size:clamp(17px,1.45vw,21px);font-weight:500;line-height:1.3;max-width:none}
+.s4-muted{margin:4px 0 0;font-size:clamp(14px,1.2vw,16px);color:var(--mute);line-height:1.4;max-width:1000px}
 /* slide 7: a plain, exploratory list, one item per step */
 .s4-plain{list-style:none;margin:0;padding:0;display:grid;gap:clamp(14px,2.6vh,26px);max-width:40ch}
 .s4-plain li{font-size:clamp(22px,2.3vw,34px);font-weight:500;line-height:1.2;letter-spacing:-.01em}
@@ -170,33 +172,36 @@
       <li><a class="sess" data-l="t" href="session-1.html"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
       <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
       <li><a class="sess" data-l="m" href="session-3.html"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
-      <li><a class="sess" data-l="t" href="session-4.html" aria-current="page"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html" aria-current="page"><span class="n">4</span><span class="label">Can we be more cost effective?</span></a></li>
       <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+    <ol class="sessions appx">
+      <li><a class="sess appx-link" href="appendix.html"><span class="n" aria-hidden="true">A</span><span class="label">Appendix</span></a></li>
     </ol>
   </aside>
 
   <main class="main">
     <header class="top">
       <div class="sn" aria-hidden="true">4</div>
-      <div class="sname">Can a cheaper model do the job?</div>
+      <div class="sname">Can we be more cost effective?</div>
       <nav class="pips" id="pips" aria-label="Slides"></nav>
     </header>
 
     <div class="stage" id="stage">
 
       <!-- 1 Title [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s4-title" class="slide tech" data-attn="up">
         <div class="t-title">
           <p class="big" aria-hidden="true">4</p>
-          <h1>Can a cheaper model do the job?</h1>
+          <h1>Can we be more cost effective?</h1>
         </div>
       </section>
 
       <!-- 2 Cost per finished task [LAPTOP] -->
-      <section class="slide tech" data-attn="laptop">
+      <section id="s4-cost-per-task" class="slide tech" data-attn="laptop">
         <h2 class="s4-title">Can a cheaper model do it?</h2>
         <p class="prompt em-context">Each card compares two ways to do the same job. Predict which costs less per finished task.</p>
-        <div class="qs" data-qs="cost" data-on-done="s4-close">
+        <div class="qs" data-qs="cost" data-qs-mode="predict" data-on-done="s4-close">
           <ol class="qs-done" aria-label="Answered"></ol>
           <div class="qs-item" data-answer="mid" data-short="Real coding tasks">
             <p class="qs-text">Real coding tasks</p>
@@ -289,7 +294,7 @@
       </section>
 
       <!-- 3 Paying less per task [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s4-paying-less" class="slide tech" data-attn="up">
         <h2 class="s4-title">Engineering tactics for cost reduction</h2>
         <div class="s4-ways">
           <figure class="s4-way step">
@@ -360,7 +365,7 @@
       </section>
 
       <!-- 4 Support desk: setup [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s4-desk-setup" class="slide tech" data-attn="up">
         <h2 class="s4-title">The support desk</h2>
         <div class="s4-setup">
           <p class="em-current">For the next few minutes, you’re running Brew Diligence’s customer support desk.</p>
@@ -371,7 +376,7 @@
       </section>
 
       <!-- 5 Support desk: play [LAPTOP] -->
-      <section class="slide tech" data-attn="laptop">
+      <section id="s4-desk-play" class="slide tech" data-attn="laptop">
         <div class="s4-desk" data-widget="support">
           <h2 class="s4-title">The support desk: play</h2>
           <div class="s4-pickers">
@@ -416,7 +421,7 @@
               <div class="qs" data-qs="tickets" data-qs-mode="record">
                 <ol class="qs-done" aria-label="Answered"></ol>
                 <div class="qs-item" data-short="Bag arrived split open">
-                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">3 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div></div>
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">3 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div><div class="s4-f"><span class="s4-fk">Order value</span><span class="s4-fv">$18</span></div></div>
                   <p class="s4-mk">Message</p>
                   <p class="qs-text">“My bag arrived split open, beans everywhere.”</p>
                   <div class="qs-choices s4-five">
@@ -464,7 +469,7 @@
                   </div>
                 </div>
                 <div class="qs-item" data-short="Damaged bag and cancel">
-                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">6 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div></div>
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">6 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div><div class="s4-f"><span class="s4-fk">Order value</span><span class="s4-fv">$26</span></div></div>
                   <p class="s4-mk">Message</p>
                   <p class="qs-text">“Bag was damaged AND I want to cancel.”</p>
                   <div class="qs-choices s4-five">
@@ -488,7 +493,7 @@
                   </div>
                 </div>
                 <div class="qs-item" data-short="Missing again, third time">
-                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">8 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Missing</span></div></div>
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">8 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Missing</span></div><div class="s4-f"><span class="s4-fk">Refund history</span><span class="s4-fv">refunded twice this quarter</span></div></div>
                   <p class="s4-mk">Message</p>
                   <p class="qs-text">“Missing again. Third time this quarter, refund please.”</p>
                   <div class="qs-choices s4-five">
@@ -500,7 +505,7 @@
                   </div>
                 </div>
                 <div class="qs-item" data-short="Gift, friend hated it">
-                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">12 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Other</span></div></div>
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">12 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Other</span></div><div class="s4-f"><span class="s4-fk">Order value</span><span class="s4-fv">$24</span></div></div>
                   <p class="s4-mk">Message</p>
                   <p class="qs-text">“Was a gift, my friend hated it. Can I get my money back?”</p>
                   <div class="qs-choices s4-five">
@@ -545,7 +550,7 @@
       </section>
 
       <!-- 6 Debrief [UP] -->
-      <section class="slide tech" data-attn="up" data-widget="debrief">
+      <section id="s4-debrief" class="slide tech" data-attn="up" data-widget="debrief" data-reset-keys="">
         <h2 class="s4-title">Debrief: the ten tickets</h2>
         <table class="s4-table">
           <thead>
@@ -558,20 +563,22 @@
             <tr><td><span class="dt-n">4 · Ordered 34 days ago</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm no" role="img" aria-label="Deny (34 days, over 30)" title="Deny (34 days, over 30)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Send to a person, or refund" title="Send to a person, or refund"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
             <tr><td><span class="dt-n">5 · Damaged bag and cancel</span><span class="dt-c">A careful person: Refund and cancel</span></td><td><span class="dm no" role="img" aria-label="Refund (Damaged); cancel missed" title="Refund (Damaged); cancel missed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm no" role="img" aria-label="Refund; cancel missed" title="Refund; cancel missed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td class="s4-you"></td></tr>
             <tr><td><span class="dt-n">6 · Glass in the bag</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm costly" role="img" aria-label="Refund (Damaged)" title="Refund (Damaged)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Send to a person" title="Send to a person"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
-            <tr><td><span class="dt-n">7 · Missing again, third time</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm costly" role="img" aria-label="Refund (Missing)" title="Refund (Missing)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm no" role="img" aria-label="Deny the repeat refund" title="Deny the repeat refund"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td class="s4-you"></td></tr>
-            <tr><td><span class="dt-n">8 · Gift, friend hated it</span><span class="dt-c">A careful person: Refund if small; else a person</span></td><td><span class="dm no" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Refund, if under $30" title="Refund, if under $30"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">7 · Missing again, third time</span><span class="dt-c">A careful person: Deny the repeat refund</span></td><td><span class="dm costly" role="img" aria-label="Refund (Missing)" title="Refund (Missing)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Deny the repeat refund" title="Deny the repeat refund"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">8 · Gift, friend hated it</span><span class="dt-c">A careful person: Refund</span></td><td><span class="dm no" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Refund, if under $30" title="Refund, if under $30"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
             <tr><td><span class="dt-n">9 · Lawyer threat</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm ok" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Send to a person" title="Send to a person"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
             <tr><td><span class="dt-n">10 · Decaf request</span><span class="dt-c">A careful person: Answer; no action</span></td><td><span class="dm no" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm no" role="img" aria-label="No action fits (gap)" title="No action fits (gap)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td class="s4-you"></td></tr>
           </tbody>
           <tfoot>
-            <tr><td>Totals</td><td><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> 4 &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 4 &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 2 costly</td><td><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> 7 &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 3 &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 0 costly</td><td class="s4-you"></td></tr>
+            <tr><td>Totals</td><td><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> 4 &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 4 &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 2 costly</td><td><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> 8 &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 2 &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 0 costly</td><td class="s4-you"></td></tr>
           </tfoot>
         </table>
         <p class="s4-legend"><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> matches a careful person &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> wrong, recoverable &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> costly enough to question the process</p>
+        <p class="s4-dq">Which failures came from missing information, missing rules, or a need for judgment?</p>
+        <p class="s4-muted">We changed the information and the policy as well as the approach, so these scores describe this exercise, not models in general.</p>
       </section>
 
       <!-- 7 Three ways to automate [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s4-automate-ways" class="slide tech" data-attn="up">
         <h2 class="s4-title">Some ways to mix rules and models</h2>
         <ul class="s4-plain">
           <li class="step">Fixed rules decide.<span class="s4-tie">Like the flowchart team.</span></li>
@@ -582,12 +589,12 @@
       </section>
 
       <!-- 8 More than one lab [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s4-more-than-one-lab" class="slide tech" data-attn="up">
         <p class="qline">Use models from more than one lab: <em>to compare them, and so they check each other’s work.</em></p>
       </section>
 
       <!-- 9 Takeaways [UP] -->
-      <section class="slide tech" data-attn="up">
+      <section id="s4-takeaways" class="slide tech" data-attn="up">
         <div class="take-wrap">
           <h2 class="take-title">Key takeaways</h2>
           <p class="take-ask">Check off the ones that feel clear to you.</p>
@@ -615,7 +622,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var sec = document.querySelector('[data-widget="debrief"]');
   if (!sec) return;
   var WORD = { refund: 'Refund', replace: 'Replace', deny: 'Deny', cancel: 'Cancel subscription', person: 'Send to a person' };
-  var ACCEPT = [['refund'], ['cancel'], ['replace'], ['person'], [], ['person'], ['person'], ['refund', 'person'], ['person'], []];
+  var ACCEPT = [['refund'], ['cancel'], ['replace'], ['person'], [], ['person'], ['deny'], ['refund'], ['person'], []];
   var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg>', CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
   function paint() {
     var saved = null;

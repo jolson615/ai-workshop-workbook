@@ -57,7 +57,9 @@ h1{font-weight:normal;font-size:28px;margin:0;letter-spacing:-.01em}
 .btn{font:inherit;font-size:15px;padding:7px 16px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
 .btn:disabled{opacity:.35;cursor:default}
 .count{font-size:14px;color:var(--muted)}
-.jobs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+/* the agent list takes whatever room the panel has left and scrolls; everything else keeps its height */
+.jobs{list-style:none;margin:0;padding:0;display:grid;gap:6px;min-height:44px;overflow-y:auto;overscroll-behavior:contain}
+.jobs:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .jobs li{font-size:14px;line-height:1.3;padding:6px 10px;background:var(--card);border:1px solid var(--rule);border-left:6px solid var(--c,var(--green));border-radius:6px}
 .jobs li b{font-weight:normal;color:var(--ink);font-style:italic}
 .stops{display:grid;gap:6px;border-top:1px solid var(--rule);padding-top:10px}
@@ -133,7 +135,7 @@ h1{font-weight:normal;font-size:28px;margin:0;letter-spacing:-.01em}
         <span class="count" id="agentCount">0 of 5</span>
       </div>
 
-      <ul class="jobs" id="jobs" hidden></ul>
+      <ul class="jobs" id="jobs" hidden tabindex="0" aria-label="Agents you added"></ul>
 
       <div class="stops reveal" id="stops" hidden>
         <div class="label">Stop reviewing one kind of work</div>

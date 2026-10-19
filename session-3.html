@@ -320,8 +320,11 @@
       <li><a class="sess" data-l="t" href="session-1.html"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
       <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
       <li><a class="sess" data-l="m" href="session-3.html" aria-current="page"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
-      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can we be more cost effective?</span></a></li>
       <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+    <ol class="sessions appx">
+      <li><a class="sess appx-link" href="appendix.html"><span class="n" aria-hidden="true">A</span><span class="label">Appendix</span></a></li>
     </ol>
   </aside>
 
@@ -335,7 +338,7 @@
     <div class="stage" id="stage">
 
       <!-- 1 Title [UP] -->
-      <section class="slide mind" data-attn="up">
+      <section id="s3-title" class="slide mind" data-attn="up">
         <div class="m-title">
           <span class="rule" aria-hidden="true"></span>
           <h1>Better problem statements</h1>
@@ -343,7 +346,7 @@
       </section>
 
       <!-- 2 How information travels through your org [UP] -->
-      <section class="slide mind" data-attn="up" data-steps-start>
+      <section id="s3-travel" class="slide mind" data-attn="up" data-steps-start>
         <div class="chain-wrap" id="s3-chain">
           <h2 class="s3-h">How information travels through your org</h2>
           <div class="chain">
@@ -386,7 +389,7 @@
       </section>
 
       <!-- 4 Invisible work [UP] -->
-      <section class="slide mind" data-attn="up">
+      <section id="s3-invisible-work" class="slide mind" data-attn="up">
         <ul class="m-take">
           <li class="step">Your people likely do a ton of undocumented problem solving.</li>
           <li class="step">Don’t use AI to extend the life of a broken process.</li>
@@ -394,7 +397,7 @@
       </section>
 
       <!-- 5 Step 1: your problem [LAPTOP] -->
-      <section class="slide mind" data-attn="laptop">
+      <section id="s3-step1-problem" class="slide mind" data-attn="laptop">
         <div class="m-check">
           <h2 class="s3-h">Step 1: your problem</h2>
           <p class="m-prompt" id="s3-q5">When it comes to AI, what problem are you hoping to tackle?</p>
@@ -479,7 +482,7 @@
       </section>
 
       <!-- 8 Why these three [UP] -->
-      <section class="slide mind" data-attn="up">
+      <section id="s3-why-three-checks" class="slide mind" data-attn="up">
         <h2 class="s3-h">Why these three checks</h2>
         <ul class="s3-why">
           <li class="step">
@@ -620,7 +623,7 @@
       </section>
 
       <!-- 11 Example: three things to try [UP] -->
-      <section class="slide mind" data-attn="up">
+      <section id="s3-three-to-try" class="slide mind" data-attn="up">
         <h2 class="s3-h">Example: three things to try</h2>
         <figure class="s3-yours">
           <figcaption class="s3-yours-l">Example statement</figcaption>
@@ -659,7 +662,7 @@
       </section>
 
       <!-- 12 Step 5: pick the simplest [LAPTOP] -->
-      <section class="slide mind" data-attn="laptop" id="s3-s12">
+      <section class="slide mind" data-attn="laptop" id="s3-s12" data-reset-keys="" data-reset-hook="">
         <div class="m-check">
           <h2 class="s3-h">Step 5: pick the simplest</h2>
           <p class="m-prompt">Which is the simplest thing that could work?</p>
@@ -682,7 +685,7 @@
       </section>
 
       <!-- 12 Who leads this? [UP] -->
-      <section class="slide mind" data-attn="up">
+      <section id="s3-who-leads" class="slide mind" data-attn="up">
         <div class="s3-flow">
           <h2 class="s3-h">To discuss:</h2>
           <div class="s3-q">Are you the right person to spearhead this?</div>
@@ -710,7 +713,7 @@
       </section>
 
       <!-- 13 Your problem statement [UP] -->
-      <section class="slide mind" data-attn="up" data-steps-start>
+      <section id="s3-your-statement" class="slide mind" data-attn="up" data-steps-start>
         <div class="s3-final">
           <h2 class="s3-h">Your problem statement</h2>
           <p class="s3-big" id="s3-final"></p>
@@ -724,7 +727,7 @@
       </section>
 
       <!-- 14 Key takeaways [UP] -->
-      <section class="slide mind" data-attn="up">
+      <section id="s3-takeaways" class="slide mind" data-attn="up">
         <div class="take-wrap">
           <h2 class="take-title">Key takeaways</h2>
           <p class="take-ask">Check off the ones that feel clear to you.</p>
@@ -1043,6 +1046,14 @@
       storeJSON(K.tries, tries);
       paint11();
     });
+  });
+
+  /* Reset on the pick slide clears only the simplest-choice marker; the three ideas (wb:s3:tries.t) stay */
+  var pickSlide = document.getElementById('s3-s12');
+  if (pickSlide) pickSlide.addEventListener('wb:reset', function () {
+    tries.s = -1;
+    storeJSON(K.tries, tries);
+    paint11();
   });
 
   /* ---------- slide 13: copy and download ---------- */
@@ -1364,6 +1375,8 @@
   var whyCards = $$('.s3-why li, .s3-ex-card, .s3-ex-end');
   function whyEm(el) {
     var c = el.classList;
+    /* an unrevealed card carries no emphasis (a stale em-context would show it through the reveal) */
+    if (!c.contains('on')) { if (c.contains('em-context')) c.remove('em-context'); return; }
     /* only touch classes that actually change: a no-op remove still fires a mutation, which would loop */
     if (c.contains('em-current')) { if (c.contains('em-context')) c.remove('em-context'); }
     else if (c.contains('em-done')) { c.remove('em-done'); c.add('em-context'); }
