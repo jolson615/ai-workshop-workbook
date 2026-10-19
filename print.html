@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 4 printable · Workbook</title>
+<style>
+/* Printable fallback for session 4. Plain black on white. No navigation; the screen bar is hidden in print. */
+:root{--ink:#141311;--mute:#5b574f;--rule:#c9c4b8}
+*{box-sizing:border-box}
+body{margin:0;background:#f2efe8;color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;font-size:16px;line-height:1.35}
+.screen-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:820px;margin:0 auto;padding:18px 20px;border-bottom:1px solid var(--ink)}
+.screen-bar a{color:var(--ink);font-size:15px}
+.screen-bar button{padding:10px 16px;background:var(--ink);color:#f2efe8;border:0;font:700 16px "Helvetica Neue",Helvetica,Arial,sans-serif;cursor:pointer}
+.screen-bar button:hover{background:#e8461e;color:var(--ink)}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 40px}
+.page{padding:28px 0 36px;border-bottom:1px dashed var(--rule)}
+.page:last-child{border-bottom:0}
+.page h2{margin:0 0 18px;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.page .sub{margin:0 0 14px;color:var(--mute);font-size:15px}
+
+/* setup */
+.setup{list-style:none;margin:0;padding:0;font-size:22px;line-height:1.35;font-weight:500}
+.setup li{padding:10px 0;border-top:1px solid var(--ink)}
+.setup li:last-child{border-bottom:1px solid var(--ink)}
+.setup b{font-weight:800}
+
+/* flowchart: subway map, black and white. Each branch has its own dash pattern, so no colour is needed. */
+.sw{list-style:none;margin:0;padding:0;display:grid;max-width:700px}
+.sw-stop,.sw-end{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr) auto;align-items:stretch;min-height:72px}
+.sw-qw{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right;padding-right:6px}
+.sw-n{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.sw-q{margin:0;font-size:18px;font-weight:600;line-height:1.2}
+.sw-rail{position:relative}
+.sw-rail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:8px;margin-left:-4px;background:var(--ink)}
+.sw-first .sw-rail::before{top:50%}
+.sw-end .sw-rail::before{bottom:50%}
+.sw-stn{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:3px solid var(--ink);border-radius:50%;background:#fff;box-sizing:border-box}
+.sw-no{position:absolute;left:calc(50% + 12px);top:calc(50% + 10px);font-size:13px;font-weight:800;letter-spacing:.1em}
+.sw-mid{position:relative;display:flex;align-items:center}
+.sw-mid svg{display:block;width:100%;height:10px;overflow:visible}
+.sw-mid line{stroke:#000;stroke-width:6px;stroke-linecap:butt}
+.b-deny line{stroke-dasharray:none}
+.b-refund line{stroke-dasharray:16 8}
+.b-replace line{stroke-dasharray:3 6}
+.b-cancel line{stroke-dasharray:22 6 3 6}
+.sw-yes{position:absolute;left:50%;bottom:50%;margin-bottom:6px;transform:translateX(-50%);font-size:13px;font-weight:800;letter-spacing:.1em}
+.sw-term{display:flex;align-items:center;gap:10px;padding-left:4px}
+.sw-tdot{flex:none;width:18px;height:18px;border-radius:50%;background:#000}
+.sw-tl{font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.sw-endstn{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border:4px solid var(--ink);border-radius:50%;background:#fff;box-sizing:border-box}
+.sw-endstn::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--ink)}
+.sw-endtxt{grid-column:3 / span 2;margin:0;align-self:center;padding-left:4px;font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.sw-legend{margin:14px 0 0;font-size:13px;color:var(--mute)}
+.sw-note{margin:8px 0 14px;font-size:14px;color:var(--mute)}
+
+/* ticket form fields */
+.pf{margin:auto 0 0;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;line-height:1.3;border-top:1px solid var(--ink);padding-top:8px}
+.pf b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800}
+
+/* brief */
+.brief{max-width:66ch;display:grid;gap:14px;border:2px solid var(--ink);padding:22px 26px;background:#fbfaf6}
+.brief .brief-label{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.brief p{margin:0;font-size:24px;line-height:1.5;font-weight:500}
+
+/* tickets: cut-out cards, 5 per page */
+.actions{margin:0 0 16px;font-size:16px;font-weight:600}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{border:1.5px dashed var(--ink);padding:14px 16px;min-height:150px;display:flex;flex-direction:column;gap:8px}
+.card .cn{margin:0;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.card .ct{margin:0;font-size:19px;line-height:1.3;font-weight:500}
+.card:last-child:nth-child(odd){grid-column:1/-1;max-width:50%}
+
+/* debrief: blank table */
+.blank{width:100%;border-collapse:collapse;font-size:15px}
+.blank th{text-align:left;font-weight:700;padding:6px 8px;border-bottom:2px solid var(--ink)}
+.blank td{height:36px;border-bottom:1px solid var(--rule);padding:4px 8px;vertical-align:bottom}
+.blank td:first-child{width:24%;font-weight:600}
+
+@media screen and (max-width:640px){
+  .cards{grid-template-columns:1fr}
+  .card:last-child:nth-child(odd){max-width:none}
+  .brief p{font-size:20px}
+  .setup{font-size:19px}
+}
+
+@media print{
+  @page{size:letter;margin:.6in}
+  html,body{background:#fff;color:#000;font-size:12pt}
+  .screen-bar{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .page{break-after:page;page-break-after:always;padding:0 0 0;border-bottom:0}
+  .page:last-child{break-after:auto;page-break-after:auto}
+  .page h2{font-size:16pt;margin-bottom:12pt}
+  .page .sub{color:#000}
+  .setup{font-size:14pt}
+  .setup li{border-top-color:#000}
+  .setup li:last-child{border-bottom-color:#000}
+  .sw-stop,.sw-end{break-inside:avoid}
+  .sw-q,.sw-tl,.sw-endtxt{font-size:12pt}
+  .sw-mid line{stroke:#000}
+  .brief p{font-size:16pt;line-height:1.4}
+  .brief{border-color:#000;background:#fff}
+  .card{break-inside:avoid;min-height:2.3in;border-color:#000}
+  .card .ct{font-size:13pt}
+  .card:last-child:nth-child(odd){max-width:50%}
+  .blank th,.blank td{border-color:#000}
+  .blank td{height:0.42in}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<div class="screen-bar">
+  <a href="session-4.html">← Back to session 4</a>
+  <button type="button" id="printBtn">Print or save as PDF</button>
+</div>
+
+<div class="wrap">
+
+  <section class="page" aria-labelledby="p1">
+    <h2 id="p1">Session 4: the support desk</h2>
+    <ul class="setup">
+      <li><b>Follow a flowchart:</b> half the room follows the flowchart exactly.</li>
+      <li><b>Follow a prompt:</b> the other half follows a prompt and uses their judgment.</li>
+      <li>In each small group, one person has the flowchart or prompt ready to go, and everyone else handles the tickets.</li>
+      <li><b>Rules role:</b> has the flowchart or prompt ready and tells the group what it says.</li>
+      <li><b>Tickets role:</b> sorts each ticket with one action: Refund · Replace · Deny · Cancel subscription · Send to a person.</li>
+    </ul>
+  </section>
+
+  <section class="page" aria-labelledby="p2">
+    <h2 id="p2">Follow a flowchart: the flowchart</h2>
+    <p class="sub">Follow it exactly, even when it feels wrong.</p>
+    <ol class="sw" aria-label="The flowchart, as a subway map">
+<li class="sw-stop sw-first"><div class="sw-qw"><span class="sw-n">Stop 1</span><p class="sw-q">Order date more than 30 days ago?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-deny" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-deny"><span class="sw-tdot"></span><span class="sw-tl">Deny</span></div></li>
+<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 2</span><p class="sw-q">Issue type is Damaged or Missing?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-refund" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-refund"><span class="sw-tdot"></span><span class="sw-tl">Refund</span></div></li>
+<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 3</span><p class="sw-q">Issue type is Taste?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-replace" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-replace"><span class="sw-tdot"></span><span class="sw-tl">Replace</span></div></li>
+<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 4</span><p class="sw-q">Issue type is Cancel subscription?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-cancel" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-cancel"><span class="sw-tdot"></span><span class="sw-tl">Cancel subscription</span></div></li>
+<li class="sw-end"><div class="sw-qw"><span class="sw-n">None of the above</span></div><div class="sw-rail"><span class="sw-endstn"></span></div><p class="sw-endtxt">Send to a person</p></li>
+    </ol>
+    <p class="sw-note">The flowchart only sees the form fields.</p>
+    <p class="sw-legend">Line styles: solid = Deny · long dashes = Refund · dots = Replace · dash and dot = Cancel subscription.</p>
+  </section>
+
+  <section class="page" aria-labelledby="p3">
+    <h2 id="p3">Follow a prompt: the prompt</h2>
+    <div class="brief">
+      <p class="brief-label">The prompt</p>
+      <p>You answer customers for Brew Diligence, a coffee roaster.</p>
+      <p>Keep good customers happy and be fair to the business.</p>
+      <p>Refunds under $30 are fine if the story is believable.</p>
+      <p>Send anything about safety, legal threats, or a long-time customer who is upset to a person.</p>
+      <p>Don’t refund the same customer twice in 90 days.</p>
+    </div>
+  </section>
+
+  <section class="page" aria-labelledby="p4">
+    <h2 id="p4">Tickets 1–5 (cut out)</h2>
+    <p class="actions">Refund · Replace · Deny · Cancel subscription · Send to a person</p>
+    <div class="cards">
+      <div class="card"><p class="cn">Ticket 1</p><p class="ct">“My bag arrived split open, beans everywhere.”</p><div class="pf"><span><b>Order date</b>3 days ago</span><span><b>Issue type</b>Damaged</span></div></div>
+      <div class="card"><p class="cn">Ticket 2</p><p class="ct">“Please cancel my subscription, moving abroad.”</p><div class="pf"><span><b>Order date</b>10 days ago</span><span><b>Issue type</b>Cancel subscription</span></div></div>
+      <div class="card"><p class="cn">Ticket 3</p><p class="ct">“Tastes burnt. Not what I expected from you.”</p><div class="pf"><span><b>Order date</b>5 days ago</span><span><b>Issue type</b>Taste</span></div></div>
+      <div class="card"><p class="cn">Ticket 4</p><p class="ct">“Ordered 34 days ago, only just opened it, it’s stale. I’ve subscribed for three years.”</p><div class="pf"><span><b>Order date</b>34 days ago</span><span><b>Issue type</b>Taste</span></div></div>
+      <div class="card"><p class="cn">Ticket 5</p><p class="ct">“Bag was damaged AND I want to cancel.”</p><div class="pf"><span><b>Order date</b>6 days ago</span><span><b>Issue type</b>Damaged</span></div></div>
+    </div>
+  </section>
+
+  <section class="page" aria-labelledby="p5">
+    <h2 id="p5">Tickets 6–10 (cut out)</h2>
+    <p class="actions">Refund · Replace · Deny · Cancel subscription · Send to a person</p>
+    <div class="cards">
+      <div class="card"><p class="cn">Ticket 6</p><p class="ct">“Found a small piece of glass in the bag.”</p><div class="pf"><span><b>Order date</b>4 days ago</span><span><b>Issue type</b>Damaged</span></div></div>
+      <div class="card"><p class="cn">Ticket 7</p><p class="ct">“Missing again. Third time this quarter, refund please.”</p><div class="pf"><span><b>Order date</b>8 days ago</span><span><b>Issue type</b>Missing</span></div></div>
+      <div class="card"><p class="cn">Ticket 8</p><p class="ct">“Was a gift, my friend hated it. Can I get my money back?”</p><div class="pf"><span><b>Order date</b>12 days ago</span><span><b>Issue type</b>Other</span></div></div>
+      <div class="card"><p class="cn">Ticket 9</p><p class="ct">“If this isn’t fixed I’m contacting my lawyer.”</p><div class="pf"><span><b>Order date</b>9 days ago</span><span><b>Issue type</b>Other</span></div></div>
+      <div class="card"><p class="cn">Ticket 10</p><p class="ct">“Love the beans! Can you do a decaf version?”</p><div class="pf"><span><b>Order date</b>2 days ago</span><span><b>Issue type</b>Other</span></div></div>
+    </div>
+  </section>
+
+  <section class="page" aria-labelledby="p6">
+    <h2 id="p6">Debrief</h2>
+    <table class="blank">
+      <thead>
+        <tr><th>Ticket</th><th>Flowchart says</th><th>Prompt suggests</th><th>A careful person would</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td></td><td></td><td></td></tr>
+        <tr><td>2</td><td></td><td></td><td></td></tr>
+        <tr><td>3</td><td></td><td></td><td></td></tr>
+        <tr><td>4</td><td></td><td></td><td></td></tr>
+        <tr><td>5</td><td></td><td></td><td></td></tr>
+        <tr><td>6</td><td></td><td></td><td></td></tr>
+        <tr><td>7</td><td></td><td></td><td></td></tr>
+        <tr><td>8</td><td></td><td></td><td></td></tr>
+        <tr><td>9</td><td></td><td></td><td></td></tr>
+        <tr><td>10</td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<script>
+  (function () {
+    var b = document.getElementById('printBtn');
+    if (b) b.addEventListener('click', function () { window.print(); });
+  })();
+</script>
+</body>
+</html>

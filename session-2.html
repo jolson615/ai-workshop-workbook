@@ -1,0 +1,2612 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){var d=document.documentElement,n=null;d.classList.add("preload");try{n=localStorage.getItem("wb:nav")}catch(e){}if(n!==null?n==="1":innerWidth<900)d.classList.add("nav-c")})()</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 2 · Why is the model wrong sometimes? · Workbook</title>
+<link rel="stylesheet" href="assets/workbook.css">
+<style>
+/* Session 2 only. Chrome and shared .tech classes come from assets/workbook.css.
+   Order: shared session-2 patterns, then one group per slide in slide order (sections carry ids s2-slide-1 to s2-slide-14).
+   Slide-specific names (s2d, s2t, s2h, hg, s2-tr, s2-lu, s2-perm, s2-tile) keep rules from leaking between slides.
+   Note: workbook.css sets [hidden]{display:none!important}, so no per-element hidden rules are needed here. */
+
+/* ===== Shared session-2 patterns ===== */
+/* Four-source colours, defined once (agentic is berry, so vermilion stays the session's lane colour). Used by the tree (slide 4), corner icons (slides 5 to 11), source slide titles (7 to 10),
+   the agentic tool step (8), the harness brackets (9, 10), and the final puzzle (11). Colour marks chips, rules, icons and
+   left edges only. Text never takes these colours except amber text, which uses --src-harness-ink (5.9:1 on paper). */
+:root{
+  --src-param:#3b4a8f; --src-user:#1f8a7a; --src-agent:#a8396b; --src-harness:#c98a14;
+  --src-param-soft:#e0e3ef; --src-user-soft:#d5e7e1; --src-agent-soft:#f4e1ea; --src-harness-soft:#f5e9cf;
+  --src-harness-ink:#7d5309;
+}
+/* corner wayfinding (slides 5 to 11): four icons only, current branch highlighted */
+.wayf{position:absolute;top:clamp(12px,2.2vh,22px);right:var(--gx);z-index:1;display:flex;gap:6px}
+.slide:has(> .wayf){padding-top:clamp(64px,9vh,84px)}
+.wi{--c:var(--mute);--c-on:#fff;width:36px;height:36px;display:grid;place-items:center;border:1.5px solid color-mix(in srgb,var(--c) 55%,transparent);color:var(--c)}
+.wayf .wi:nth-child(1){--c:var(--src-param)}
+.wayf .wi:nth-child(2){--c:var(--src-user)}
+.wayf .wi:nth-child(3){--c:var(--src-agent)}
+.wayf .wi:nth-child(4){--c:var(--src-harness);--c-on:var(--ink)}
+.wi svg{width:22px;height:22px}
+.wi.on{background:var(--c);border-color:var(--c);color:var(--c-on)}
+/* source slide titles (7 user-provided, 8 agentic, 9 and 10 harness): a small chip in the source colour */
+#s2-slide-7>.prompt{--chip:var(--src-user)}
+#s2-slide-8>.prompt{--chip:var(--src-agent)}
+#s2-slide-9>.prompt,#s2-slide-10>.prompt{--chip:var(--src-harness)}
+#s2-slide-7>.prompt::before,#s2-slide-8>.prompt::before,#s2-slide-9>.prompt::before,#s2-slide-10>.prompt::before{content:"";display:inline-block;width:14px;height:14px;margin-right:12px;vertical-align:.04em;background:var(--chip)}
+
+/* blanks, sentences and leads (slides 3, 5 and 6) */
+.s2-blank{display:inline-block;min-width:6ch;padding:0 .15em;border-bottom:3px solid var(--ink);text-align:center;vertical-align:baseline;line-height:1.1}
+.s2-blank.filled{color:var(--signal);font-weight:800}
+.s2-lede{margin:0 0 14px;font-size:clamp(18px,1.7vw,24px);line-height:1.35;max-width:52ch}
+.s2-sent{margin:0 0 14px;font-size:clamp(30px,3.4vw,52px);font-weight:700;letter-spacing:-.025em;line-height:1.1}
+
+/* quiet button and note (slides 2 and 10) */
+.s2-quiet{padding:9px 18px;background:none;border:1.5px solid var(--mute);font-size:16px;font-weight:600;color:var(--ink)}
+.s2-quiet:not(:disabled):hover{border-color:var(--ink)}
+.s2-quiet:disabled{opacity:.5;cursor:default}
+
+/* chat bubbles (slides 9 and 10) */
+.s2-chat{display:flex;flex-direction:column;gap:10px;max-width:940px}
+.s2-msg{border:2px solid var(--ink);background:var(--card);padding:12px 18px;font-size:clamp(20px,2vw,28px);line-height:1.3;font-weight:500}
+.s2-msg.s2-user{align-self:flex-end;background:var(--ink);color:var(--paper);max-width:90%}
+.s2-msg.s2-model{align-self:flex-start;max-width:90%}
+.s2-who{display:block;margin-bottom:4px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.s2-user .s2-who{color:var(--paper);opacity:.7}
+
+/* ===== Slide 2: how a model is trained (fill the blanks) ===== */
+.s2-passage{margin:0;font-size:clamp(22px,2.35vw,38px);line-height:1.5;font-weight:600;letter-spacing:-.015em;max-width:64ch}
+/* slide 2 passage: a 70-word paragraph is running text, not the one thing to look at, so regular weight at a readable size */
+#s2-passage.em-current{font-weight:400!important;font-size:clamp(20px,2vw,26px);line-height:1.55}
+.s2-gap{position:relative;display:inline-block;min-width:4.4em;padding:0 .2em;margin:0 .04em;text-align:center;border-bottom:3px solid var(--ink);vertical-align:baseline}
+.s2-gap .gn{font-size:.5em;font-weight:800;color:var(--signal);vertical-align:.55em;margin-right:.15em;line-height:0}
+.s2-gap .fill{display:inline-block;font-weight:800;color:var(--signal);opacity:0;transition:opacity .5s linear}
+.s2-gap.on .fill{opacity:1}
+.s2-gap.new{animation:s2Hi 1.4s ease-out}
+@keyframes s2Hi{from{background:var(--soft)}to{background:transparent}}
+.s2-show{display:grid;gap:10px;justify-items:start;margin-top:clamp(20px,4vh,36px)}
+.s2-note{margin:0;font-size:14px;color:var(--mute)}
+
+/* ===== Slide 3: Brew Diligence case study ===== */
+.s2-kicker{margin:0;font-size:clamp(18px,1.8vw,26px);font-weight:800;color:var(--signal)}
+/* illustrated map: 40 cafés on a coast. Motion runs only while .s2m-play is on (the slide is entered); re-entry restarts it. */
+.s2m{--m-sea:#d3dfdb;--m-sea-ink:#5d7c77;--m-land:#ebe3cf;--m-bean:#6b4628;--m-bean-deep:#3a2415;
+  grid-column:1/-1;display:flex;align-items:stretch;gap:clamp(24px,3.4vw,52px);width:100%;max-width:1080px;height:min(62vh,540px);min-height:300px}
+.s2m-map{position:relative;flex:none;height:100%;aspect-ratio:640/700;border:2px solid var(--ink);overflow:hidden;background:var(--m-sea)}
+.s2m-map svg{display:block;width:100%;height:100%}
+.s2m-sea{fill:var(--m-sea)}
+.s2m-wave{stroke:#c3d3ce;stroke-width:1;fill:none}
+.s2m-sea-name{font-size:12px;letter-spacing:.34em;font-style:italic;fill:var(--m-sea-ink);font-weight:500}
+.s2m-river{fill:none;stroke:#bcd0ca;stroke-width:3.5;stroke-linecap:round}
+.s2m-land{fill:var(--m-land);opacity:0}
+.s2m-isle{fill:var(--m-land);stroke:var(--ink);stroke-opacity:.4;stroke-width:1.2}
+.s2m-coast{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-opacity:.55;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.s2m-dot{fill:var(--m-bean);stroke:var(--m-land);stroke-width:1.5;opacity:0;transform:scale(.2);transform-box:fill-box;transform-origin:center}
+.s2m-hdot{fill:var(--m-bean-deep);stroke:var(--m-land);stroke-width:2;opacity:0;transform:scale(.2);transform-box:fill-box;transform-origin:center}
+.s2m-ring{fill:none;stroke:var(--m-bean-deep);stroke-width:1.6;opacity:0;transform-box:fill-box;transform-origin:center}
+.s2m-leader{stroke:var(--m-bean-deep);stroke-width:1;opacity:0}
+.s2m-hlabel{font-size:14px;font-weight:700;fill:var(--ink);text-anchor:end;paint-order:stroke;stroke:var(--m-sea);stroke-width:5px;stroke-linejoin:round;opacity:0}
+.s2m-count{font-size:34px;font-weight:700;fill:var(--ink);letter-spacing:-.02em}
+.s2m-count-label{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;fill:var(--mute)}
+.s2m-scale line{stroke:var(--m-sea-ink);stroke-width:1.4}
+.s2m-scale text{font-size:11px;fill:var(--m-sea-ink);font-weight:600}
+.s2m-panel{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.s2m-h{margin:clamp(8px,1.6vh,14px) 0 0;font-size:clamp(34px,3.6vw,52px);font-weight:800;letter-spacing:-.025em;line-height:1.02}
+.s2m-lead{margin:clamp(10px,1.8vh,16px) 0 0;font-size:clamp(19px,1.9vw,26px);line-height:1.35;max-width:30ch}
+.s2m-sam{display:flex;gap:18px;align-items:center;margin-top:clamp(18px,3.4vh,34px);padding:16px 20px 16px 16px;background:var(--card);border:2px solid var(--ink);max-width:520px}
+.s2m-sam svg{flex:0 0 auto;width:64px;height:64px;border-radius:50%}
+.s2m-sam b{display:block;font-size:20px;letter-spacing:-.01em}
+.s2m-role{display:block;font-size:14px;color:var(--mute);margin-top:2px}
+.s2m-note{display:block;font-size:15px;line-height:1.4;margin-top:6px}
+.s2m-key{display:flex;gap:20px;margin-top:18px;font-size:14px;color:var(--mute)}
+.s2m-key span{display:flex;align-items:center;gap:8px}
+.s2m-key i{display:inline-block;width:12px;height:12px;border-radius:50%}
+.s2m-k-cafe{background:var(--m-bean)}
+.s2m-k-harbor{background:var(--m-bean-deep);box-shadow:0 0 0 3px rgba(58,36,21,.18)}
+.s2m-foot{max-width:520px;margin:18px 0 0;padding-top:14px;border-top:2px solid var(--ink);font-size:clamp(17px,1.5vw,20px);line-height:1.4}
+/* motion: plays once on entry (.s2m-play), replays on re-entry */
+.s2m.s2m-play .s2m-land{animation:s2mFade .9s ease both}
+.s2m.s2m-play #s2m-coast{animation:s2mDraw 1.8s cubic-bezier(.4,0,.2,1) both}
+.s2m.s2m-play .s2m-dot,.s2m.s2m-play .s2m-hdot{animation:s2mPop .5s cubic-bezier(.34,1.56,.64,1) both}
+.s2m.s2m-play .s2m-ring{animation:s2mPulse 2.4s ease-out infinite}
+.s2m.s2m-play .s2m-leader{animation:s2mFade .6s ease 1.9s both}
+.s2m.s2m-play .s2m-hlabel{animation:s2mFade .6s ease 2.1s both}
+.s2m.s2m-play .s2m-rise{animation:s2mRise .8s var(--ease) both;animation-delay:var(--d,0s)}
+.s2m.s2m-play .s2m-sam{animation:s2mSlide .9s var(--ease) 1s both}
+@keyframes s2mFade{from{opacity:0}to{opacity:1}}
+@keyframes s2mDraw{to{stroke-dashoffset:0}}
+@keyframes s2mPop{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes s2mPulse{0%{transform:scale(.5);opacity:.85}100%{transform:scale(3.4);opacity:0}}
+@keyframes s2mRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes s2mSlide{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .s2m *,.s2m{animation:none!important}
+  .s2m-land{opacity:1}
+  #s2m-coast{stroke-dashoffset:0}
+  .s2m-dot,.s2m-hdot{opacity:1;transform:none}
+  .s2m-ring{opacity:.5}
+  .s2m-leader,.s2m-hlabel{opacity:1}
+  .s2m-rise,.s2m-sam{opacity:1;transform:none}
+}
+@media (max-width:820px){
+  .s2m{flex-direction:column;height:auto}
+  .s2m-map{height:auto;width:100%;max-width:480px}
+}
+
+/* ===== Slide 4: where the answer comes from (split stage). Steps 1 to 5 are the .step children in DOM order. ===== */
+.s2d{position:relative;width:100%;max-width:1180px}
+.s2d-stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);grid-template-rows:auto minmax(0,1fr);min-height:min(56vh,520px);margin-top:44px;--pad:clamp(16px,2.4vw,32px)}
+.s2d-hl{grid-column:1;grid-row:1;padding-right:var(--pad);min-width:0}
+.s2d-lcard{grid-column:1;grid-row:2;margin-right:var(--pad);min-width:0}
+.s2d-hr{grid-column:2;grid-row:1;padding-left:var(--pad);min-width:0}
+.s2d-h{margin:0 0 14px;font-size:clamp(18px,1.7vw,24px);font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--ink)}
+.s2d-lcard.step{transform:translateX(-56px);transition:opacity .6s var(--ease),transform .8s var(--ease)}
+.s2d-lcard.step.on{transform:none}
+.s2d-split{position:absolute;top:0;bottom:0;left:25%;width:0}
+.s2d-line{position:absolute;top:0;bottom:0;left:0;border-left:2px solid var(--ink);transform:scaleY(0);transform-origin:top}
+.s2d-split.on .s2d-line{transform:none;transition:transform .8s var(--ease)}
+.s2d-mark{position:absolute;top:-36px;left:0;transform:translateX(-50%);padding:4px 10px;background:var(--paper);border:2px solid var(--ink);font-size:14px;font-weight:800;letter-spacing:.02em;line-height:1.2;white-space:nowrap}
+.s2d-row{grid-column:2;grid-row:2;min-width:0;padding-left:var(--pad);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.4vw,18px)}
+.s2d-card{display:grid;gap:10px;align-content:start;min-height:clamp(170px,26vh,230px);padding:clamp(14px,2vh,20px) 18px;background:var(--card);border:2px solid var(--ink);border-top:6px solid var(--c,var(--ink));color:var(--ink)}
+.s2d-lcard{--c:var(--src-param);--cs:var(--src-param-soft)}
+.s2d-row>.s2d-card:nth-child(1){--c:var(--src-user);--cs:var(--src-user-soft)}
+.s2d-row>.s2d-card:nth-child(2){--c:var(--src-agent);--cs:var(--src-agent-soft)}
+.s2d-row>.s2d-card:nth-child(3){--c:var(--src-harness);--cs:var(--src-harness-soft)}
+.s2d-card svg{box-sizing:border-box;width:52px;height:52px;padding:12px;border-radius:50%;background:var(--cs);color:var(--c,var(--ink));fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.s2d-t{margin:0;font-size:clamp(19px,1.8vw,26px);font-weight:800;letter-spacing:-.01em;line-height:1.15}
+.s2d-s{margin:0;font-size:clamp(15px,1.3vw,18px);line-height:1.3;color:var(--mute)}
+
+/* ===== Slide 5: what the model produces (older and current model bars) ===== */
+.s2-odds{grid-column:1/-1;max-width:920px}
+.s2-toggle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(100%,380px);border:2px solid var(--ink);background:var(--card);margin:0 0 12px}
+.s2-toggle button{flex:1 1 0;width:100%;min-width:0;margin:0;border:0;border-radius:0;padding:9px 16px;font:inherit;font-size:16px;font-weight:700;line-height:1.2;color:var(--ink);background:var(--card);cursor:pointer}
+.s2-toggle button+button{border-left:2px solid var(--ink)}
+.s2-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.s2-bars{display:grid;gap:clamp(8px,1.4vh,14px)}
+.bar{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) 56px;align-items:center;gap:14px;font-size:clamp(16px,1.5vw,20px)}
+.bar .w{font-weight:700}
+.bar .track{position:relative;height:16px;background:rgba(20,19,17,.08)}
+.bar .f{position:absolute;left:0;top:0;bottom:0;width:calc(var(--v, 0) * 1%);background:var(--ink);transition:width .9s var(--ease)}
+.bar .pct{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.s2-note-sm{margin:10px 0 0;font-size:14px;color:var(--mute)}
+@media (min-width:1200px){
+  .s2-odds{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(28px,3.4vw,56px);align-items:start;max-width:1180px}
+  .s2-odds>*{grid-column:1}
+  .s2-odds>.qs{grid-column:2;grid-row:1 / span 5;align-self:start}
+}
+@media (max-height:860px) and (min-width:1200px){
+  .s2-lede{margin-bottom:10px}
+  .s2-sent{margin-bottom:10px}
+  .s2-toggle{margin-bottom:10px}
+  .s2-bars{gap:8px}
+}
+@media (max-width:820px){
+  .bar{grid-template-columns:minmax(0,120px) minmax(0,1fr) 48px}
+}
+
+/* ===== Slide 6: how sure is the model (pick the word, then how sure). Scoped to #s2h and [data-widget="sure"]. ===== */
+.s2-odds[data-widget="sure"]{display:block;grid-column:1/-1;width:100%;max-width:920px;justify-self:start}
+[data-widget="sure"] .s2-lede{max-width:72ch;font-size:clamp(17px,1.5vw,21px);margin:0 0 12px;text-wrap:pretty}
+[data-widget="sure"] .qs-text{font-size:clamp(18px,1.6vw,22px);text-wrap:balance}
+[data-widget="sure"] .qs-count{margin-top:2px}
+[data-widget="sure"] .s2-note-inline{margin-left:14px}
+/* .s2h is also the slide 8 list (#s2t), so its base rules stay here */
+.s2h{display:grid;gap:8px;margin-top:8px;max-width:920px}
+.s2h .qs-done{border-top:1px solid var(--rule)}
+.s2h .qs-item.cur{gap:8px}
+.s2h .qs-sum{padding:4px 0}
+.s2h .qs-sum .qs-q{white-space:normal}
+#s2h{margin-top:0;max-width:none}
+#s2h .qs-done{border-top:1px solid var(--rule)}
+#s2h .qs-sum{padding:4px 0;gap:12px;font-size:15px;line-height:1.25}
+#s2h .qs-sum .qs-q{font-size:15px;white-space:normal}
+#s2h .qs-sum .qs-you{font-size:14px;color:var(--mute)}
+#s2h .qs-item.cur{padding:16px 20px 18px;margin-top:10px;gap:12px}
+#s2h .s2-sent{margin:0;font-size:clamp(26px,2.6vw,40px);line-height:1.15;letter-spacing:-.02em;text-wrap:balance}
+#s2h .qs-choices{gap:8px}
+#s2h .qs-choices.s2-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+#s2h .qs-choices.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+#s2h .qs-choices .pick{flex:none;min-width:0;width:100%;font-size:15px;padding:9px 4px;white-space:normal;overflow-wrap:break-word}
+#s2h .qs-note{margin:4px 0 0}
+#s2h .s2r{margin:0}
+#s2h .s2r-bars{display:grid;gap:3px;max-width:600px}
+#s2h .s2r .bar{grid-template-columns:150px minmax(0,1fr) 44px;gap:10px;font-size:14px;line-height:1.2}
+#s2h .s2r .bar .track{height:8px}
+#s2h .s2r .bar.mine .track{outline:2px solid var(--ink);outline-offset:3px}
+#s2h .s2r-you{margin-left:8px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+#s2h .s2r .s2r-line{margin:4px 0 0;font-size:14px;color:var(--mute)}
+.s2-close{margin:clamp(14px,3vh,28px) 0 0;font-size:clamp(26px,3vw,44px);font-weight:700;letter-spacing:-.025em;line-height:1.1;max-width:24ch}
+.s2-close em{font-style:normal;color:var(--signal)}
+#s2-close{font-size:clamp(24px,2.5vw,36px);max-width:none;text-wrap:balance;margin-top:clamp(8px,1.6vh,16px)}
+@media (max-width:820px){
+  #s2h .qs-choices.s2-five{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #s2h .qs-choices.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ===== Slide 7: user-provided context (the context tray). Four slots, a big file takes two, FIFO push-out, answer-quality gauge, the draft. Scoped to .s2-tr. ===== */
+#s2-slide-7{padding-top:56px;padding-bottom:clamp(16px,2.4vh,24px)}
+.s2-tr{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:0 clamp(22px,2.8vw,40px);align-items:start;max-width:1120px}
+/* the title and the question share the top row: the title on the left, the question beside it */
+#s2-slide-7>.prompt{grid-column:1/span 6;grid-row:1;align-self:center;margin:0}
+#s2-slide-7>.s2-tr-q{grid-column:7/-1;grid-row:1;align-self:center;margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.35;max-width:58ch}
+#s2-slide-7>.s2-tr{grid-column:1/-1;grid-row:2;margin-top:18px}
+.s2-tr-l,.s2-tr-r{min-width:0}
+.s2-tr-lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 6px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.s2-tr-lab span:last-child{font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--mute)}
+/* the tray: four unit slots, a thick base like a tray */
+.s2-tr-box{position:relative;height:124px;border:2px solid var(--ink);border-bottom-width:12px;border-radius:12px 12px 16px 16px;background:var(--src-user-soft);padding:12px;outline:3px dashed transparent;outline-offset:6px;transition:outline-color .2s}
+.s2-tr-box.hover{outline-color:var(--src-user)}
+.s2-tr-box::before{content:"";position:absolute;left:50%;top:-8px;width:56px;height:7px;margin-left:-28px;border-radius:4px;background:var(--ink)}
+.s2-tr-slots,.s2-tr-stack{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:100%;gap:8px}
+.s2-tr-slots{height:100%}
+.s2-tr-stack{position:absolute;left:12px;top:12px;right:12px;bottom:12px;pointer-events:none}
+.s2-tr-slot{position:relative;border:1.5px dashed rgba(20,20,20,.3);border-radius:8px}
+.s2-tr-slot::before{content:attr(data-n);position:absolute;left:7px;top:5px;font-size:11px;font-weight:500;color:var(--mute)}
+/* the desk: eight cards, a big file spans two columns. An empty cell means that card is on the tray. */
+.s2-tr-desk{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.s2-tr-cell{position:relative;height:92px;border-radius:8px}
+.s2-tr-cell.wide{grid-column:span 2}
+.s2-tr-cell:empty{border:1.5px dashed rgba(20,20,20,.3);display:grid;place-items:center}
+.s2-tr-cell:empty::after{content:attr(data-label);font-size:12px;font-weight:500;color:var(--mute)}
+.s2-tr-card{position:relative;width:100%;height:100%;margin:0;padding:8px 9px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:var(--card);border:1.5px solid var(--ink);border-radius:8px;font:inherit;color:inherit;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.s2-tr-card:hover{background:#fff}
+.s2-tr-card.dragging{cursor:grabbing;box-shadow:0 14px 28px rgba(20,20,20,.22);background:#fff}
+.s2-tr-card .ico{display:block;width:20px;height:20px;margin-bottom:auto;color:var(--src-user-ink,var(--src-user))}
+.s2-tr-card .ico svg{display:block;width:20px;height:20px}
+.s2-tr-card .t{font-size:12.5px;font-weight:500;line-height:1.15}
+.s2-tr-card .m{font-size:11px;line-height:1.2;color:var(--mute);margin-top:2px}
+.s2-tr-card.wide::before{content:"";position:absolute;left:-1.5px;right:-1.5px;top:-1.5px;height:5px;background:var(--src-user);border-radius:8px 8px 0 0}
+.s2-tr-card.wide{box-shadow:3px 3px 0 var(--src-user)}
+.s2-tr-card.used{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--src-user)}
+.s2-tr-card.nope{background:#ece8df}
+.s2-tr-card.nope .ico,.s2-tr-card.nope .t,.s2-tr-card.nope .m{opacity:.5}
+.s2-tr-badge{position:absolute;top:-9px;right:-9px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 0 3px var(--paper)}
+.s2-tr-badge:empty{display:none}
+.s2-tr-badge.ok{background:var(--c-ok)}
+.s2-tr-badge.no{background:#8b8780}
+.s2-tr-badge svg{width:13px;height:13px}
+.s2-tr-status{min-height:20px;margin:6px 0 0;font-size:14px;line-height:1.35;color:var(--mute)}
+.s2-tr-status.flash{color:var(--ink)}
+.s2-tr-reveal{margin-top:6px;min-height:0}
+/* the gauge: a half dial with the score beside its label */
+.s2-tr-gauge{position:relative;height:196px;padding:10px 14px 8px;background:var(--card);border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.s2-tr-gauge-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.s2-tr-gauge-top>span:last-child{font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink);white-space:nowrap}
+.s2-tr-num{font-size:26px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-right:4px}
+.s2-tr-gauge svg{display:block;width:100%;max-width:224px;height:auto;margin:4px auto 0;overflow:visible}
+.s2-tr-gauge-sub{margin:4px 0 0;text-align:center;font-size:12px;line-height:1.3;color:var(--mute)}
+.s2-tr-pop{position:absolute;left:50%;top:44px;font-size:20px;font-weight:500;color:var(--ink);pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums}
+.s2-tr-pop.neg{color:var(--mute)}
+.s2-tr-ask{display:block;width:100%;margin:10px 0 0;padding:11px 16px;border:0;border-radius:99px;background:var(--ink);color:var(--paper);font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s,background .15s}
+.s2-tr-ask:hover{background:#333}
+.s2-tr-ask:active{transform:translateY(1px)}
+/* the draft: appears only after asking, and uses only what is on the tray */
+.s2-tr-draft{margin:10px 0 0;padding:10px 14px 10px;border:2px solid var(--ink);border-radius:12px;background:var(--card);min-height:120px}
+.s2-tr-draft .s2-tr-lab{margin-bottom:4px}
+.s2-tr-idle{margin:4px 0 0;font-size:14px;line-height:1.4;color:var(--mute)}
+.s2-tr-lines p{margin:0 0 3px;font-size:14px;line-height:1.3}
+.s2-tr-lines p.guess{color:var(--mute);font-style:italic}
+.s2-tr-lines em{font-style:normal;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--mute);border-radius:99px;padding:1px 6px;margin-left:4px;vertical-align:1px;color:var(--mute)}
+.s2-tr-chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}
+.s2-tr-chip{font-size:12px;line-height:1.2;padding:3px 9px;border:1.5px dashed var(--ink);border-radius:99px}
+.s2-tr-note,.s2-tr-ours{margin:6px 0 0;font-size:13px;line-height:1.35}
+.s2-tr-k{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+@media (max-width:820px){
+  .s2-tr{grid-template-columns:minmax(0,1fr)}
+  .s2-tr-desk{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+/* ===== Slide 8: agentic context (answer directly or use a tool, then which tool) ===== */
+.s2-tools{max-width:920px;border:2px solid var(--ink);border-top:6px solid var(--src-agent);background:var(--card)}
+.s2-tools-h{margin:0;padding:10px 16px;border-bottom:2px solid var(--ink);font-size:16px;font-weight:800;letter-spacing:.02em}
+.s2-tools ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.s2-tools li{padding:10px 16px;border-bottom:1px solid var(--rule)}
+.s2-tools li:nth-child(odd){border-right:1px solid var(--rule)}
+.s2-tools li b{display:block;font-size:17px;font-weight:800}
+.s2-tools li span{display:block;font-size:15px;line-height:1.3;color:var(--mute)}
+.s2t-lede{margin:0 0 8px;font-size:clamp(20px,1.9vw,27px);line-height:1.25;max-width:60ch}
+.s2t-wrap{display:grid;grid-template-columns:clamp(240px,24vw,300px) minmax(0,1fr);gap:clamp(18px,2.4vw,32px);align-items:start}
+.s2t-tools{max-width:none}
+.s2t-tools ul{grid-template-columns:1fr}
+.s2t-tools li,.s2t-tools li:nth-child(odd){border-right:0;padding:9px 14px}
+.s2t-tools li b{font-size:16px}
+.s2t-tools li span{font-size:14px;line-height:1.25}
+.s2t-tools .s2-tools-h{padding:7px 14px;font-size:15px}
+.s2t{max-width:none;margin-top:4px}
+.s2t .qs-item.cur{padding:12px 20px 14px}
+.s2t-a,.s2t-b{display:grid;gap:8px}
+.s2t-right{margin:6px 0 0}
+.s2t .s2t-b{border-left:4px solid var(--src-agent);padding-left:14px}
+/* step B back link (same pattern as session 1 "No tool fits"): returns to step A, scores nothing */
+.s2t .s2t-back{justify-self:start;margin-top:2px;padding:4px 0;background:none;border:0;font-size:16px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+.s2t .s2t-back:hover{color:var(--signal)}
+@media (max-width:820px){
+  .s2t-wrap{grid-template-columns:1fr}
+}
+
+/* ===== Slide 9: before you type anything (conversation, then the harness bracket above the first message) ===== */
+.s2-hbr{order:-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px 14px;border:2px dashed var(--src-harness);background:var(--src-harness-soft)}
+.s2-hbr-h{grid-column:1/-1;margin:0 0 2px;font-size:14px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--src-harness-ink)}
+.s2-hb{padding:6px 10px;min-width:0;border:1.5px solid var(--ink);background:var(--card);font-size:clamp(15px,1.4vw,18px);line-height:1.3}
+/* harness boxes: one box per step. The label is the only bold text; the content is regular and slightly muted. */
+.s2-hb-l{display:block;font-weight:800;color:var(--ink)}
+.s2-hb-t{display:block;font-weight:400;color:var(--mute)}
+.s2-hb.step.on{animation:s2Slide .5s var(--ease) both}
+.s2-hbr.step:not(.on){display:none}
+.s2-hbr.step.on{animation:s2Slide .5s var(--ease) both}
+@keyframes s2Slide{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+.s2-harn-end{margin:14px 0 0;font-size:clamp(18px,1.6vw,23px);font-weight:500;letter-spacing:-.005em;line-height:1.4;max-width:58ch}
+
+/* ===== Slide 10: harness-inserted context (the pick-three game). Stages are .hg-st, shown one at a time. ===== */
+.hg{display:block;max-width:1080px;min-width:0}
+.hg .btn-ink{margin:0}
+.hg-ask{margin:0 0 14px;font-size:clamp(17px,1.5vw,21px);line-height:1.35;max-width:70ch}
+.hg-pick{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:clamp(20px,3vw,40px);align-items:start}
+.hg-cands{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hg-cand{position:relative;min-height:62px;padding:10px 38px 10px 14px;background:var(--card);border:2px solid var(--ink);text-align:left;font-size:16px;font-weight:600;line-height:1.25;color:var(--ink);display:flex;align-items:center}
+.hg-cand:not(:disabled):hover{background:#ebe7dd}
+.hg-cand[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.hg-cand:disabled:not([aria-pressed="true"]){opacity:.45;cursor:default}
+.hg-cand .num{position:absolute;top:8px;right:12px;font-size:12px;font-weight:800;color:var(--signal)}
+.hg-cand[aria-pressed="true"] .num{color:var(--paper)}
+.hg-guess{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:880px}
+.hg-guess .hg-cand{min-height:96px;font-size:17px}
+.hg-slots{border-top:3px solid var(--ink);padding-top:12px;display:grid;gap:8px}
+.hg-h{margin:0;font-size:16px;font-weight:800}
+.hg-slot{min-height:56px;border:2px dashed var(--rule);padding:8px 12px;font-size:15px;line-height:1.25;display:flex;align-items:center;gap:10px;background:none;text-align:left;width:100%;color:var(--ink)}
+.hg-slot.filled{border:2px solid var(--ink);background:var(--card)}
+.hg-slot.filled:hover{border-color:var(--signal)}
+.hg-slot .n{font-size:12px;font-weight:800;color:var(--mute);min-width:12px}
+.hg-slot .empty{color:var(--mute)}
+.hg-slot .x{margin-left:auto;font-size:12px;color:var(--mute);white-space:nowrap}
+.hg-count{margin:0;font-size:14px;color:var(--mute)}
+.hg-row{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:14px}
+.hg-chat{display:flex;flex-direction:column;gap:8px;max-width:880px}
+.hg-hbr{border:2px dashed var(--src-harness);background:var(--src-harness-soft);padding:9px 14px;display:grid;gap:6px}
+.hg-hbr-h{margin:0;font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--src-harness-ink)}
+.hg-hb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.hg-mem{padding:6px 10px;border:1.5px solid var(--ink);background:var(--card);font-size:clamp(15px,1.4vw,17px);line-height:1.3}
+.hg-mem b{display:block;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.hg-mem ul{list-style:none;margin:2px 0 0;padding:0}
+.hg-sys{margin:0;font-size:13px;line-height:1.3;color:var(--mute)}
+.hg-hb>div{padding:6px 10px;border:1.5px solid var(--ink);background:var(--card);font-size:15px;line-height:1.3;min-width:0}
+.hg-hb b{display:block;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.hg .s2-msg{font-size:clamp(17px,1.5vw,21px);line-height:1.3;padding:10px 16px}
+.hg-reply{font-size:clamp(17px,1.5vw,20px);line-height:1.4;font-weight:500}
+.hg-reply p{margin:0 0 6px}
+.hg-reply p:last-child,.hg-reply ul:last-child{margin-bottom:0}
+.hg-reply ul{margin:0 0 6px;padding-left:22px}
+.hg-reply li{margin:0 0 2px}
+.hg-note{margin:0;max-width:880px;padding:4px 0 4px 12px;border-left:3px solid var(--mute);font-size:15px;line-height:1.35;color:var(--mute)}
+.hg-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;font-size:13px}
+.hg-chips .lbl{align-self:center;color:var(--mute);margin-right:4px}
+.hg-chip{border:1px solid var(--ink);padding:4px 9px;background:var(--card);line-height:1.2}
+.hg-day{margin:0 0 8px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);font-weight:800}
+.hg-test{display:flex;flex-direction:column;gap:8px;max-width:880px}
+.hg-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:14px}
+.hg-prog{font-size:14px;color:var(--mute)}
+.hg-vhead{margin:0 0 4px;font-size:clamp(24px,2.4vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.hg-vsub{margin:0 0 10px;font-size:16px;line-height:1.4;max-width:72ch}
+.hg-verdict{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start}
+.hg-side{display:grid;gap:12px;align-content:start}
+.hg-vrow{display:grid;grid-template-columns:30px minmax(0,215px) minmax(0,1fr);gap:14px;align-items:start;padding:9px 0;border-top:1px solid var(--rule);animation:hgFade .4s ease both}
+.hg-vrow:last-of-type{border-bottom:1px solid var(--rule)}
+.hg-mark{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:800;color:#fff}
+.hg-mark.ok{background:#2f7d4f}
+.hg-mark.no{background:#8b8780}
+.hg-vlabel{font-size:15px;line-height:1.3}
+.hg-vtitle{margin:0 0 2px;font-size:15px;font-weight:800}
+.hg-vbody{margin:0;font-size:15px;line-height:1.35}
+.hg-take{margin:0;font-size:16px;line-height:1.4;padding:10px 14px;background:var(--soft);border-left:4px solid var(--signal)}
+.hg-close{margin:0;font-size:clamp(20px,2vw,26px);font-weight:400;letter-spacing:-.01em;line-height:1.3}
+.hg-restart{display:block;justify-self:start;background:none;border:0;padding:4px 0;font-size:14px;text-decoration:underline;text-underline-offset:3px;color:var(--ink)}
+@keyframes hgFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (max-width:820px){
+  .hg-pick{grid-template-columns:1fr}
+  .hg-cands,.hg-guess{grid-template-columns:1fr}
+  .hg-hb{grid-template-columns:1fr}
+  .hg-vrow{grid-template-columns:30px minmax(0,1fr)}
+  .hg-verdict{grid-template-columns:1fr}
+}
+@media (max-height:860px) and (min-width:1200px){
+  .hg-ask{margin-bottom:8px;font-size:17px}
+  .hg .s2-msg{padding:7px 14px;font-size:17px}
+  .hg-reply{font-size:16px;line-height:1.35}
+  .hg-hbr{padding:6px 12px}
+  .hg-hb>div{padding:4px 9px}
+  .hg-chat,.hg-test{gap:6px}
+  .hg-cand{min-height:54px}
+  .hg-row,.hg-foot{margin-top:8px}
+  .hg-chips{margin-bottom:8px}
+  .hg-day{margin-bottom:6px}
+  .hg-vsub{margin-bottom:8px}
+}
+
+/* ===== Slide 11: where did this come from? (shared .qs pattern, plus source colour on the buttons and summary tags) ===== */
+[data-qs="origin"] .qs-choices .pick{position:relative;overflow:hidden;padding-left:20px}
+[data-qs="origin"] .qs-choices .pick::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--c)}
+[data-qs="origin"] .pick[data-pick="training"]{--c:var(--src-param)}
+[data-qs="origin"] .pick[data-pick="provided"]{--c:var(--src-user)}
+[data-qs="origin"] .pick[data-pick="got"]{--c:var(--src-agent)}
+[data-qs="origin"] .pick[data-pick="harness"]{--c:var(--src-harness)}
+[data-qs="origin"] .qs-done>li[data-src="training"]{--c:var(--src-param)}
+[data-qs="origin"] .qs-done>li[data-src="provided"]{--c:var(--src-user)}
+[data-qs="origin"] .qs-done>li[data-src="got"]{--c:var(--src-agent)}
+[data-qs="origin"] .qs-done>li[data-src="harness"]{--c:var(--src-harness)}
+[data-qs="origin"] .qs-sum .qs-you::before{content:"";display:inline-block;width:10px;height:10px;margin-right:8px;border-radius:50%;background:var(--c,transparent);vertical-align:0}
+
+/* ===== Slide 12: when the answer is wrong (the lineup). Lead and instruction are regular weight. Bold marks only the current case and the chosen suspect. Scoped to .s2-lu. ===== */
+.s2-bad-lead{margin:0 0 12px;font-size:clamp(17px,1.5vw,21px);font-weight:400;line-height:1.35;max-width:64ch}
+.s2-lu{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:0 clamp(20px,2.6vw,36px);align-items:start;max-width:1120px}
+.s2-lu-ask{grid-column:1/-1;margin:0 0 12px;font-size:clamp(16px,1.3vw,18px);font-weight:400;line-height:1.35}
+.s2-lu-lab{margin:0 0 6px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.s2-lu-lineup{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.s2-lu-sus{position:relative;width:100%;display:grid;grid-template-columns:60px minmax(0,1fr) 28px;align-items:center;gap:12px;padding:6px 12px 6px 6px;font:inherit;text-align:left;color:var(--ink);background:var(--card);border:2px solid var(--ink);cursor:pointer;transition:background .3s var(--ease),color .3s var(--ease),border-color .3s,opacity .3s,transform .25s var(--ease)}
+.s2-lu-sus:disabled{cursor:default}
+.s2-lu-sus:not(:disabled):hover{transform:translateX(4px)}
+.s2-lu-sus.ghost{border-style:dashed;border-color:rgba(20,20,20,.55);background:#ebe7dc}
+.s2-lu-art{width:60px;height:48px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 12%,var(--card))}
+.s2-lu-sus.ghost .s2-lu-art{background:rgba(20,20,20,.04)}
+.s2-lu-art svg{width:52px;height:38px;overflow:visible}
+.s2-lu-txt{min-width:0}
+.s2-lu-nm{display:block;font-size:16px;font-weight:400;line-height:1.15}
+.s2-lu-ds{display:block;font-size:13px;line-height:1.25;color:var(--mute);margin-top:2px}
+.s2-lu-sus.chosen .s2-lu-nm{font-weight:700}
+.s2-lu-sus.is-ok{background:var(--c);color:#fff;border-color:var(--ink)}
+.s2-lu-sus.is-ok .s2-lu-ds{color:rgba(255,255,255,.92)}
+.s2-lu-sus.is-ok .s2-lu-art{background:rgba(255,255,255,.16)}
+.s2-lu-sus.is-no{background:#e6e2d8;color:var(--mute);border-color:rgba(20,20,20,.35)}
+.s2-lu-sus.is-no .s2-lu-art{opacity:.45}
+.s2-lu-sus.is-no .s2-lu-ds{color:var(--mute)}
+.s2-lu-sus.is-ghost-no{opacity:.6}
+.s2-lu-stamp{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;opacity:0;transform:scale(.3);transition:opacity .3s var(--ease),transform .45s var(--ease)}
+.s2-lu-stamp svg{width:14px;height:14px}
+.s2-lu-stamp.ok{background:var(--c-ok)}
+.s2-lu-stamp.no{background:#8b8780}
+.s2-lu-sus.hit .s2-lu-stamp,.s2-lu-sus.miss .s2-lu-stamp{opacity:1;transform:none}
+.s2-lu-tag{position:absolute;top:-10px;right:-8px;background:var(--ink);color:var(--paper);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;box-shadow:0 0 0 2px var(--paper)}
+.s2-lu-tag[hidden]{display:none}
+.s2-lu-case{min-width:0;display:grid;gap:12px;align-content:start}
+.s2-lu-head{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:22px}
+.s2-lu-head .s2-lu-lab{margin:0}
+.s2-lu-pips{display:flex;gap:6px}
+.s2-lu-pip{width:14px;height:14px;border:1.5px solid var(--ink);background:none}
+.s2-lu-pip.on{background:var(--ink)}
+.s2-lu-pip.solved{background:var(--mute);border-color:var(--mute)}
+.s2-lu-q{margin:0;padding:10px 14px;background:var(--ink);color:var(--paper);font-size:clamp(17px,1.5vw,20px);line-height:1.3;font-weight:700}
+.s2-lu-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.s2-lu-ans{margin:0;background:#fff;border:2px solid var(--ink);padding:10px 12px;font-size:clamp(16px,1.3vw,18px);line-height:1.35;min-height:92px}
+.s2-lu-slip{position:relative;background:#fffdf4;border:2px solid var(--ink);padding:10px 12px 12px 18px;transform:translateY(10px);opacity:0;transition:transform .6s var(--ease),opacity .6s var(--ease)}
+.s2-lu-slip.in{transform:none;opacity:1}
+.s2-lu-slip::before{content:"";position:absolute;left:-2px;top:-2px;bottom:-2px;width:10px;background:var(--c)}
+.s2-lu-src{margin:0 0 6px;font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.s2-lu-line{margin:0 0 6px;padding:6px 8px;border-left:3px solid var(--c);background:rgba(20,20,20,.03);font-size:15px;line-height:1.3}
+.s2-lu-line.cut{border-left-style:dashed}
+.s2-lu-line.cut::after{content:"";display:block;height:6px;margin-top:4px;background:repeating-linear-gradient(90deg,var(--paper) 0 6px,transparent 6px 11px)}
+.s2-lu-key{background:linear-gradient(transparent 52%,var(--soft) 52%)}
+.s2-lu-foot{grid-column:1/-1;display:flex;align-items:center;gap:20px;margin-top:14px;padding-top:12px;border-top:2px solid var(--ink);min-height:70px}
+.s2-lu-fb{flex:1;margin:0;min-height:48px;font-size:clamp(16px,1.3vw,18px);line-height:1.35;opacity:0;transition:opacity .45s var(--ease)}
+.s2-lu-fb.on{opacity:1}
+.s2-lu-fb b{font-weight:700}
+.s2-lu-next{flex:none;font:inherit;font-size:16px;font-weight:600;color:var(--paper);background:var(--ink);border:0;padding:11px 20px;cursor:pointer}
+.s2-lu-next:hover{background:#333}
+.s2-lu-next[hidden]{display:none}
+.s2-lu-end{display:grid;gap:10px;align-content:start}
+.s2-lu-big{margin:0;font-size:clamp(24px,2.4vw,34px);font-weight:500;line-height:1.15;letter-spacing:-.02em;max-width:26ch}
+.s2-lu-big span{box-shadow:inset 0 -.3em 0 var(--soft)}
+.s2-lu-sum{margin:0;font-size:clamp(16px,1.3vw,18px);line-height:1.35;max-width:60ch}
+.s2-lu-recap{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px;border-top:2px solid var(--ink)}
+.s2-lu-recap li{display:grid;grid-template-columns:14px minmax(0,1fr);gap:10px;align-items:start;padding:6px 0;border-bottom:1px solid var(--rule)}
+.s2-lu-recap i{display:block;width:14px;height:14px;margin-top:3px;background:var(--c);border:2px solid var(--ink)}
+.s2-lu-recap b{display:block;font-size:16px;font-weight:500;line-height:1.2}
+.s2-lu-recap span{display:block;font-size:13px;line-height:1.3;color:var(--mute)}
+.s2-lu-close{margin:4px 0 0;padding-left:12px;border-left:4px solid var(--signal);font-size:clamp(16px,1.3vw,18px);font-weight:400;line-height:1.35;max-width:60ch}
+@media (max-width:820px){
+  .s2-lu{grid-template-columns:minmax(0,1fr)}
+  .s2-lu-cols{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ===== Slide 13: your permissions from session 1 (tiles, one per system) ===== */
+.s2-perm{max-width:860px}
+.s2-perm-tiles{list-style:none;margin:8px 0 10px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:860px}
+.s2-tile{display:grid;gap:10px;justify-items:start;min-width:0;padding:14px 12px;border:2px solid var(--ink);background:var(--card)}
+.s2-tile-ic{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--ink)}
+.s2-tile-n{margin:0;font-size:clamp(15px,1.4vw,18px);font-weight:800;line-height:1.15}
+.s2-ind{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font-size:14px;color:var(--mute)}
+.s2-ind-box{width:30px;height:30px;display:grid;place-items:center;border:2px solid var(--ink);background:var(--card)}
+.s2-ind-box svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--ink)}
+.s2-ind-box.v0{border:2px dashed var(--mute);background:transparent}
+.s2-ind-box.v0 svg{color:var(--mute)}
+.s2-ind-box.v1{background:linear-gradient(90deg,var(--signal) 50%,var(--card) 50%)}
+.s2-ind-box.v2{background:var(--signal)}
+.s2-perm-legend{margin:0 0 26px;font-size:14px;color:var(--mute);max-width:72ch}
+.s2-perm-none{font-size:clamp(17px,1.6vw,22px);margin:8px 0 26px}
+.s2-perm .s2-perm-line{font-weight:400!important}
+.s2-perm-line{margin:0;font-size:clamp(20px,1.9vw,26px);font-weight:400;line-height:1.25;letter-spacing:-.01em;max-width:40ch}
+@media (max-width:820px){
+  .s2-perm-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</head>
+<body data-lang="tech" data-session="2">
+<div class="app" id="app">
+
+  <aside class="nav" aria-label="Sessions">
+    <div class="nav-top">
+      <button class="nav-toggle" id="navToggle" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation ([)">[</button>
+    </div>
+    <ol class="sessions">
+      <li><a class="sess" data-l="t" href="session-1.html"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-2.html" aria-current="page"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-3.html"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="sn" aria-hidden="true">2</div>
+      <div class="sname">Why is the model wrong sometimes?</div>
+      <nav class="pips" id="pips" aria-label="Slides"></nav>
+    </header>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 Title [UP] -->
+      <section id="s2-slide-1" class="slide tech" data-attn="up">
+        <div class="t-title">
+          <p class="big" aria-hidden="true">2</p>
+          <h1>Why is the model wrong sometimes?</h1>
+        </div>
+      </section>
+
+      <!-- 2 How a model is trained [UP]: blanks, revealed together -->
+      <section id="s2-slide-2" class="slide tech" data-attn="up">
+        <h2 class="prompt em-context">How a model is trained</h2>
+        <p class="s2-passage em-current" id="s2-passage">Roller Coaster Tycoon is a popular video game that allows <span class="s2-gap"><span class="gn">1</span><span class="fill">Players</span></span> to immerse themselves in the <span class="s2-gap"><span class="gn">2</span><span class="fill">Exciting</span></span> world of theme park management. In this game, players take on the <span class="s2-gap"><span class="gn">3</span><span class="fill">Role</span></span> of an amusement park entrepreneur, tasked with designing and operating thrilling <span class="s2-gap"><span class="gn">4</span><span class="fill">Roller</span></span> coasters, captivating attractions, and satisfying the <span class="s2-gap"><span class="gn">5</span><span class="fill">Needs</span></span> of virtual park visitors. From constructing <span class="s2-gap"><span class="gn">6</span><span class="fill">Heart-stopping</span></span> rides to managing finances and park layout, Roller Coaster Tycoon offers an engaging and <span class="s2-gap"><span class="gn">7</span><span class="fill">Challenging</span></span> experience.</p>
+        <div class="s2-show">
+          <button class="s2-quiet" id="s2-show" type="button">Show answer 1</button>
+          <p class="s2-note em-context" id="s2-note">Please wait. We’ll reveal these together.</p>
+        </div>
+      </section>
+
+      <!-- 3 Meet Brew Diligence [UP]: illustrated map. Motion is driven by the script at the end of the file (plays on entry, replays on re-entry). -->
+      <section id="s2-slide-3" class="slide tech" data-attn="up">
+        <div class="s2m" id="s2m">
+          <div class="s2m-map">
+            <svg viewBox="0 0 640 700" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map of the Brew Diligence café region. Harbor Street is highlighted on the coast.">
+              <rect class="s2m-sea" width="640" height="700"/>
+              <g id="s2m-waves"></g>
+              <text class="s2m-sea-name" x="30" y="46">MARROW BAY</text>
+              <path class="s2m-river" d="M246 198 C 290 214, 330 186, 380 204 S 480 236, 540 214 S 610 232, 650 236"/>
+              <path id="s2m-land" class="s2m-land" d=""/>
+              <ellipse class="s2m-isle" cx="120" cy="196" rx="26" ry="13" transform="rotate(-18 120 196)"/>
+              <ellipse class="s2m-isle" cx="98" cy="474" rx="17" ry="9" transform="rotate(28 98 474)"/>
+              <path id="s2m-coast" class="s2m-coast" d="" pathLength="1"/>
+              <g id="s2m-cafes"></g>
+              <circle id="s2m-ring" class="s2m-ring" r="11" cx="0" cy="0"/>
+              <line id="s2m-leader" class="s2m-leader" x1="0" y1="0" x2="0" y2="0"/>
+              <circle id="s2m-hdot" class="s2m-hdot" r="7.5" cx="0" cy="0"/>
+              <text id="s2m-hlabel" class="s2m-hlabel" x="0" y="0">Harbor Street</text>
+              <text class="s2m-count" x="30" y="92" id="s2m-count">0</text>
+              <text class="s2m-count-label" x="30" y="112">cafés</text>
+              <g class="s2m-scale" transform="translate(30 654)">
+                <line x1="0" y1="0" x2="120" y2="0"/><line x1="0" y1="-5" x2="0" y2="5"/><line x1="60" y1="-3" x2="60" y2="3"/><line x1="120" y1="-5" x2="120" y2="5"/>
+                <text x="0" y="18">0</text><text x="112" y="18">50 km</text>
+              </g>
+            </svg>
+          </div>
+          <div class="s2m-panel">
+            <p class="s2-kicker s2m-rise" style="--d:.1s">Our case study</p>
+            <h2 class="s2m-h s2m-rise" style="--d:.25s">Meet Brew Diligence</h2>
+            <p class="s2m-lead s2m-rise" style="--d:.45s">Brew Diligence: a coffee roaster with 40 cafés.</p>
+            <div class="s2m-sam s2m-sam-card">
+              <svg viewBox="0 0 68 68" aria-hidden="true">
+                <circle cx="34" cy="34" r="34" fill="#e6d6bb"/>
+                <path d="M10 68 C10 50 20 44 34 44 C48 44 58 50 58 68 Z" fill="#3a2415"/>
+                <path d="M28 40 h12 v6 q-6 4 -12 0 z" fill="#c4906a"/>
+                <circle cx="34" cy="28" r="12.5" fill="#c4906a"/>
+                <path d="M21 27 C19 14 49 12 47 27 C44 20 25 19 21 27 Z" fill="#2a1d14"/>
+                <circle cx="29.5" cy="29" r="1.5" fill="#141414"/><circle cx="38.5" cy="29" r="1.5" fill="#141414"/>
+                <path d="M30 34.5 Q34 37.5 38 34.5" stroke="#141414" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              </svg>
+              <div>
+                <b>Sam</b>
+                <span class="s2m-role">Café manager, Harbor Street</span>
+                <span class="s2m-note">Sam’s café is the one we follow for the rest of the session.</span>
+              </div>
+            </div>
+            <div class="s2m-key s2m-rise" style="--d:1.7s"><span><i class="s2m-k-cafe"></i>Café</span><span><i class="s2m-k-harbor"></i>Harbor Street, Sam’s café</span></div>
+            <p class="s2m-foot s2m-rise" style="--d:1.9s">You’ve just encouraged every café manager to start using an AI assistant.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Where the answer comes from [UP]: split stage. Steps: 1 parametric (left), 2 divider + marker, 3-5 context cards. data-em off: no card is emphasized. -->
+      <section id="s2-slide-4" class="slide tech" data-attn="up" data-em="off">
+        <div class="s2d">
+          <h2 class="prompt em-context">Where does the model’s answer come from?</h2>
+          <div class="s2d-stage">
+            <p class="s2d-h s2d-hl">Before the conversation</p>
+            <div class="s2d-card s2d-lcard step"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5h6.5A2.5 2.5 0 0 1 12 8v11.5a2 2 0 0 0-2-2H3z"/><path d="M21 5.5h-6.5A2.5 2.5 0 0 0 12 8v11.5a2 2 0 0 1 2-2h7z"/></svg><p class="s2d-t">Parametric memory</p><p class="s2d-s">training data</p></div>
+            <div class="s2d-split step" aria-hidden="true"><span class="s2d-line"></span><span class="s2d-mark">conversation starts</span></div>
+            <p class="s2d-h s2d-hr">During the conversation: the context window</p>
+            <div class="s2d-row">
+              <div class="s2d-card step"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg><p class="s2d-t">User-provided context</p><p class="s2d-s">you typed or attached it</p></div>
+              <div class="s2d-card step"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/></svg><p class="s2d-t">Agentic context</p><p class="s2d-s">the model went and got it</p></div>
+              <div class="s2d-card step"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><p class="s2d-t">Harness-inserted context</p><p class="s2d-s">added before you typed</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 What the model produces [LAPTOP] -->
+      <section id="s2-slide-5" class="slide tech" data-attn="laptop">
+        <div class="wayf" data-lit="1"></div>
+        <h2 class="prompt em-context">What the model produces</h2>
+        <div class="s2-odds" data-widget="paris">
+          <p class="s2-lede em-context">The model doesn’t simply pick a word. It scores every possible next token.</p>
+          <p class="s2-sent em-context">The capital of France is <span class="s2-blank" aria-hidden="true"></span></p>
+          <div class="s2-toggle" role="group" aria-label="Model">
+            <button type="button" data-m="old" aria-pressed="true">Older model</button>
+            <button type="button" data-m="new" aria-pressed="false">Current model</button>
+          </div>
+          <div class="s2-bars">
+            <div class="bar" data-old="70" data-new="95"><span class="w em-context">Paris</span><span class="track"><span class="f" style="--v:70"></span></span><span class="pct em-context">70%</span></div>
+            <div class="bar" data-old="9" data-new="1"><span class="w em-context">“a”</span><span class="track"><span class="f" style="--v:9"></span></span><span class="pct em-context">9%</span></div>
+            <div class="bar" data-old="7" data-new="1"><span class="w em-context">“located”</span><span class="track"><span class="f" style="--v:7"></span></span><span class="pct em-context">7%</span></div>
+            <div class="bar" data-old="6" data-new="1"><span class="w em-context">Lyon</span><span class="track"><span class="f" style="--v:6"></span></span><span class="pct em-context">6%</span></div>
+            <div class="bar" data-old="5" data-new="1"><span class="w em-context">“known”</span><span class="track"><span class="f" style="--v:5"></span></span><span class="pct em-context">5%</span></div>
+            <div class="bar" data-old="3" data-new="1"><span class="w em-context">Marseille</span><span class="track"><span class="f" style="--v:3"></span></span><span class="pct em-context">3%</span></div>
+          </div>
+          <p class="s2-note-sm">Illustrative numbers.</p>
+
+          <div class="qs" data-qs="paris">
+            <ol class="qs-done" aria-label="Answered"></ol>
+            <div class="qs-item" data-answer="no" data-short="Is “located” a hallucination?">
+              <p class="qs-text">The model samples the token “located”. Is that a hallucination?</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="yes" aria-pressed="false" type="button">Yes</button>
+                <button class="pick" data-pick="no" aria-pressed="false" type="button">No</button>
+                <button class="pick" data-pick="unsure" data-unsure aria-pressed="false" type="button">Not sure</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>No. “The capital of France is located in Paris” is just a different, true sentence. It isn’t a hallucination.</p>
+            </div>
+            <div class="qs-item" data-answer="rarely" data-short="How often “Lyon” here?">
+              <p class="qs-text">How often would the current model write “Lyon” here?</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="never" aria-pressed="false" type="button">Never</button>
+                <button class="pick" data-pick="rarely" aria-pressed="false" type="button">Rarely</button>
+                <button class="pick" data-pick="often" aria-pressed="false" type="button">Often</button>
+                <button class="pick" data-pick="unsure" data-unsure aria-pressed="false" type="button">Not sure</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Rarely: about 1 in 100. Not never.</p>
+            </div>
+            <p class="qs-count" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 How sure is it? [LAPTOP]: two steps per sentence (pick the word, then how sure) -->
+      <section id="s2-slide-6" class="slide tech" data-attn="laptop">
+        <div class="wayf" data-lit="1"></div>
+        <h2 class="prompt em-context">How sure is the model?</h2>
+        <div class="s2-odds" data-widget="sure">
+          <p class="s2-lede em-context">The more often something appears in what a model read, the more confident it gets. For each sentence, pick the next token, then say how sure the model is.</p>
+          <div class="s2h" id="s2h">
+            <ol class="qs-done" aria-label="Answered"></ol>
+            <div class="qs-item" data-lead="Water boils at 100 degrees" data-answer="very" data-odds='[["Celsius",92],["Fahrenheit",3],["at",2],["when",1],["and",1]]'>
+              <p class="s2-sent em-current">Water boils at 100 degrees <span class="s2-blank" aria-hidden="true"></span></p>
+              <div class="s2h-a">
+                <p class="qs-text em-context">Which token comes next?</p>
+                <div class="qs-choices s2-five">
+                  <button class="pick" data-a="when" aria-pressed="false" type="button">when</button>
+                  <button class="pick" data-a="Fahrenheit" aria-pressed="false" type="button">Fahrenheit</button>
+                  <button class="pick" data-a="Celsius" aria-pressed="false" type="button">Celsius</button>
+                  <button class="pick" data-a="and" aria-pressed="false" type="button">and</button>
+                  <button class="pick" data-a="at" aria-pressed="false" type="button">at</button>
+                </div>
+              </div>
+              <div class="s2h-b" hidden>
+                <p class="qs-text em-context">How sure is the model?</p>
+                <div class="qs-choices four">
+                  <button class="pick" data-b="very" aria-pressed="false" type="button">Very sure</button>
+                  <button class="pick" data-b="somewhat" aria-pressed="false" type="button">Somewhat sure</button>
+                  <button class="pick" data-b="guessing" aria-pressed="false" type="button">Guessing</button>
+                  <button class="pick" data-b="unsure" data-unsure aria-pressed="false" type="button">Not sure</button>
+                </div>
+              </div>
+            </div>
+            <div class="qs-item" data-lead="The highest-grossing movie of all time is" data-answer="somewhat" data-line="The answer has changed several times, so the text it learned from disagrees." data-odds='[["Avatar",42],["Avengers",26],["Titanic",17],["Star",6],["Gone",3]]'>
+              <p class="s2-sent em-current">The highest-grossing movie of all time is <span class="s2-blank" aria-hidden="true"></span></p>
+              <div class="s2h-a">
+                <p class="qs-text em-context">Which token comes next?</p>
+                <div class="qs-choices s2-five">
+                  <button class="pick" data-a="Titanic" aria-pressed="false" type="button">Titanic</button>
+                  <button class="pick" data-a="Gone" aria-pressed="false" type="button">Gone</button>
+                  <button class="pick" data-a="Avatar" aria-pressed="false" type="button">Avatar</button>
+                  <button class="pick" data-a="Star" aria-pressed="false" type="button">Star</button>
+                  <button class="pick" data-a="Avengers" aria-pressed="false" type="button">Avengers</button>
+                </div>
+              </div>
+              <div class="s2h-b" hidden>
+                <p class="qs-text em-context">How sure is the model?</p>
+                <div class="qs-choices four">
+                  <button class="pick" data-b="very" aria-pressed="false" type="button">Very sure</button>
+                  <button class="pick" data-b="somewhat" aria-pressed="false" type="button">Somewhat sure</button>
+                  <button class="pick" data-b="guessing" aria-pressed="false" type="button">Guessing</button>
+                  <button class="pick" data-b="unsure" data-unsure aria-pressed="false" type="button">Not sure</button>
+                </div>
+              </div>
+            </div>
+            <div class="qs-item" data-lead="The mayor of Springfield in 1987 was" data-answer="guessing" data-line="There are dozens of Springfields, plus a famous cartoon one." data-odds='[["Joe",11],["Quimby",10],["John",9],["Robert",8],["Mary",7]]'>
+              <p class="s2-sent em-current">The mayor of Springfield in 1987 was <span class="s2-blank" aria-hidden="true"></span></p>
+              <div class="s2h-a">
+                <p class="qs-text em-context">Which token comes next?</p>
+                <div class="qs-choices s2-five">
+                  <button class="pick" data-a="Joe" aria-pressed="false" type="button">Joe</button>
+                  <button class="pick" data-a="Quimby" aria-pressed="false" type="button">Quimby</button>
+                  <button class="pick" data-a="John" aria-pressed="false" type="button">John</button>
+                  <button class="pick" data-a="Robert" aria-pressed="false" type="button">Robert</button>
+                  <button class="pick" data-a="Mary" aria-pressed="false" type="button">Mary</button>
+                </div>
+              </div>
+              <div class="s2h-b" hidden>
+                <p class="qs-text em-context">How sure is the model?</p>
+                <div class="qs-choices four">
+                  <button class="pick" data-b="very" aria-pressed="false" type="button">Very sure</button>
+                  <button class="pick" data-b="somewhat" aria-pressed="false" type="button">Somewhat sure</button>
+                  <button class="pick" data-b="guessing" aria-pressed="false" type="button">Guessing</button>
+                  <button class="pick" data-b="unsure" data-unsure aria-pressed="false" type="button">Not sure</button>
+                </div>
+              </div>
+            </div>
+            <div class="qs-item" data-lead="Brew Diligence’s best-selling drink is the" data-answer="guessing" data-odds='[["latte",19],["cappuccino",17],["mocha",16],["americano",15],["cortado",14]]'>
+              <p class="s2-sent em-current">Brew Diligence’s best-selling drink is the <span class="s2-blank" aria-hidden="true"></span></p>
+              <div class="s2h-a">
+                <p class="qs-text em-context">Which token comes next?</p>
+                <div class="qs-choices s2-five">
+                  <button class="pick" data-a="latte" aria-pressed="false" type="button">latte</button>
+                  <button class="pick" data-a="cappuccino" aria-pressed="false" type="button">cappuccino</button>
+                  <button class="pick" data-a="mocha" aria-pressed="false" type="button">mocha</button>
+                  <button class="pick" data-a="americano" aria-pressed="false" type="button">americano</button>
+                  <button class="pick" data-a="cortado" aria-pressed="false" type="button">cortado</button>
+                </div>
+              </div>
+              <div class="s2h-b" hidden>
+                <p class="qs-text em-context">How sure is the model?</p>
+                <div class="qs-choices four">
+                  <button class="pick" data-b="very" aria-pressed="false" type="button">Very sure</button>
+                  <button class="pick" data-b="somewhat" aria-pressed="false" type="button">Somewhat sure</button>
+                  <button class="pick" data-b="guessing" aria-pressed="false" type="button">Guessing</button>
+                  <button class="pick" data-b="unsure" data-unsure aria-pressed="false" type="button">Not sure</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="qs-count" aria-live="polite"><span id="s2h-count"></span><span class="s2-note-inline">Illustrative next-token scores.</span></p>
+          <p class="s2-close em-current" id="s2-close" hidden>A wrong answer is a likely-sounding token. <em>It isn’t a lie.</em></p>
+        </div>
+      </section>
+
+      <!-- 7 Branch 2: you provided it [LAPTOP] -->
+      <section id="s2-slide-7" class="slide tech" data-attn="laptop">
+        <div class="wayf" data-lit="2"></div>
+        <h2 class="prompt em-context">User-provided context</h2>
+        <p class="s2-tr-q">Sam asks: “Draft Saturday’s staff schedule for the Harbor Street café.” Pick what to attach so the answer could be right.</p>
+        <div class="s2-tr" data-widget="tray">
+          <div class="s2-tr-l">
+            <div class="s2-tr-lab"><span>Context window · 4 slots</span><span id="s2-tr-count">0 of 4 used</span></div>
+            <div class="s2-tr-box" id="s2-tr-box">
+              <div class="s2-tr-slots" aria-hidden="true"><div class="s2-tr-slot" data-n="1"></div><div class="s2-tr-slot" data-n="2"></div><div class="s2-tr-slot" data-n="3"></div><div class="s2-tr-slot" data-n="4"></div></div>
+              <div class="s2-tr-stack" id="s2-tr-stack"></div>
+            </div>
+            <div class="s2-tr-lab"><span>On your desk</span><span>Click a card, or drag it into the tray</span></div>
+            <div class="s2-tr-desk" id="s2-tr-desk"></div>
+            <p class="s2-tr-status" id="s2-tr-status" aria-live="polite">The model sees the tray and nothing else. Pushed-out cards are gone for this answer.</p>
+            <div class="s2-tr-reveal" id="s2-tr-reveal"></div>
+          </div>
+          <div class="s2-tr-r">
+            <section class="s2-tr-gauge" id="s2-tr-gauge" aria-label="Answer quality">
+              <div class="s2-tr-gauge-top"><span>Answer quality</span><span><span class="s2-tr-num" id="s2-tr-num">0</span><span id="s2-tr-band">Guessing</span></span></div>
+              <svg viewBox="0 0 260 140" aria-hidden="true">
+                <path d="M32 118 A98 98 0 0 1 228 118" fill="none" stroke="#ddd8cc" stroke-width="16"/>
+                <path id="s2-tr-fill" d="M32 118 A98 98 0 0 1 228 118" fill="none" stroke="#1f8a7a" stroke-width="16" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+                <text x="32" y="138" text-anchor="middle" font-size="11" fill="#5d5a53">0</text>
+                <text x="228" y="138" text-anchor="middle" font-size="11" fill="#5d5a53">100</text>
+                <line id="s2-tr-needle" x1="130" y1="118" x2="130" y2="34" stroke="#141414" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="130" cy="118" r="7" fill="#141414"/>
+              </svg>
+              <p class="s2-tr-gauge-sub">Best with four slots: 90 · one big file: 60</p>
+            </section>
+            <button class="s2-tr-ask" id="s2-tr-ask" type="button">Ask the assistant</button>
+            <section class="s2-tr-draft" id="s2-tr-draft" aria-live="polite"></section>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 Agentic context [LAPTOP]: two parts per request (answer directly or use a tool, then which tool), one request at a time -->
+      <section id="s2-slide-8" class="slide tech" data-attn="laptop">
+        <div class="wayf" data-lit="3"></div>
+        <h2 class="prompt em-context">Agentic context</h2>
+        <p class="s2t-lede em-context">You are the model. Decide whether to answer from your parametric memory, or use a tool. If you use one, pick which.</p>
+        <div class="s2t-wrap">
+        <div class="s2-tools s2t-tools">
+          <p class="s2-tools-h">Brew Diligence assistant tools</p>
+          <ul>
+            <li><b>Stock system</b><span>Live counts of what is on the shelf at each café.</span></li>
+            <li><b>Delivery log</b><span>What arrived, when, and what is still on the way.</span></li>
+            <li><b>Web search</b><span>Public information from outside the company.</span></li>
+            <li><b>Staff schedule</b><span>Who is scheduled to work, and when.</span></li>
+          </ul>
+        </div>
+        <div class="s2h s2t" id="s2t">
+          <ol class="qs-done" aria-label="Answered"></ol>
+          <div class="qs-item" data-answer="can" data-short="What’s a flat white?">
+            <p class="qs-text em-current">“What’s a flat white?”</p>
+            <div class="s2t-a">
+              <p class="qs-text em-context">Answer directly, or use a tool?</p>
+              <div class="qs-choices">
+                <button class="pick" data-a="can" aria-pressed="false" type="button">Answer directly</button>
+                <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+              </div>
+            </div>
+            <div class="s2t-b" hidden>
+              <p class="qs-text em-context">Which tool?</p>
+              <div class="qs-choices four">
+                <button class="pick" data-b="stock" aria-pressed="false" type="button">Stock system</button>
+                <button class="pick" data-b="delivery" aria-pressed="false" type="button">Delivery log</button>
+                <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                <button class="pick" data-b="staff" aria-pressed="false" type="button">Staff schedule</button>
+              </div>
+              <button class="s2t-back" data-back type="button">← Back: answer directly instead</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>A flat white is general knowledge the model learned in training. No tool is needed.</p>
+          </div>
+          <div class="qs-item" data-answer="stock" data-short="How many oat-milk cartons are in stock at Harbor Street?">
+            <p class="qs-text em-current">“How many oat-milk cartons are in stock at Harbor Street?”</p>
+            <div class="s2t-a">
+              <p class="qs-text em-context">Answer directly, or use a tool?</p>
+              <div class="qs-choices">
+                <button class="pick" data-a="can" aria-pressed="false" type="button">Answer directly</button>
+                <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+              </div>
+            </div>
+            <div class="s2t-b" hidden>
+              <p class="qs-text em-context">Which tool?</p>
+              <div class="qs-choices four">
+                <button class="pick" data-b="stock" aria-pressed="false" type="button">Stock system</button>
+                <button class="pick" data-b="delivery" aria-pressed="false" type="button">Delivery log</button>
+                <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                <button class="pick" data-b="staff" aria-pressed="false" type="button">Staff schedule</button>
+              </div>
+              <button class="s2t-back" data-back type="button">← Back: answer directly instead</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>The count changes every day, and only the stock system has today’s number for Harbor Street.</p>
+          </div>
+          <div class="qs-item" data-answer="can" data-short="How do I politely ask a supplier to move a delivery?">
+            <p class="qs-text em-current">“How do I politely ask a supplier to move a delivery?”</p>
+            <div class="s2t-a">
+              <p class="qs-text em-context">Answer directly, or use a tool?</p>
+              <div class="qs-choices">
+                <button class="pick" data-a="can" aria-pressed="false" type="button">Answer directly</button>
+                <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+              </div>
+            </div>
+            <div class="s2t-b" hidden>
+              <p class="qs-text em-context">Which tool?</p>
+              <div class="qs-choices four">
+                <button class="pick" data-b="stock" aria-pressed="false" type="button">Stock system</button>
+                <button class="pick" data-b="delivery" aria-pressed="false" type="button">Delivery log</button>
+                <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                <button class="pick" data-b="staff" aria-pressed="false" type="button">Staff schedule</button>
+              </div>
+              <button class="s2t-back" data-back type="button">← Back: answer directly instead</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Wording a polite request is writing, and training covers that. No live data is needed.</p>
+          </div>
+          <div class="qs-item" data-answer="delivery" data-short="Has the Harbor Street milk delivery arrived this morning?">
+            <p class="qs-text em-current">“Has the Harbor Street milk delivery arrived this morning?”</p>
+            <div class="s2t-a">
+              <p class="qs-text em-context">Answer directly, or use a tool?</p>
+              <div class="qs-choices">
+                <button class="pick" data-a="can" aria-pressed="false" type="button">Answer directly</button>
+                <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+              </div>
+            </div>
+            <div class="s2t-b" hidden>
+              <p class="qs-text em-context">Which tool?</p>
+              <div class="qs-choices four">
+                <button class="pick" data-b="stock" aria-pressed="false" type="button">Stock system</button>
+                <button class="pick" data-b="delivery" aria-pressed="false" type="button">Delivery log</button>
+                <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                <button class="pick" data-b="staff" aria-pressed="false" type="button">Staff schedule</button>
+              </div>
+              <button class="s2t-back" data-back type="button">← Back: answer directly instead</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Today’s arrivals are not in training or in this chat. Only the delivery log can say.</p>
+          </div>
+          <div class="qs-item" data-answer="staff" data-short="Who’s opening Harbor Street on Saturday?">
+            <p class="qs-text em-current">“Who’s opening Harbor Street on Saturday?”</p>
+            <div class="s2t-a">
+              <p class="qs-text em-context">Answer directly, or use a tool?</p>
+              <div class="qs-choices">
+                <button class="pick" data-a="can" aria-pressed="false" type="button">Answer directly</button>
+                <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+              </div>
+            </div>
+            <div class="s2t-b" hidden>
+              <p class="qs-text em-context">Which tool?</p>
+              <div class="qs-choices four">
+                <button class="pick" data-b="stock" aria-pressed="false" type="button">Stock system</button>
+                <button class="pick" data-b="delivery" aria-pressed="false" type="button">Delivery log</button>
+                <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                <button class="pick" data-b="staff" aria-pressed="false" type="button">Staff schedule</button>
+              </div>
+              <button class="s2t-back" data-back type="button">← Back: answer directly instead</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Schedules change from week to week, so the names for this Saturday have to be looked up in the staff schedule.</p>
+          </div>
+          <p class="qs-count" aria-live="polite"><span id="s2t-count"></span></p>
+        </div>
+        </div>
+      </section>
+
+      <!-- 8b Before you type anything [UP]: steps: conversation, bracket, then each harness box, model reply, closing line. Emphasis is off so the boxes stay even. -->
+      <section id="s2-slide-9" class="slide tech" data-attn="up" data-em="off">
+        <div class="wayf" data-lit="4"></div>
+        <h2 class="prompt em-context">Before you type anything</h2>
+        <div class="s2-chat">
+          <div class="step">
+            <div class="s2-msg s2-user"><span class="s2-who">You</span>Can you summarize this week’s sales for me?</div>
+          </div>
+          <div class="s2-hbr step">
+            <p class="s2-hbr-h">Added by the harness, before the first turn</p>
+            <div class="s2-hb step"><span class="s2-hb-l">System prompt</span><span class="s2-hb-t">You help café managers at Brew Diligence. Keep replies brief.</span></div>
+            <div class="s2-hb step"><span class="s2-hb-l">Memory</span><span class="s2-hb-t">Manager: Sam. Café: Harbor Street.</span></div>
+            <div class="s2-hb step"><span class="s2-hb-l">Preferences</span><span class="s2-hb-t">Summaries as three bullets.</span></div>
+          </div>
+          <div class="step">
+            <div class="s2-msg s2-model"><span class="s2-who">Model</span>Morning, Sam. Here’s the week in three bullets…</div>
+          </div>
+          <p class="s2-harn-end step">Most harnesses insert user- or project-specific context like this to the start of every new conversation, and so the model has access to more info than just its training data, even in what appears to be a fresh context.</p>
+        </div>
+      </section>
+
+      <!-- 9 Branch 4: the harness added it [LAPTOP]: pick three, see Sam's next turn, guess the risk, check Monday and Thursday, verdict -->
+      <section id="s2-slide-10" class="slide tech" data-attn="laptop">
+        <div class="wayf" data-lit="4"></div>
+        <h2 class="prompt em-context">Harness-inserted context: Memory</h2>
+        <div class="hg" id="hg">
+
+          <!-- stage 1, decision: pick three of eight -->
+          <div class="hg-st" data-st="pick">
+            <p class="hg-ask em-context">Sam's assistant has room for three lines of inserted context. Pick the three you would keep for every chat, from Monday to Thursday.</p>
+            <div class="hg-pick">
+              <div class="hg-cands" id="hg-cands"></div>
+              <aside class="hg-slots">
+                <p class="hg-h">Sam's inserted context</p>
+                <div id="hg-slots"></div>
+                <p class="hg-count" id="hg-count">0 of 3 picked</p>
+                <button class="btn-ink" id="hg-load" type="button" disabled>Load these three</button>
+              </aside>
+            </div>
+          </div>
+
+          <!-- stage 2, result: Sam's next turn, built from the three lines -->
+          <div class="hg-st" data-st="next" hidden>
+            <p class="hg-ask em-context">Sam sends a new message. Check which of your three lines the reply used.</p>
+            <div class="hg-chat">
+              <div class="hg-hbr" id="hg-blocks"></div>
+              <div class="s2-msg s2-user"><span class="s2-who">Sam</span>Can you help me plan this week?</div>
+              <div class="s2-msg s2-model"><span class="s2-who">Model</span><div class="hg-reply" id="hg-nreply"></div></div>
+              <p class="hg-note" id="hg-note" hidden></p>
+            </div>
+            <div class="hg-row">
+              <button class="s2-quiet" id="hg-back" type="button">Change these three</button>
+              <button class="btn-ink" id="hg-go" type="button">Check Monday and Thursday</button>
+            </div>
+          </div>
+
+          <!-- stage 3, decision: which of the three is the risk? -->
+          <div class="hg-st" data-st="guess" hidden>
+            <p class="hg-ask em-context">Before you test: which of your three lines is most likely to go wrong by Thursday?</p>
+            <div class="hg-guess" id="hg-guess"></div>
+          </div>
+
+          <!-- stage 4, result: the same three requests on Monday and Thursday -->
+          <div class="hg-st" data-st="test" hidden>
+            <p class="hg-ask em-context">Same three requests, two days. Each reply is written with only the three lines you picked.</p>
+            <div class="hg-chips" id="hg-chips"></div>
+            <p class="hg-day" id="hg-day"></p>
+            <p class="hg-note" id="hg-reveal" hidden></p>
+            <div class="hg-test">
+              <div class="s2-msg s2-user" id="hg-ask"></div>
+              <div class="s2-msg s2-model"><span class="s2-who">Model</span><div class="hg-reply" id="hg-reply"></div></div>
+            </div>
+            <div class="hg-foot">
+              <span class="hg-prog" id="hg-prog"></span>
+              <button class="btn-ink" id="hg-next" type="button">Next</button>
+            </div>
+          </div>
+
+          <!-- stage 5, verdict -->
+          <div class="hg-st" data-st="verdict" hidden>
+            <div class="hg-verdict">
+              <div>
+                <h3 class="hg-vhead" id="hg-vhead"></h3>
+                <p class="hg-vsub" id="hg-vsub"></p>
+                <div id="hg-vlist"></div>
+              </div>
+              <div class="hg-side">
+                <p class="hg-take">Inserted context should be stable, relevant, and safe to share. Live data belongs behind a tool.</p>
+                <p class="hg-close">The harness decides what the model already knows when the conversation starts.</p>
+                <button class="hg-restart" id="hg-restart" type="button">Start over</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 10 Where did this come from? [LAPTOP]: final puzzle, all four branches -->
+      <section id="s2-slide-11" class="slide tech" data-attn="laptop">
+        <div class="wayf" data-lit="1,2,3,4"></div>
+        <h2 class="prompt em-context">Where did this come from?</h2>
+        <p class="prompt em-context">For each of the following AI-generated responses, indicate where you imagine the model got its information.</p>
+        <div class="qs" data-qs="origin">
+          <ol class="qs-done" aria-label="Answered"></ol>
+          <div class="qs-item" data-answer="training" data-short="Espresso is made by forcing hot water…">
+            <p class="qs-text">Espresso is made by forcing hot water through finely ground coffee.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>General knowledge, learned in training.</p>
+          </div>
+          <div class="qs-item" data-answer="provided" data-short="Priya on the bar, per the schedule">
+            <p class="qs-text">Priya is on the bar on Saturday, according to the schedule you attached.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>You attached that schedule. The model is reading it.</p>
+          </div>
+          <div class="qs-item" data-answer="harness" data-short="Good morning, Sam. Three bullets.">
+            <p class="qs-text">Good morning, Sam. Here’s your summary in three bullets.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Sam’s name and the three-bullet format were saved before this chat.</p>
+          </div>
+          <div class="qs-item" data-answer="got" data-short="Oat milk: 12 cartons left">
+            <p class="qs-text">Harbor Street has 12 cartons of oat milk left.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>A live count, so it came from the stock system the model queried.</p>
+          </div>
+          <div class="qs-item" data-answer="harness" data-short="Keeping it brief, as Brew Diligence asks">
+            <p class="qs-text">I’ll keep this brief, as Brew Diligence asks.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>That instruction came from the system prompt the harness inserted before the chat.</p>
+          </div>
+          <div class="qs-item" data-answer="training" data-short="Milk should be kept below 41°F">
+            <p class="qs-text">Milk should be kept below 41°F.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Public food-safety guidance, so it was learned in training.</p>
+          </div>
+          <div class="qs-item" data-answer="got" data-short="Milk delivery due at 6:30 tomorrow">
+            <p class="qs-text">Harbor Street’s milk delivery is due at 6:30 tomorrow.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Probably a delivery schedule lookup. If you typed it into the chat, it’s the second option.</p>
+          </div>
+          <div class="qs-item" data-answer="harness" data-short="Kept under 100 words, as asked last week">
+            <p class="qs-text">As you asked last week, I’ve kept this under 100 words.</p>
+            <div class="qs-choices four">
+              <button class="pick" data-pick="training" aria-pressed="false" type="button">Parametric memory (training data)</button>
+              <button class="pick" data-pick="provided" aria-pressed="false" type="button">User-provided context</button>
+              <button class="pick" data-pick="got" aria-pressed="false" type="button">Agentic context</button>
+              <button class="pick" data-pick="harness" aria-pressed="false" type="button">Harness-inserted context</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Last week’s chat isn’t in this conversation. The model knows because the harness saved it as a memory and inserted it before you typed.</p>
+          </div>
+          <p class="qs-count" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- 11 Discussion [UP] -->
+      <section id="s2-slide-12" class="slide tech" data-attn="laptop">
+        <h2 class="prompt em-context">When the answer is wrong</h2>
+        <p class="s2-bad-lead">We tend to call every wrong answer a hallucination. These days, it’s just as likely the model was given bad context.</p>
+        <div class="s2-lu" data-widget="lineup">
+          <p class="s2-lu-ask">Which bad context is the culprit? Pick one suspect for each case.</p>
+          <div class="s2-lu-l">
+            <ul class="s2-lu-lineup" id="s2-lu-lineup" aria-label="Suspects"></ul>
+          </div>
+          <div class="s2-lu-case">
+            <div id="s2-lu-case-panel">
+              <div class="s2-lu-head"><p class="s2-lu-lab" id="s2-lu-eyebrow">Case 1 of 4 · Brew Diligence assistant</p><div class="s2-lu-pips" id="s2-lu-pips" aria-hidden="true"></div></div>
+              <p class="s2-lu-lab" style="margin-top:12px">Sam asked</p>
+              <p class="s2-lu-q" id="s2-lu-q"></p>
+              <div class="s2-lu-cols" style="margin-top:12px">
+                <div>
+                  <p class="s2-lu-lab">The assistant said</p>
+                  <p class="s2-lu-ans" id="s2-lu-ans"></p>
+                </div>
+                <div>
+                  <p class="s2-lu-lab">What the context said</p>
+                  <div class="s2-lu-slip" id="s2-lu-slip"></div>
+                </div>
+              </div>
+            </div>
+            <div class="s2-lu-end" id="s2-lu-end" hidden>
+              <p class="s2-lu-lab">The verdict</p>
+              <p class="s2-lu-big"><span>Most wrong answers had an accomplice: the context.</span></p>
+              <p class="s2-lu-sum">Four suspects, four kinds of bad context. Before you blame the model, check what it was given.</p>
+              <ul class="s2-lu-recap" id="s2-lu-recap"></ul>
+              <p class="s2-lu-lab" style="margin-top:8px">For the table</p>
+              <p class="s2-lu-close">When AI provides incorrect information, it’s valuable to investigate whether it’s a hallucination, or if context led the model astray.</p>
+            </div>
+          </div>
+          <div class="s2-lu-foot">
+            <p class="s2-lu-fb" id="s2-lu-fb" aria-live="polite"></p>
+            <button class="s2-lu-next" id="s2-lu-next" type="button" hidden>Next suspect</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Permissions callback [UP]: reads session 1's saved sliders -->
+      <section id="s2-slide-13" class="slide tech" data-attn="up">
+        <div class="s2-perm">
+          <h2 class="prompt em-context">Your permissions from session 1</h2>
+          <ul class="s2-perm-tiles" id="s2-perm-tiles" hidden></ul>
+          <p class="s2-perm-legend" id="s2-perm-legend" hidden>Dim with a lock: never. Half filled with a question mark: ask me first. Filled: always allow.</p>
+          <p class="s2-perm-none" id="s2-perm-none" hidden>You haven’t set these yet. <a href="session-1.html#11">Set them in session 1</a>.</p>
+          <p class="s2-perm-line em-current">Context is what the model needs to do the job. The more access you allow, the more capable the model will appear.</p>
+        </div>
+      </section>
+
+      <!-- 12 Takeaways [UP] -->
+      <section id="s2-slide-14" class="slide tech" data-attn="up">
+        <div class="take-wrap"><h2 class="take-title">Key takeaways</h2><p class="take-ask">Check off the ones that feel clear to you.</p><ul class="take">
+          <li><label><input type="checkbox"><span class="tt">A model’s facts come from training or from its context.</span></label></li>
+          <li><label><input type="checkbox"><span class="tt">A wrong answer is as likely to come from bad context as from a bad guess.</span></label></li>
+          <li><label><input type="checkbox"><span class="tt">Context can come from you, from the harness, or from the model itself.</span></label></li>
+        </ul></div>
+      </section>
+
+    </div>
+
+    <footer class="foot">
+      <button class="btn" id="prev" type="button">← Back</button>
+      <p class="attn" id="attn" data-mode="up">Eyes up front</p>
+      <button class="btn" id="next" type="button">Next →</button>
+    </footer>
+  </main>
+</div>
+<script src="assets/workbook.js"></script>
+<script>
+/* Session 2 widgets. Classic script; every storage call is wrapped in try/catch. Keys use wb:s2:. */
+(function () {
+  'use strict';
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function loadJSON(k, d) {
+    var v = load(k);
+    if (v === null) return d;
+    try { return JSON.parse(v); } catch (e) { return d; }
+  }
+  function storeJSON(k, v) { store(k, JSON.stringify(v)); }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* ---------- shared: corner wayfinding icons (branch 1 to 4), used on slides 5 to 11 ---------- */
+  var BRANCHES = [
+    { b: 1, name: 'Parametric memory', sub: 'training data',
+      icon: '<path d="M3 5.5h6.5A2.5 2.5 0 0 1 12 8v11.5a2 2 0 0 0-2-2H3z"/><path d="M21 5.5h-6.5A2.5 2.5 0 0 0 12 8v11.5a2 2 0 0 1 2-2h7z"/>' },
+    { b: 2, name: 'User-provided context', sub: '',
+      icon: '<path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/>' },
+    { b: 3, name: 'Agentic context', sub: 'the model fetches it',
+      icon: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/>' },
+    { b: 4, name: 'Harness-inserted context', sub: 'system prompt, memory, preferences',
+      icon: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>' }
+  ];
+  function buildWayf(el) {
+    var lit = (el.getAttribute('data-lit') || '').split(',').map(Number);
+    el.innerHTML = BRANCHES.map(function (br) {
+      var on = lit.indexOf(br.b) > -1;
+      return '<span class="wi' + (on ? ' on' : '') + '" role="img" title="' + br.name +
+        '" aria-label="Branch ' + br.b + ' of 4: ' + br.name + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        br.icon + '</svg></span>';
+    }).join('');
+  }
+  $$('.wayf').forEach(buildWayf);
+
+  /* ---------- slide 2: show answers (blanks fill together) ---------- */
+  function initBlanks() {
+    var p = $('#s2-passage'), btn = $('#s2-show'), note = $('#s2-note');
+    if (!p || !btn) return;
+    var key = 'wb:s2:blanks';
+    var gaps = $$('.s2-gap', p);
+    var TOTAL = gaps.length;
+    var n = Number(load(key)) || 0;
+    if (n < 0 || n > TOTAL) n = 0;
+    /* one click fills the next numbered blank; only that blank gets the highlight */
+    function paint(flash) {
+      gaps.forEach(function (g, i) { g.classList.toggle('on', i < n); g.classList.remove('new'); });
+      if (flash > -1) { void gaps[flash].offsetWidth; gaps[flash].classList.add('new'); }
+      if (note) note.hidden = n > 0;
+      btn.hidden = n >= TOTAL;
+      btn.textContent = 'Show answer ' + (n + 1);
+    }
+    btn.addEventListener('click', function () {
+      if (n >= TOTAL) return;
+      n += 1;
+      store(key, String(n));
+      paint(n - 1);
+    });
+    paint(-1);
+  }
+
+  /* ---------- slide 5: Older / Current model toggle reshapes the bars ---------- */
+  function initParis() {
+    var root = $('[data-widget="paris"]');
+    if (!root) return;
+    var key = 'wb:s2:model';
+    var btns = $$('[data-m]', root);
+    var bars = $$('.bar', root);
+    function show(m) {
+      if (m !== 'old' && m !== 'new') m = 'old';
+      btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-m') === m)); });
+      bars.forEach(function (bar) {
+        var v = bar.getAttribute('data-' + m);
+        bar.querySelector('.f').style.setProperty('--v', v);
+        bar.querySelector('.pct').textContent = v + '%';
+      });
+      /* one list, sorted by this model's probability, high to low; no groups or labels */
+      var box = bars[0] && bars[0].parentNode;
+      if (box) {
+        bars.slice().sort(function (a, b) {
+          return Number(b.getAttribute('data-' + m)) - Number(a.getAttribute('data-' + m));
+        }).forEach(function (bar) { box.appendChild(bar); });
+      }
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var m = b.getAttribute('data-m');
+        show(m);
+        store(key, m);
+      });
+    });
+    show(load(key) === 'new' ? 'new' : 'old');
+  }
+
+  /* ---------- slide 6: how sure. Per sentence: pick the next word, then how sure (check or x on step 2 only) ---------- */
+  function initHowSure() {
+    var root = $('#s2h');
+    if (!root) return;
+    var key = 'wb:s2:howsure2';
+    var items = $$('.qs-item', root);
+    var n = items.length;
+    var done = $('.qs-done', root);
+    var count = $('#s2h-count');
+    var close = $('#s2-close');
+    var LINE = {
+      very: 'Written everywhere.',
+      somewhat: 'Well known, but written less often.',
+      guessing: 'Rarely or never written down.'
+    };
+    var CHECK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="tick" d="M5 12.6l4.3 4.3L19 7.2"/></svg>' +
+      '<i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i>';
+    var CROSS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+    var st = { a: items.map(function () { return null; }), b: items.map(function () { return null; }) };
+    function pickOf(item, attr, val) {
+      var hit = $$('.pick', item).filter(function (b) { return b.getAttribute(attr) === val; })[0];
+      return hit ? val : null;
+    }
+    var saved = loadJSON(key, null);
+    if (saved && Array.isArray(saved.a) && Array.isArray(saved.b) && saved.a.length === n && saved.b.length === n) {
+      st.a = saved.a.map(function (w, i) { return w ? pickOf(items[i], 'data-a', w) : null; });
+      st.b = saved.b.map(function (p, i) { return p && st.a[i] ? pickOf(items[i], 'data-b', p) : null; });
+    }
+    function cur() {
+      for (var i = 0; i < n; i++) if (st.b[i] === null) return i;
+      return n;
+    }
+    function label(item, attr, val) {
+      var b = $$('.pick', item).filter(function (x) { return x.getAttribute(attr) === val; })[0];
+      return b ? b.textContent : '';
+    }
+    function reveal(i) {
+      var item = items[i], mine = st.a[i], rows = [];
+      JSON.parse(item.getAttribute('data-odds')).forEach(function (o, k) { rows.push({ w: o[0], v: o[1], k: k }); });
+      rows.sort(function (p, q) { return (q.v - p.v) || (p.k - q.k); });
+      var wrap = document.createElement('div');
+      wrap.className = 's2r qs-note';
+      var list = document.createElement('div');
+      list.className = 's2r-bars';
+      rows.forEach(function (o) {
+        var row = document.createElement('div');
+        row.className = 'bar' + (o.w === mine ? ' mine' : '');
+        var w = document.createElement('span'); w.className = 'w'; w.textContent = o.w;
+        if (o.w === mine) {
+          var you = document.createElement('em'); you.className = 's2r-you'; you.textContent = 'your pick';
+          w.appendChild(you);
+        }
+        var track = document.createElement('span'); track.className = 'track';
+        var f = document.createElement('span'); f.className = 'f';
+        f.style.setProperty('--v', String(o.v));
+        track.appendChild(f);
+        var pct = document.createElement('span'); pct.className = 'pct'; pct.textContent = o.v + '%';
+        row.appendChild(w); row.appendChild(track); row.appendChild(pct);
+        list.appendChild(row);
+      });
+      wrap.appendChild(list);
+      var line = st.b[i] === 'unsure' ? '' : (item.getAttribute('data-line') || LINE[st.b[i]] || '');
+      if (line) {
+        var p = document.createElement('p');
+        p.className = 's2r-line';
+        p.textContent = line;
+        wrap.appendChild(p);
+      }
+      return wrap;
+    }
+    function summary(i, fresh, latest) {
+      var item = items[i], b = st.b[i];
+      var unsure = b === 'unsure';
+      var ok = b === item.getAttribute('data-answer');
+      var li = document.createElement('li');
+      li.className = 'qs-sum em-done' + (fresh ? ' fresh' : '') + (unsure ? '' : (ok ? ' ok' : ' no'));
+      var q = document.createElement('span'); q.className = 'qs-q';
+      q.textContent = item.getAttribute('data-lead') + ' ' + st.a[i];
+      var you = document.createElement('span'); you.className = 'qs-you';
+      you.textContent = label(item, 'data-b', b);
+      li.appendChild(q); li.appendChild(you);
+      if (!unsure) {
+        var mk = document.createElement('span');
+        mk.className = 'qs-mark';
+        mk.setAttribute('role', 'img');
+        mk.setAttribute('aria-label', ok ? 'Matched' : 'Differed');
+        mk.innerHTML = ok ? CHECK_SVG : CROSS_SVG;
+        li.appendChild(mk);
+      }
+      if (latest) li.appendChild(reveal(i));
+      return li;
+    }
+    function render(freshIdx) {
+      var c = cur();
+      items.forEach(function (item, i) {
+        var on = i === c;
+        item.classList.toggle('cur', on);
+        var word = st.a[i];
+        var sent = $('.s2-sent', item);
+        /* the blank takes the picked word; empty until a word is picked */
+        sent.textContent = item.getAttribute('data-lead') + ' ';
+        var blank = document.createElement('span');
+        blank.className = 's2-blank' + (word ? ' filled' : '');
+        if (word) blank.textContent = word;
+        else blank.setAttribute('aria-hidden', 'true');
+        sent.appendChild(blank);
+        $$('[data-a]', item).forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.getAttribute('data-a') === word));
+          b.disabled = word !== null;
+        });
+        $$('[data-b]', item).forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.getAttribute('data-b') === st.b[i]));
+          b.disabled = st.b[i] !== null;
+        });
+        $('.s2h-a', item).hidden = word !== null;
+        $('.s2h-b', item).hidden = word === null;
+      });
+      done.innerHTML = '';
+      for (var i = 0; i < c; i++) done.appendChild(summary(i, i === freshIdx, i === c - 1));
+      done.hidden = c === 0;
+      var answered = st.b.filter(function (p) { return p !== null; }).length;
+      count.textContent = answered >= n ? 'All ' + n + ' answered.' : answered + ' of ' + n + ' answered.';
+      close.hidden = answered < n;
+    }
+    function save() { storeJSON(key, st); }
+    items.forEach(function (item, i) {
+      $$('[data-a]', item).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (cur() !== i || st.a[i] !== null) return;
+          st.a[i] = b.getAttribute('data-a');
+          save();
+          render(-1);
+          var f = $('[data-b]', item);
+          if (f) f.focus({ preventScroll: true });
+        });
+      });
+      $$('[data-b]', item).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (cur() !== i || st.a[i] === null || st.b[i] !== null) return;
+          st.b[i] = b.getAttribute('data-b');
+          save();
+          render(i);
+          var nxt = cur();
+          if (nxt < n) { var f2 = $('[data-a]', items[nxt]); if (f2) f2.focus({ preventScroll: true }); }
+        });
+      });
+    });
+    render(-1);
+  }
+  /* ---------- slide 7: the context tray. Four slots; a big file takes two. Attaching to a full tray pushes out the oldest cards (FIFO).
+     Answer quality is a gauge. The draft uses only what is on the tray. Persists under wb:s2:tray. ---------- */
+  function initTray() {
+    var root = $('[data-widget="tray"]');
+    if (!root) return;
+    var KEY = 'wb:s2:tray', UNITS = 4;
+    var CARDS = [
+      {id:'staff',   title:'Staff list',               meta:'Sheet · 1 page',   w:25, icon:'people'},
+      {id:'avail',   title:'Availability sheet',       meta:'Sheet · 2 pages',  w:35, icon:'cal'},
+      {id:'sales',   title:'Sales by hour',            meta:'Chart · 1 page',   w:10, icon:'bars'},
+      {id:'lastsat', title:"Last Saturday's schedule", meta:'Schedule · 4 Oct', w:10, icon:'schedule'},
+      {id:'hours',   title:'Café opening hours',       meta:'Notice · 1 page',  w:20, icon:'clock'},
+      {id:'holiday', title:'Company holiday policy',   meta:'PDF · 9 pages',    w:0,  icon:'doc'},
+      {id:'export',  title:'Full 2025 sales export',   meta:'CSV · 412 MB',     w:0,  icon:'stack', big:true},
+      {id:'brand',   title:'Brand guidelines PDF',     meta:'PDF · 64 pages',   w:0,  icon:'swatch', big:true}
+    ];
+    var ICON = {
+      people:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="9" r="4"/><path d="M3 23c0-4 3-7 7-7s7 3 7 7"/><circle cx="19.5" cy="10" r="3"/><path d="M19 16c3 0 5.5 2 5.5 5.5"/></svg>',
+      cal:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="21" height="19" rx="3"/><path d="M3.5 11h21M9 2.5v5M19 2.5v5M8 16h3M14 16h3M8 20h3"/></svg>',
+      bars:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 24.5h20"/><path d="M7 21v-6M12.5 21V8M18 21v-9M23 21v-4"/></svg>',
+      schedule:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="4.5" width="21" height="19" rx="2"/><path d="M3.5 11h21M3.5 17h21M10.5 4.5v19M17.5 4.5v19"/></svg>',
+      clock:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="14" cy="14" r="10"/><path d="M14 8v6l4 2.5"/></svg>',
+      doc:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h10l5 5v16H7z"/><path d="M17 3.5v5h5M11 15h8M11 19h8"/></svg>',
+      stack:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="14" cy="7" rx="9" ry="3.5"/><path d="M5 7v6c0 2 4 3.5 9 3.5s9-1.5 9-3.5V7M5 13v6c0 2 4 3.5 9 3.5s9-1.5 9-3.5v-6"/></svg>',
+      swatch:'<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><circle cx="18" cy="18" r="6"/><path d="M18 4.5a6 6 0 0 1 0 0"/></svg>'
+    };
+    var CHECK = '<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var CROSS = '<svg viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    var SHORT = {avail:'availability sheet', staff:'staff list', hours:'opening hours'};
+    var NEEDED = ['staff', 'avail', 'hours'];
+    var reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var box = $('#s2-tr-box', root), stack = $('#s2-tr-stack', root), desk = $('#s2-tr-desk', root);
+    var count = $('#s2-tr-count', root), gauge = $('#s2-tr-gauge', root), fill = $('#s2-tr-fill', root);
+    var needle = $('#s2-tr-needle', root), num = $('#s2-tr-num', root), band = $('#s2-tr-band', root);
+    var askBtn = $('#s2-tr-ask', root), draft = $('#s2-tr-draft', root), status = $('#s2-tr-status', root), reveal = $('#s2-tr-reveal', root);
+    var byId = {}, els = {};
+    CARDS.forEach(function (c) { byId[c.id] = c; });
+
+    var saved = loadJSON(KEY, null), tray = [], asked = false, stale = false, pushedLog = [];
+    var lastScore = 0, shown = 0, gaugeTimer = 0, flashTimer = 0, drag = null, suppress = false;
+    var slotsOf = function (list) { return list.reduce(function (s, id) { return s + (byId[id].big ? 2 : 1); }, 0); };
+    var score = function () { return tray.reduce(function (s, id) { return s + byId[id].w; }, 0); };
+    var bandOf = function (s) { return s >= 90 ? 'Best possible with four' : s >= 70 ? 'Solid' : s >= 30 ? 'Partial' : 'Guessing'; };
+    var inside = function (r, e) { return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; };
+    function save() { storeJSON(KEY, {tray: tray.slice(), asked: asked, stale: stale, pushed: pushedLog.slice()}); }
+
+    /* build the desk: one cell per card, one card per cell until it goes to the tray */
+    CARDS.forEach(function (c) {
+      var cell = document.createElement('div');
+      cell.className = 's2-tr-cell' + (c.big ? ' wide' : '');
+      desk.appendChild(cell);
+      c.cell = cell;
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.className = 's2-tr-card' + (c.big ? ' wide' : '');
+      el.setAttribute('data-id', c.id);
+      el.setAttribute('aria-label', c.title + ', ' + c.meta + (c.big ? ', takes two slots' : '') + '. Press to attach to the tray.');
+      el.innerHTML = '<span class="ico" aria-hidden="true">' + ICON[c.icon] + '</span><span class="t">' + c.title + '</span><span class="m">' + c.meta + '</span><span class="s2-tr-badge" aria-hidden="true"></span>';
+      cell.appendChild(el);
+      els[c.id] = el;
+      el.addEventListener('pointerdown', function (e) {
+        if (e.button !== 0) return;
+        drag = {id: c.id, el: el, sx: e.clientX, sy: e.clientY, moved: false};
+      });
+      el.addEventListener('click', function () { if (!suppress) toggle(c.id); });
+    });
+
+    /* restore: keep only cards that exist and fit in four slots */
+    if (saved && Array.isArray(saved.tray)) {
+      saved.tray.forEach(function (id) {
+        if (byId[id] && tray.indexOf(id) < 0 && slotsOf(tray) + (byId[id].big ? 2 : 1) <= UNITS) tray.push(id);
+      });
+      asked = !!saved.asked;
+      stale = !!saved.stale;
+    }
+    if (saved && Array.isArray(saved.pushed)) pushedLog = saved.pushed.filter(function (id) { return !!byId[id]; });
+
+    function clearDrag() {
+      Object.keys(els).forEach(function (id) { els[id].removeAttribute('style'); els[id].classList.remove('dragging'); });
+    }
+
+    /* lay out: the tray in order, left to right; a big card takes two slots */
+    function place() {
+      var inTray = {};
+      tray.forEach(function (id) { inTray[id] = true; });
+      CARDS.forEach(function (c) {
+        if (!inTray[c.id] && els[c.id].parentNode !== c.cell) c.cell.appendChild(els[c.id]);
+        c.cell.setAttribute('data-label', inTray[c.id] ? 'on the tray' : '');
+      });
+      var col = 0;
+      tray.forEach(function (id) {
+        var el = els[id], n = byId[id].big ? 2 : 1;
+        if (el.parentNode !== stack) stack.appendChild(el);
+        el.style.gridRow = '1';
+        el.style.gridColumn = (col + 1) + ' / span ' + n;
+        col += n;
+      });
+      count.textContent = slotsOf(tray) + ' of 4 used';
+    }
+
+    /* FLIP: measure every card, change the layout, then glide each card from where it was (Web Animations, no rAF) */
+    function flip(change) {
+      var all = CARDS.map(function (c) { return els[c.id]; });
+      var first = all.map(function (el) { return el.getBoundingClientRect(); });
+      change();
+      place();
+      if (reduce || !all[0].animate) return;
+      all.forEach(function (el, i) {
+        var f = first[i], l = el.getBoundingClientRect();
+        var dx = f.left - l.left, dy = f.top - l.top;
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+        el.animate([{transform: 'translate(' + dx + 'px,' + dy + 'px)'}, {transform: 'none'}], {duration: 560, easing: 'cubic-bezier(.2,.7,.2,1)'});
+      });
+    }
+
+    function say(msg) {
+      status.textContent = msg;
+      status.classList.add('flash');
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(function () { status.classList.remove('flash'); }, 1400);
+    }
+
+    /* FIFO: the oldest cards are pushed out until the newcomer fits */
+    function attach(id) {
+      if (tray.indexOf(id) > -1) return;
+      var need = byId[id].big ? 2 : 1, rest = tray.slice(), pushed = [];
+      while (slotsOf(rest) + need > UNITS && rest.length) pushed.push(rest.shift());
+      pushedLog = pushedLog.filter(function (x) { return x !== id; });
+      pushed.forEach(function (p) { if (pushedLog.indexOf(p) < 0) pushedLog.push(p); });
+      flip(function () { clearDrag(); tray = rest.concat([id]); });
+      pushed.forEach(function (p) {
+        /* a pushed card dips out of view as it slides back to the desk */
+        if (!reduce && els[p].animate) els[p].animate([{opacity: 1}, {opacity: 0.3, offset: 0.35}, {opacity: 1}], {duration: 900});
+      });
+      if (!reduce && els[id].animate) {
+        els[id].animate([{boxShadow: '0 0 0 7px rgba(31,138,122,.85)'}, {boxShadow: '0 0 0 7px rgba(31,138,122,0)'}], {duration: 900});
+      }
+      if (pushed.length) {
+        say('No room for ' + byId[id].title + '. Pushed out: ' + pushed.map(function (p) { return byId[p].title; }).join(', ') + '. The model can’t see ' + (pushed.length > 1 ? 'them' : 'it') + ' now.');
+      } else {
+        say('Attached: ' + byId[id].title + '. ' + slotsOf(tray) + ' of 4 slots used.');
+      }
+      afterChange();
+    }
+
+    function detach(id) {
+      flip(function () { clearDrag(); tray = tray.filter(function (x) { return x !== id; }); });
+      say('Back on the desk: ' + byId[id].title + '.');
+      afterChange();
+    }
+
+    function toggle(id) { tray.indexOf(id) > -1 ? detach(id) : attach(id); }
+
+    function afterChange() {
+      if (asked) { asked = false; stale = true; }
+      save();
+      update();
+      renderVerdict();
+    }
+
+    /* gauge: a half dial. paint() sets the needle, fill and number; tween() eases to a new score with timers */
+    function paint(v) {
+      var a = Math.PI * (1 - v / 100), cx = 130, cy = 118, r = 84;
+      needle.setAttribute('x2', (cx + r * Math.cos(a)).toFixed(2));
+      needle.setAttribute('y2', (cy - r * Math.sin(a)).toFixed(2));
+      fill.setAttribute('stroke-dashoffset', (100 - v).toFixed(2));
+      num.textContent = String(Math.round(Math.max(0, Math.min(100, v))));
+      gauge.setAttribute('aria-label', 'Answer quality ' + num.textContent + ' of 100');
+    }
+    function tween(to) {
+      clearTimeout(gaugeTimer);
+      var from = shown, t0 = Date.now(), dur = reduce ? 0 : 850;
+      (function step() {
+        var k = dur ? Math.min(1, (Date.now() - t0) / dur) : 1;
+        var c1 = 1.1, c3 = c1 + 1, e = 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2);
+        shown = k < 1 ? Math.max(0, Math.min(100, from + (to - from) * e)) : to;
+        paint(shown);
+        if (k < 1) gaugeTimer = setTimeout(step, 16);
+      })();
+    }
+    function pop(d) {
+      var p = document.createElement('div');
+      p.className = 's2-tr-pop' + (d < 0 ? ' neg' : '');
+      p.textContent = (d > 0 ? '+' : '−') + Math.abs(d);
+      gauge.appendChild(p);
+      if (reduce || !p.animate) { p.remove(); return; }
+      p.animate([
+        {transform: 'translate(-50%,0)', opacity: 0},
+        {transform: 'translate(-50%,-10px)', opacity: 1, offset: 0.2},
+        {transform: 'translate(-50%,-34px)', opacity: 0}
+      ], {duration: 1100, easing: 'ease-out', fill: 'forwards'}).onfinish = function () { p.remove(); };
+    }
+    function update() {
+      var s = score();
+      if (s !== lastScore) {
+        var d = s - lastScore;
+        if (d) pop(d);
+        lastScore = s;
+        tween(s);
+      }
+      band.textContent = bandOf(s);
+    }
+
+    /* the draft: built only from the tray. Missing cards become guesses; the reveal marks each card with a green check or a grey x */
+    function renderVerdict() {
+      CARDS.forEach(function (c) {
+        var el = els[c.id], b = el.querySelector('.s2-tr-badge');
+        el.classList.remove('used', 'nope');
+        b.className = 's2-tr-badge';
+        b.innerHTML = '';
+      });
+      if (!asked) {
+        draft.innerHTML = '<div class="s2-tr-lab"><span>The draft</span></div><p class="s2-tr-idle">' +
+          (stale ? 'The tray changed. Ask again for a new draft.' : 'Ask, and the draft appears here. It can only use what is on the tray.') + '</p>';
+        reveal.innerHTML = '';
+        return;
+      }
+      var has = function (id) { return tray.indexOf(id) > -1; };
+      var lines = [
+        has('hours') ? ['Open 7:00 to 17:00.', false] : ['Hours: I guessed 9:00 to 18:00.', true],
+        has('avail') ? ['Priya and Lena are free all day Saturday.', false] : ['I assumed everyone is free Saturday.', true],
+        has('staff') ? ['Team: Priya, Lena, Marcus and Tomás.', false] : ['Team: I invented Alex, Sam and Jordan.', true]
+      ];
+      if (has('sales')) lines.push(['Two people on the floor 11:00 to 13:00, the peak.', false]);
+      if (has('lastsat')) lines.push(['Same shape as last Saturday’s schedule.', false]);
+
+      tray.forEach(function (id) {
+        var ok = byId[id].w > 0, el = els[id], b = el.querySelector('.s2-tr-badge');
+        el.classList.add(ok ? 'used' : 'nope');
+        b.className = 's2-tr-badge ' + (ok ? 'ok' : 'no');
+        b.innerHTML = ok ? CHECK : CROSS;
+      });
+
+      var usedCards = tray.filter(function (id) { return byId[id].w > 0; });
+      var noiseCards = tray.filter(function (id) { return byId[id].w === 0; });
+      var bigOn = tray.filter(function (id) { return byId[id].big; });
+      var missing = NEEDED.filter(function (id) { return !has(id); });
+      /* the small card that mattered, pushed out to make room for a big file */
+      var crowded = bigOn.length ? missing.filter(function (id) { return pushedLog.indexOf(id) > -1; }) : [];
+      var chips = missing.map(function (id) { return '<span class="s2-tr-chip">Missing: ' + SHORT[id] + '</span>'; }).join('');
+      var guesses = lines.filter(function (l) { return l[1]; }).length;
+      var note = '<span class="s2-tr-k">Used</span> ' + (usedCards.length ? usedCards.map(function (id) { return byId[id].title; }).join(', ') : 'nothing') + '.';
+      if (noiseCards.length) note += ' ' + (noiseCards.length === 1 ? 'One file' : noiseCards.length + ' files') + ' took ' + slotsOf(noiseCards) + ' slots and did nothing.';
+      if (crowded.length) note += ' Big files crowd out the small one that mattered: ' + crowded.map(function (id) { return SHORT[id]; }).join(' and ') + '.';
+      if (guesses) note += ' A missing card becomes a confident guess.';
+
+      draft.innerHTML = '<div class="s2-tr-lab"><span>The draft</span></div>' +
+        '<div class="s2-tr-lines">' + lines.map(function (l) {
+          return '<p class="' + (l[1] ? 'guess' : '') + '">' + l[0] + (l[1] ? '<em>guessed</em>' : '') + '</p>';
+        }).join('') + '</div>';
+      /* the reveal sits under the desk: which cards were missing, what was used, and our answer */
+      reveal.innerHTML = '<div class="s2-tr-chips">' + chips + '</div>' +
+        '<p class="s2-tr-note">' + note + '</p>' +
+        '<p class="s2-tr-ours"><span class="s2-tr-k">Our answer</span> the staff list, availability sheet and opening hours.</p>';
+      if (!reduce && draft.querySelectorAll('.s2-tr-lines p').length) {
+        draft.querySelectorAll('.s2-tr-lines p').forEach(function (p, i) {
+          if (p.animate) p.animate([{opacity: 0, transform: 'translateY(6px)'}, {opacity: 1, transform: 'none'}], {duration: 420, delay: 140 * i, fill: 'backwards', easing: 'ease-out'});
+        });
+      }
+    }
+
+    /* pointer drag (mouse, pen, touch): drop on the tray to attach, drag off it to detach */
+    window.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+      if (!drag.moved) {
+        if (Math.hypot(dx, dy) < 6) return;
+        drag.moved = true;
+        var r = drag.el.getBoundingClientRect();
+        drag.r = r;
+        Object.assign(drag.el.style, {position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', zIndex: 20, margin: '0', pointerEvents: 'none'});
+        drag.el.classList.add('dragging');
+      }
+      drag.el.style.left = (drag.r.left + dx) + 'px';
+      drag.el.style.top = (drag.r.top + dy) + 'px';
+      drag.el.style.transform = 'rotate(' + Math.max(-7, Math.min(7, dx / 24)).toFixed(2) + 'deg)';
+      box.classList.toggle('hover', inside(box.getBoundingClientRect(), e));
+    });
+    window.addEventListener('pointerup', function (e) {
+      if (!drag) return;
+      var d = drag; drag = null;
+      box.classList.remove('hover');
+      if (!d.moved) return;
+      suppress = true; setTimeout(function () { suppress = false; }, 60);
+      var over = inside(box.getBoundingClientRect(), e), inTray = tray.indexOf(d.id) > -1;
+      if (over && !inTray) attach(d.id);
+      else if (!over && inTray) detach(d.id);
+      else flip(clearDrag);
+    });
+    window.addEventListener('pointercancel', function () {
+      if (!drag) return;
+      var d = drag; drag = null;
+      box.classList.remove('hover');
+      if (d.moved) flip(clearDrag);
+    });
+
+    askBtn.addEventListener('click', function () {
+      asked = true; stale = false;
+      save();
+      renderVerdict();
+      say(tray.length ? 'Here is the draft, built from the tray only.' : 'Nothing attached. Every line is a guess.');
+    });
+
+    /* first paint: no animation for a restored state */
+    place();
+    lastScore = score();
+    shown = lastScore;
+    paint(shown);
+    band.textContent = bandOf(lastScore);
+    renderVerdict();
+    if (!saved && !reduce) {
+      CARDS.forEach(function (c, i) {
+        var el = els[c.id];
+        if (el.animate) el.animate([{opacity: 0, transform: 'translateY(12px)'}, {opacity: 1, transform: 'none'}], {duration: 520, delay: 120 + i * 55, fill: 'backwards', easing: 'ease-out'});
+      });
+    }
+  }
+
+  /* ---------- slide 12: the lineup. Four bad-context suspects plus Hallucination, which is never the answer. One case at a time; each pick is scored once.
+     Persists under wb:s2:lineup. ---------- */
+  function initLineup() {
+    var root = $('[data-widget="lineup"]');
+    if (!root) return;
+    var KEY = 'wb:s2:lineup';
+    var SUSPECTS = [
+      {id:'ood', name:'Out of date', hex:'#6b7a2f', ds:'It was true once.',
+       svg:'<rect x="22" y="12" width="76" height="62" fill="#fbfaf6" stroke="#141414" stroke-width="2"/><rect x="22" y="12" width="76" height="17" fill="#6b7a2f" stroke="#141414" stroke-width="2"/><rect x="36" y="5" width="4" height="13" fill="#141414"/><rect x="82" y="5" width="4" height="13" fill="#141414"/><text x="60" y="54" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="800" font-size="20" fill="#141414">2024</text><line x1="26" y1="66" x2="94" y2="30" stroke="#6b7a2f" stroke-width="3"/>'},
+      {id:'con', name:'Conflicting', hex:'#7d3c6e', ds:'Two sources disagree.',
+       svg:'<g transform="rotate(-10 34 42)"><rect x="4" y="20" width="56" height="44" fill="#fbfaf6" stroke="#141414" stroke-width="2"/><text x="32" y="47" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="800" font-size="14" fill="#141414">7 a.m.</text></g><g transform="rotate(9 88 42)"><rect x="60" y="18" width="56" height="44" fill="#f3e6ef" stroke="#7d3c6e" stroke-width="3"/><text x="88" y="45" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="800" font-size="14" fill="#7d3c6e">6 a.m.</text></g>'},
+      {id:'inc', name:'Incomplete', hex:'#41657a', ds:'The key line is missing.',
+       svg:'<rect x="28" y="6" width="64" height="40" fill="#fbfaf6" stroke="#141414" stroke-width="2"/><rect x="36" y="16" width="48" height="5" fill="#41657a"/><rect x="36" y="27" width="40" height="5" fill="#41657a"/><rect x="36" y="38" width="30" height="5" fill="#41657a" opacity=".5"/><rect x="28" y="50" width="64" height="30" fill="none" stroke="#41657a" stroke-width="2" stroke-dasharray="6 5"/>'},
+      {id:'wr', name:'Just wrong', hex:'#8a3b2e', ds:'The source itself had a mistake.',
+       svg:'<rect x="26" y="8" width="68" height="62" fill="#fbfaf6" stroke="#141414" stroke-width="2" transform="rotate(-4 60 40)"/><rect x="36" y="18" width="46" height="5" fill="#141414" opacity=".35" transform="rotate(-4 60 40)"/><rect x="36" y="28" width="34" height="5" fill="#141414" opacity=".35" transform="rotate(-4 60 40)"/><text x="58" y="58" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="800" font-size="19" fill="#8a3b2e" transform="rotate(-4 60 40)">90 oz</text><ellipse cx="60" cy="50" rx="34" ry="16" fill="none" stroke="#8a3b2e" stroke-width="2.5" transform="rotate(-4 60 40)"/>'},
+      {id:'hal', name:'Hallucination', hex:'#8a857b', ds:'The model made it up.', ghost:true,
+       svg:'<path d="M60 12c-22 0-38 13-38 31 0 15 10 26 23 30l-4 12 16-9c1 0 2 0 3 0 22 0 38-13 38-31S82 12 60 12z" fill="#fbfaf6" stroke="#5d5a53" stroke-width="2.2" stroke-dasharray="6 5"/><text x="60" y="52" text-anchor="middle" font-family="Helvetica Neue,Helvetica,Arial" font-weight="800" font-size="30" fill="#5d5a53">?</text>'}
+    ];
+    var CASES = [
+      {culprit:'ood', q:'What does a carton of oat milk cost at Harbor Street?',
+       a:'A carton of oat milk is $3.40.',
+       src:'Price list · spring 2024', lines:[{t:'Oat milk, 1 L carton: <span class="s2-lu-key">$3.40</span>'}],
+       why:'The price list was from spring 2024, and prices changed in June.'},
+      {culprit:'con', q:'When does Harbor Street open on Sundays?',
+       a:'We open at 6 a.m. on Sundays.',
+       src:'Two hours sheets in the same folder', lines:[{t:'All cafés: open <span class="s2-lu-key">6 a.m.</span> daily'},{t:'Harbor Street: open <span class="s2-lu-key">7 a.m.</span> Sundays'}],
+       why:'Two sheets disagree. The model picked the general one, and the café-specific sheet was the right one.'},
+      {culprit:'inc', q:'Can a customer get a refund on a gift card?',
+       a:'Yes, within 14 days of purchase.',
+       src:'Refund policy · page 2 of 3', lines:[{t:'Refunds are available within 14 days of purchase.'},{t:'Gift cards…', cut:true}],
+       why:'The page was cut off. The rest of the policy says gift cards are never refunded, only replaced.'},
+      {culprit:'wr', q:'How big is a small cold brew?',
+       a:'A small cold brew is 90 oz.',
+       src:'Drinks sheet · draft', lines:[{t:'Small cold brew: <span class="s2-lu-key">90 oz</span>'}],
+       why:'Nothing was old or missing. The drinks sheet had a typo: it should say 9 oz.'}
+    ];
+    var CHECK = '<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var CROSS = '<svg viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    var byId = {}, btn = {};
+    SUSPECTS.forEach(function (s) { byId[s.id] = s; });
+    var list = $('#s2-lu-lineup', root), pipsEl = $('#s2-lu-pips', root), eyebrow = $('#s2-lu-eyebrow', root);
+    var q = $('#s2-lu-q', root), ans = $('#s2-lu-ans', root), slip = $('#s2-lu-slip', root);
+    var casePanel = $('#s2-lu-case-panel', root), endEl = $('#s2-lu-end', root), recap = $('#s2-lu-recap', root);
+    var fb = $('#s2-lu-fb', root), next = $('#s2-lu-next', root);
+
+    var st = {i: 0, picks: [null, null, null, null], done: false};
+    var saved = loadJSON(KEY, null);
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.picks)) {
+        st.picks = CASES.map(function (c, k) { return saved.picks[k] && byId[saved.picks[k]] ? saved.picks[k] : null; });
+      }
+      var si = parseInt(saved.i, 10);
+      st.i = isNaN(si) ? 0 : Math.max(0, Math.min(CASES.length - 1, si));
+      st.done = !!saved.done;
+    }
+    function save() { storeJSON(KEY, {i: st.i, picks: st.picks.slice(), done: st.done}); }
+
+    /* the lineup: one button per suspect, in a list */
+    SUSPECTS.forEach(function (s) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 's2-lu-sus' + (s.ghost ? ' ghost' : '');
+      b.style.setProperty('--c', s.hex);
+      b.setAttribute('data-id', s.id);
+      b.innerHTML = '<span class="s2-lu-art"><svg viewBox="0 0 120 84" aria-hidden="true">' + s.svg + '</svg></span>' +
+        '<span class="s2-lu-txt"><span class="s2-lu-nm">' + s.name + '</span><span class="s2-lu-ds">' + s.ds + '</span></span>' +
+        '<span class="s2-lu-stamp" aria-hidden="true"></span><span class="s2-lu-tag" hidden>Our answer</span>';
+      b.addEventListener('click', function () { choose(s.id); });
+      li.appendChild(b);
+      list.appendChild(li);
+      btn[s.id] = b;
+    });
+    CASES.forEach(function () {
+      var p = document.createElement('span');
+      p.className = 's2-lu-pip';
+      pipsEl.appendChild(p);
+    });
+
+    function renderPips() {
+      var ps = pipsEl.children;
+      for (var k = 0; k < ps.length; k++) {
+        var cls = 's2-lu-pip';
+        if (st.picks[k]) cls += ' solved';
+        else if (k === st.i && !st.done) cls += ' on';
+        ps[k].className = cls;
+      }
+    }
+
+    /* the case text. Called on entry and on Next, never on a pick, so the slip does not replay. */
+    function loadCase() {
+      var c = CASES[st.i];
+      casePanel.style.setProperty('--c', byId[c.culprit].hex);
+      q.textContent = c.q;
+      ans.textContent = c.a;
+      slip.style.setProperty('--c', byId[c.culprit].hex);
+      slip.classList.remove('in');
+      slip.innerHTML = '<p class="s2-lu-src">' + c.src + '</p>' + c.lines.map(function (l) {
+        return '<p class="s2-lu-line' + (l.cut ? ' cut' : '') + '">' + l.t + '</p>';
+      }).join('');
+      setTimeout(function () { slip.classList.add('in'); }, 60);
+    }
+
+    /* the lineup and the feedback for the current case */
+    function paint() {
+      var c = CASES[st.i], pick = st.picks[st.i];
+      eyebrow.textContent = st.done ? 'Four suspects, four bad-context types' : 'Case ' + (st.i + 1) + ' of ' + CASES.length + ' · Brew Diligence assistant';
+      SUSPECTS.forEach(function (s) {
+        var b = btn[s.id], stamp = b.querySelector('.s2-lu-stamp'), tag = b.querySelector('.s2-lu-tag');
+        b.className = 's2-lu-sus' + (s.ghost ? ' ghost' : '');
+        b.disabled = !!pick || st.done;
+        stamp.className = 's2-lu-stamp';
+        stamp.innerHTML = '';
+        tag.hidden = true;
+        if (!pick) return;
+        var isCulprit = s.id === c.culprit;
+        if (s.id === pick) {
+          var right = pick === c.culprit;
+          b.classList.add('chosen', right ? 'is-ok' : 'is-no', right ? 'hit' : 'miss');
+          stamp.classList.add(right ? 'ok' : 'no', right ? 'hit' : 'miss');
+          stamp.innerHTML = right ? CHECK : CROSS;
+        } else if (isCulprit) {
+          b.classList.add('is-ok');
+          tag.hidden = false;
+        } else {
+          b.classList.add('is-no');
+        }
+      });
+      if (st.done || !pick) {
+        fb.classList.remove('on');
+        fb.innerHTML = '';
+        next.hidden = true;
+      } else {
+        var name = byId[pick].name, culprit = byId[c.culprit].name;
+        var head = pick === c.culprit
+          ? 'Your pick: <b>' + name + '</b>. Our answer matches. '
+          : 'Your pick: <b>' + name + '</b>. Our answer: ' + culprit + '. ' + (pick === 'hal' ? 'Tempting, but the context explains this one. ' : '');
+        fb.innerHTML = head + c.why;
+        fb.classList.add('on');
+        next.textContent = st.i === CASES.length - 1 ? 'See the verdict' : 'Next suspect';
+        next.hidden = false;
+      }
+      renderPips();
+    }
+
+    function showEnd() {
+      casePanel.hidden = true;
+      endEl.hidden = false;
+      recap.innerHTML = CASES.map(function (c) {
+        var su = byId[c.culprit];
+        return '<li><i style="--c:' + su.hex + '"></i><div><b>' + su.name + '</b><span>' + c.src + '</span></div></li>';
+      }).join('');
+    }
+
+    function choose(id) {
+      if (st.done || st.picks[st.i]) return;
+      st.picks[st.i] = id;
+      save();
+      paint();
+    }
+
+    next.addEventListener('click', function () {
+      if (!st.picks[st.i]) return;
+      if (st.i === CASES.length - 1) {
+        st.done = true;
+        save();
+        paint();
+        showEnd();
+        return;
+      }
+      st.i += 1;
+      save();
+      loadCase();
+      paint();
+    });
+
+    /* first paint: a restored state shows as it was left */
+    loadCase();
+    paint();
+    if (st.done) showEnd();
+  }
+
+  /* ---------- slide 8: agentic context. Per request: answer directly or use a tool (step A); after "Use a tool", which tool (step B).
+     Scored on the final choice. "Use a tool" on a direct-answer request is wrong at once; "Answer directly" on a tool request is wrong and the reveal names the tool. ---------- */
+  function initTools2() {
+    var root = $('#s2t');
+    if (!root) return;
+    var key = 'wb:s2:tools2';
+    var items = $$('.qs-item', root);
+    var n = items.length;
+    var done = $('.qs-done', root);
+    var count = $('#s2t-count');
+    var CHECK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="tick" d="M5 12.6l4.3 4.3L19 7.2"/></svg>' +
+      '<i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i>';
+    var CROSS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+    /* a[i]: 'can' | 'tool' | null (step A). b[i]: tool key, 'none' (no step B) or null (not finished) */
+    var st = { a: items.map(function () { return null; }), b: items.map(function () { return null; }) };
+    var saved = loadJSON(key, null);
+    if (saved && Array.isArray(saved.a) && Array.isArray(saved.b) && saved.a.length === n && saved.b.length === n) {
+      st.a = saved.a.map(function (v) { return v === 'can' || v === 'tool' ? v : null; });
+      st.b = saved.b.map(function (v, i) {
+        var ans = items[i].getAttribute('data-answer');
+        if (!st.a[i]) return null;
+        if (st.a[i] === 'can' || ans === 'can') return 'none';
+        return $('[data-b="' + v + '"]', items[i]) ? v : null;
+      });
+    }
+    function cur() {
+      for (var i = 0; i < n; i++) if (st.b[i] === null) return i;
+      return n;
+    }
+    function label(item, attr, val) {
+      var b = $$('.pick', item).filter(function (x) { return x.getAttribute(attr) === val; })[0];
+      return b ? b.textContent : '';
+    }
+    function correct(i) {
+      var ans = items[i].getAttribute('data-answer');
+      return ans === 'can' ? st.a[i] === 'can' : st.b[i] === ans;
+    }
+    function sumText(i) {
+      if (st.a[i] === 'can') return 'Answer directly';
+      if (st.b[i] === 'none') return 'Use a tool';
+      return 'Use a tool → ' + label(items[i], 'data-b', st.b[i]);
+    }
+    function reveal(i) {
+      var item = items[i], ok = correct(i), ans = item.getAttribute('data-answer');
+      var wrap = document.createElement('div');
+      wrap.className = 'qs-note';
+      wrap.innerHTML = $('.qs-reveal', item).innerHTML;
+      if (ok) $$('.lean', wrap).forEach(function (n) { n.parentNode.removeChild(n); });
+      if (!ok && ans !== 'can') {
+        var r = document.createElement('p');
+        r.className = 's2t-right';
+        r.textContent = 'The right tool here: ' + label(item, 'data-b', ans) + '.';
+        wrap.appendChild(r);
+      }
+      return wrap;
+    }
+    function summary(i, fresh, latest) {
+      var ok = correct(i);
+      var li = document.createElement('li');
+      li.className = 'qs-sum em-done' + (latest ? ' latest' : '') + (fresh ? ' fresh' : '') + (ok ? ' ok' : ' no');
+      var q = document.createElement('span'); q.className = 'qs-q';
+      q.textContent = items[i].getAttribute('data-short');
+      var you = document.createElement('span'); you.className = 'qs-you';
+      you.textContent = sumText(i);
+      var mk = document.createElement('span');
+      mk.className = 'qs-mark';
+      mk.setAttribute('role', 'img');
+      mk.setAttribute('aria-label', ok ? 'Matched' : 'Differed');
+      mk.innerHTML = ok ? CHECK_SVG : CROSS_SVG;
+      li.appendChild(q); li.appendChild(you); li.appendChild(mk);
+      if (latest) li.appendChild(reveal(i));
+      return li;
+    }
+    function render(freshIdx) {
+      var c = cur();
+      items.forEach(function (item, i) {
+        var a = st.a[i];
+        item.classList.toggle('cur', i === c);
+        $$('[data-a]', item).forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.getAttribute('data-a') === a));
+          b.disabled = a !== null;
+        });
+        $$('[data-b]', item).forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.getAttribute('data-b') === st.b[i]));
+          b.disabled = st.b[i] !== null;
+        });
+        $('.s2t-a', item).hidden = a !== null;
+        $('.s2t-b', item).hidden = a !== 'tool';
+      });
+      done.innerHTML = '';
+      for (var i = 0; i < c; i++) done.appendChild(summary(i, i === freshIdx, i === c - 1));
+      done.hidden = c === 0;
+      var answered = st.b.filter(function (v) { return v !== null; }).length;
+      count.textContent = answered >= n ? 'All ' + n + ' answered.' : answered + ' of ' + n + ' answered.';
+    }
+    function focusNext() {
+      var c = cur();
+      if (c >= n) return;
+      var f = $('[data-a]', items[c]);
+      if (f) f.focus({ preventScroll: true });
+    }
+    function save() { storeJSON(key, st); }
+    /* back out of step B before committing: clears step A only, nothing is scored */
+    items.forEach(function (item, i) {
+      var back = $('[data-back]', item);
+      if (!back) return;
+      back.addEventListener('click', function () {
+        if (cur() !== i || st.a[i] !== 'tool' || st.b[i] !== null) return;
+        st.a[i] = null;
+        save();
+        render(-1);
+        var f = $('[data-a]', item);
+        if (f) f.focus({ preventScroll: true });
+      });
+    });
+    items.forEach(function (item, i) {
+      $$('[data-a]', item).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (cur() !== i || st.a[i] !== null) return;
+          var v = b.getAttribute('data-a');
+          st.a[i] = v;
+          if (v === 'can' || item.getAttribute('data-answer') === 'can') st.b[i] = 'none';
+          save();
+          if (st.b[i] !== null) {
+            render(i);
+            focusNext();
+          } else {
+            render(-1);
+            var f = $('[data-b]', item);
+            if (f) f.focus({ preventScroll: true });
+          }
+        });
+      });
+      $$('[data-b]', item).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (cur() !== i || st.a[i] !== 'tool' || st.b[i] !== null) return;
+          st.b[i] = b.getAttribute('data-b');
+          save();
+          render(i);
+          focusNext();
+        });
+      });
+    });
+    render(-1);
+  }
+
+  /* ---------- slide 10: harness game. Pick three, see Sam's next turn, name the risk, check Monday and Thursday, verdict ---------- */
+  function initHarness2() {
+    var root = $('#hg');
+    if (!root) return;
+    var key = 'wb:s2:harness2';
+    var STAGES = ['pick', 'next', 'guess', 'test', 'verdict'];
+    var SN = [
+      { id: 'M', text: 'Manager: Sam, Harbor Street café', kind: 'Memory' },
+      { id: 'B', text: 'Prefers 3-bullet summaries', kind: 'Memory' },
+      { id: 'O', text: "Today's oat-milk stock: 12 cartons", kind: 'Memory' },
+      { id: 'V', text: 'Brand voice: warm, brief', kind: 'Memory' },
+      { id: 'A', text: "Sam's home address", kind: 'Memory' },
+      { id: 'F', text: "Last week's sales file (40 pages)", kind: 'Memory' },
+      { id: 'D', text: "Sam's favorite drink: cortado", kind: 'Memory' },
+      { id: 'R', text: 'Refund policy: up to $30 without approval', kind: 'Memory' }
+    ];
+    /* time-sensitive or risky lines: today's oat-milk count, home address, last week's sales file */
+    var RISKY = ['O', 'A', 'F'];
+    var VERDICT = {
+      M: { ok: true, head: 'Stable and relevant', body: 'Every reply knew who it was for.' },
+      B: { ok: true, head: 'Stable and relevant', body: 'Summaries came out as three bullets, the way Sam likes them.' },
+      O: { ok: false, head: 'Went stale', body: "Monday's count was right. By Thursday it was wrong, and the reply still sounded sure." },
+      V: { ok: true, head: 'Stable and safe', body: 'The tone changed. No facts did.' },
+      A: { ok: false, head: 'Privacy risk', body: 'The home address ended up in the team note. It rides along with every chat, and no task needed it.' },
+      F: { ok: false, head: 'Too big for the harness', body: "A 40-page file crowds out everything else, and the reply still couldn't use it." },
+      D: { ok: false, head: 'Took room, did no work', body: 'The only thing it changed was a greeting.' },
+      R: { ok: true, head: 'Stable and relevant', body: 'The refund question got a real answer on both days.' }
+    };
+    var TESTS = [
+      { ask: 'Morning. Summarize what I should focus on today.' },
+      { ask: 'A guest says the cortado was cold. Can I refund them $25?' },
+      { ask: 'Summarize where oat milk stands for the team, and sign it.' }
+    ];
+    var IDS = SN.map(function (s) { return s.id; });
+    var st = { p: [], s: 'pick', t: 0, g: null };
+
+    var saved = loadJSON(key, null);
+    if (saved && typeof saved === 'object') {
+      if (Array.isArray(saved.p)) st.p = saved.p.filter(function (id) { return IDS.indexOf(id) > -1; }).slice(0, 3);
+      if (STAGES.indexOf(saved.s) > -1) st.s = saved.s;
+      if (typeof saved.t === 'number' && saved.t >= 0 && saved.t < 6) st.t = saved.t;
+      if (typeof saved.g === 'string') st.g = saved.g;
+    }
+    if (st.p.length !== 3) st.s = 'pick';
+    if ((st.s === 'test' || st.s === 'verdict') && st.g !== 'none' && st.p.indexOf(st.g) === -1) st.s = 'guess';
+
+    function has(id) { return st.p.indexOf(id) > -1; }
+    function textOf(id) { for (var i = 0; i < SN.length; i++) if (SN[i].id === id) return SN[i].text; return ''; }
+    function save() { storeJSON(key, st); }
+    function quoted(ids) { return ids.map(function (id) { return '“' + textOf(id) + '”'; }).join(' and '); }
+
+    /* Sam's next turn. Each chosen line changes a fragment; nothing else does. */
+    function buildNext(S) {
+      var on = function (id) { return S.indexOf(id) !== -1; };
+      var lead = (on('M') ? 'Happy to help, Sam.' : 'Happy to help.') +
+        (on('D') ? ' Hope the cortado is keeping you going.' : '') + ' ' +
+        (on('V') ? "Let's make this week a good one." : "Here's a plan for the week.");
+      var items = [
+        on('O') ? 'Oat milk: 12 cartons on hand, so no reorder this week.' : 'Check stock levels before you order.',
+        'Set the morning schedule and confirm who covers Saturday.',
+        on('R') ? 'Review guest complaints. You can refund up to $30 without approval.' : 'Review guest complaints from the last few days.'
+      ];
+      var after = [];
+      if (on('F')) after.push("I can't open the 40-page sales file, so this plan doesn't use last week's sales.");
+      if (on('A')) after.push('I have your home address, 418 Alder Ave, so I planned the week around it.');
+      var note = on('A') ? "Privacy check: this plan doesn't need Sam's home address. It was added to this chat anyway, so it can show up in any reply." : '';
+      return { lead: lead, items: items, after: after, note: note };
+    }
+
+    /* Monday and Thursday replies, as in the prototype. Only the oat-milk fragment changes between days. */
+    function buildReply(t, day, S) {
+      var on = function (id) { return S.indexOf(id) !== -1; };
+      if (t === 0) {
+        var greet = (on('M') ? 'Good morning, Sam.' : 'Good morning.') + (on('D') ? ' Hope the cortado is good.' : '');
+        var lead = greet + ' ' + (on('V') ? "Here's the short version:" : 'Here are your priorities for today:');
+        var items = [
+          on('O') ? (day === 'Monday' ? 'Check oat milk: 12 cartons on hand, enough for the rush.'
+                                      : 'Check oat milk: 12 cartons on hand today, so no reorder is needed.')
+                  : 'Check stock before the morning rush.',
+          "Review today's schedule and confirm the morning shift.",
+          'Follow up on any guest complaints from yesterday.'
+        ];
+        var after0 = on('F') ? ["I can't read the 40-page sales file here, so I haven't included sales numbers."] : [];
+        return { lead: lead, items: items, after: after0 };
+      }
+      if (t === 1) {
+        var answer = on('R')
+          ? (on('V') ? 'Yes, you can do that. Policy allows up to $30 without approval, so $25 is fine.'
+                     : 'Yes. Policy allows refunds up to $30 without approval, so $25 is fine.')
+          : "I don't have the refund policy, so check with your manager before you refund.";
+        return { lead: answer, items: [], after: [] };
+      }
+      var lead3 = on('V') ? 'Hi team, quick one.' : 'Hello team.';
+      var items3 = [
+        on('O') ? (day === 'Monday' ? 'Oat milk: 12 cartons on hand today.'
+                                    : 'Oat milk: 12 cartons on hand today, so no reorder is needed.')
+                : 'Oat milk: the stock count is unknown, so please check the shelf.',
+        'Use the back shelf first so the oldest cartons go out first.',
+        'Log any oat-milk waste at close.'
+      ];
+      var sign = (on('M') ? '— Sam, Harbor Street café' : '— [Your name], Harbor Street café') + (on('A') ? ' · 418 Alder Ave' : '');
+      return { lead: lead3, items: items3, after: [sign] };
+    }
+
+    function replyHTML(r, S) {
+      var h = '<p>' + esc(r.lead) + '</p>';
+      if (r.items.length) {
+        if (S.indexOf('B') !== -1) h += '<ul>' + r.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>';
+        else h += '<p>' + esc(r.items.join(' ')) + '</p>';
+      }
+      r.after.forEach(function (p) { h += '<p>' + esc(p) + '</p>'; });
+      return h;
+    }
+
+    function renderPick() {
+      var c = $('#hg-cands', root);
+      c.innerHTML = '';
+      SN.forEach(function (s) {
+        var idx = st.p.indexOf(s.id);
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'hg-cand';
+        b.setAttribute('aria-pressed', String(idx > -1));
+        b.disabled = idx === -1 && st.p.length >= 3;
+        b.innerHTML = '<span>' + esc(s.text) + '</span>' + (idx > -1 ? '<span class="num">' + (idx + 1) + '</span>' : '');
+        b.addEventListener('click', function () {
+          var at = st.p.indexOf(s.id);
+          if (at > -1) st.p.splice(at, 1); else if (st.p.length < 3) st.p.push(s.id);
+          save();
+          renderPick();
+        });
+        c.appendChild(b);
+      });
+      var sl = $('#hg-slots', root);
+      sl.innerHTML = '';
+      for (var i = 0; i < 3; i++) {
+        var d = document.createElement('button');
+        d.type = 'button';
+        if (st.p[i]) {
+          d.className = 'hg-slot filled';
+          d.innerHTML = '<span class="n">' + (i + 1) + '</span><span>' + esc(textOf(st.p[i])) + '</span><span class="x">remove</span>';
+          (function (id) {
+            d.addEventListener('click', function () { st.p.splice(st.p.indexOf(id), 1); save(); renderPick(); });
+          })(st.p[i]);
+        } else {
+          d.className = 'hg-slot';
+          d.disabled = true;
+          d.innerHTML = '<span class="n">' + (i + 1) + '</span><span class="empty">Empty slot</span>';
+        }
+        sl.appendChild(d);
+      }
+      $('#hg-count', root).textContent = st.p.length + ' of 3 picked';
+      $('#hg-load', root).disabled = st.p.length !== 3;
+    }
+
+    function renderNext() {
+      var picked = SN.filter(function (s) { return has(s.id); });
+      /* one Memory block, one line per pick, in the order picked; the system prompt stays in the bracket, muted */
+      $('#hg-blocks', root).innerHTML = '<p class="hg-hbr-h">Added by the harness, before this chat</p>' +
+        '<div class="hg-mem"><b>Memory</b><ul>' + st.p.map(function (id) { return '<li>' + esc(textOf(id)) + '</li>'; }).join('') + '</ul></div>' +
+        '<p class="hg-sys">System prompt: You help café managers at Brew Diligence.</p>';
+      var r = buildNext(st.p);
+      $('#hg-nreply', root).innerHTML = replyHTML(r, st.p);
+      var note = $('#hg-note', root);
+      note.hidden = !r.note;
+      note.textContent = r.note;
+    }
+
+    function renderGuess() {
+      var box = $('#hg-guess', root);
+      box.innerHTML = '';
+      function add(label, id) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'hg-cand';
+        b.textContent = label;
+        b.addEventListener('click', function () {
+          st.g = id; st.t = 0; st.s = 'test';
+          save(); show();
+        });
+        box.appendChild(b);
+      }
+      st.p.forEach(function (id) { add(textOf(id), id); });
+      add('None. These will all hold up.', 'none');
+    }
+
+    /* short reveal on the test stage: right/wrong against the guess, with "Our answer" for a wrong one */
+    function revealText() {
+      var risky = st.p.filter(function (id) { return RISKY.indexOf(id) > -1; });
+      if (st.g === 'none') {
+        if (!risky.length) return 'Right. Stable, relevant facts are exactly what belongs in inserted context.';
+        return 'Your pick: None. These will all hold up. Our answer: ' + quoted(risky) + '.';
+      }
+      if (!st.g || VERDICT[st.g].ok === false) return '';
+      var bad = st.p.filter(function (id) { return !VERDICT[id].ok; });
+      return 'Your pick: ' + quoted([st.g]) + '. Our answer: ' + (bad.length ? quoted(bad) + '.' : 'None. These will all hold up.');
+    }
+
+    function renderTest() {
+      var chips = '<span class="lbl">Sam\'s context:</span>';
+      st.p.forEach(function (id) { chips += '<span class="hg-chip">' + esc(textOf(id)) + '</span>'; });
+      $('#hg-chips', root).innerHTML = chips;
+      var day = st.t < 3 ? 'Monday' : 'Thursday';
+      var k = st.t % 3, n = k + 1;
+      $('#hg-day', root).textContent = day + ' · Test ' + n + ' of 3';
+      $('#hg-ask', root).textContent = TESTS[k].ask;
+      var reply = $('#hg-reply', root);
+      reply.innerHTML = replyHTML(buildReply(k, day, st.p), st.p);
+      reply.style.animation = 'none'; void reply.offsetWidth; reply.style.animation = '';
+      $('#hg-prog', root).textContent = day + ' · reply ' + n + ' of 3';
+      $('#hg-next', root).textContent = st.t === 2 ? 'Thursday' : (st.t < 5 ? 'Next' : 'See what happened');
+      var rev = $('#hg-reveal', root), rt = revealText();
+      rev.textContent = rt;
+      rev.hidden = !rt;
+    }
+
+    function renderVerdict() {
+      var good = st.p.filter(function (id) { return VERDICT[id].ok; }).length;
+      var head, sub;
+      if (good === 3) { head = 'A good set.'; sub = 'All three were stable, relevant, and safe on both days.'; }
+      else if (good === 2) { head = 'Close.'; sub = 'Two of your three held up. The other one went stale, leaked, or took up room.'; }
+      else { head = 'Worth another try.'; sub = 'Each of these trades something away. Try a set that is stable, relevant, and safe.'; }
+      var bad = st.p.filter(function (id) { return !VERDICT[id].ok; });
+      if (st.g === 'none') {
+        var riskyPicks = st.p.filter(function (id) { return RISKY.indexOf(id) > -1; });
+        if (!riskyPicks.length) sub += ' You guessed none would go wrong, and nothing did.';
+        else sub += ' You guessed none would go wrong, but ' + quoted(riskyPicks) + ' is the real risk.';
+      } else if (st.g) {
+        if (!bad.length) sub += ' You guessed ' + quoted([st.g]) + '. Nothing went wrong, so that was a safe guess.';
+        else if (!VERDICT[st.g].ok) sub += ' You called it: ' + quoted([st.g]) + ' is the one that did not hold up.';
+        else sub += ' You guessed ' + quoted([st.g]) + ', and it held up. The real risk was ' + quoted(bad) + '.';
+      }
+      $('#hg-vhead', root).textContent = head;
+      $('#hg-vsub', root).textContent = sub;
+      var html = '';
+      st.p.forEach(function (id, i) {
+        var v = VERDICT[id];
+        html += '<div class="hg-vrow" style="animation-delay:' + (i * 0.15) + 's">' +
+          '<span class="hg-mark ' + (v.ok ? 'ok' : 'no') + '">' + (v.ok ? '&#10003;' : '&#10005;') + '</span>' +
+          '<span class="hg-vlabel">' + esc(textOf(id)) + '</span>' +
+          '<span><p class="hg-vtitle">' + esc(v.head) + '</p><p class="hg-vbody">' + esc(v.body) + '</p></span>' +
+          '</div>';
+      });
+      $('#hg-vlist', root).innerHTML = html;
+    }
+
+    function show() {
+      $$('.hg-st', root).forEach(function (el) { el.hidden = el.getAttribute('data-st') !== st.s; });
+      if (st.s === 'pick') renderPick();
+      if (st.s === 'next') renderNext();
+      if (st.s === 'guess') renderGuess();
+      if (st.s === 'test') renderTest();
+      if (st.s === 'verdict') renderVerdict();
+    }
+    function setStage(s) { st.s = s; save(); show(); }
+
+    $('#hg-load', root).addEventListener('click', function () { if (st.p.length === 3) setStage('next'); });
+    $('#hg-back', root).addEventListener('click', function () { setStage('pick'); });
+    $('#hg-go', root).addEventListener('click', function () { setStage('guess'); });
+    $('#hg-next', root).addEventListener('click', function () {
+      if (st.t < 5) { st.t += 1; save(); show(); } else { setStage('verdict'); }
+    });
+    $('#hg-restart', root).addEventListener('click', function () {
+      st = { p: [], s: 'pick', t: 0, g: null };
+      save(); show();
+    });
+
+    show();
+  }
+
+  /* one init per slide, in slide order */
+  initBlanks();
+  initParis();
+  initHowSure();
+  initTray();
+  initLineup();
+  initTools2();
+  initHarness2();
+})();
+</script>
+<script>
+/* Permissions callback: show session 1's saved sliders (wb:s1:perm2, 10 values: read/write per system) as tiles */
+(function () {
+  var SYS = [
+    { n: 'Email', ic: '<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/>' },
+    { n: 'Calendar', ic: '<rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M3 10h18M8 3v4M16 3v4"/>' },
+    { n: 'CRM', ic: '<rect x="3" y="5" width="18" height="14" rx="1.5"/><circle cx="9" cy="11" r="2"/><path d="M14 10h4M14 14h4M6.5 17c.6-1.4 1.4-2 2.5-2s1.9.6 2.5 2"/>' },
+    { n: 'Billing', ic: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>' },
+    { n: 'HR records', ic: '<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8.5 17c.7-1.6 1.9-2.3 3.5-2.3s2.8.7 3.5 2.3"/>' }
+  ];
+  var STOPS = ['Never', 'Ask me first', 'Always allow'];
+  var GLYPH = [
+    '<rect x="6" y="11" width="12" height="9" rx="1"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/>',
+    '<path d="M9.5 9.2a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.5"/><path d="M12 17.2v.3"/>',
+    '<path d="M6.5 12.5l3.8 3.8L17.5 8.2"/>'
+  ];
+  var list = document.getElementById('s2-perm-tiles'), none = document.getElementById('s2-perm-none'), legend = document.getElementById('s2-perm-legend');
+  if (!list || !none) return;
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('wb:s1:perm2')); } catch (e) {}
+  if (!Array.isArray(saved) || saved.length !== 10) { none.hidden = false; return; }
+  function ind(label, v) {
+    return '<div class="s2-ind"><span class="s2-ind-l">' + label + '</span>' +
+      '<span class="s2-ind-box v' + v + '" role="img" aria-label="' + label + ': ' + STOPS[v] + '">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true">' + GLYPH[v] + '</svg></span></div>';
+  }
+  list.innerHTML = SYS.map(function (s, i) {
+    var r = saved[i * 2] | 0, w = saved[i * 2 + 1] | 0;
+    return '<li class="s2-tile"><svg class="s2-tile-ic" viewBox="0 0 24 24" aria-hidden="true">' + s.ic + '</svg>' +
+      '<p class="s2-tile-n">' + s.n + '</p>' + ind('Read', r) + ind('Write', w) + '</li>';
+  }).join('');
+  list.hidden = false;
+  if (legend) legend.hidden = false;
+})();
+</script>
+<script>
+/* Slide 3 (Meet Brew Diligence): illustrated map. The layout is seeded, so it is the same on every load.
+   CSS does the motion; this script builds the map, runs the café count, and restarts everything each time the slide is entered.
+   Reduced motion: the final state, with no timers. */
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var sec = document.getElementById('s2-slide-3');
+  var root = document.getElementById('s2m');
+  if (!sec || !root) return;
+  var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var coastEl = document.getElementById('s2m-coast');
+  var countEl = document.getElementById('s2m-count');
+  if (!coastEl || !countEl) return;
+
+  // Coastline control points (map units, 640 x 700)
+  var P = [[318,-20],[290,40],[306,96],[274,150],[246,198],[262,250],[238,318],[214,372],[236,430],[200,494],[218,556],[186,624],[204,720]];
+  function seg(i) {
+    var p0 = P[Math.max(i - 1, 0)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(i + 2, P.length - 1)];
+    return [p1,
+      [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6],
+      [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6],
+      p2];
+  }
+  var d = 'M' + P[0][0] + ' ' + P[0][1], samples = [];
+  for (var i = 0; i < P.length - 1; i++) {
+    var s = seg(i), a = s[0], c1 = s[1], c2 = s[2], b = s[3];
+    d += ' C' + c1[0] + ' ' + c1[1] + ' ' + c2[0] + ' ' + c2[1] + ' ' + b[0] + ' ' + b[1];
+    for (var k = 0; k <= 40; k++) {
+      var t = k / 40, u = 1 - t;
+      samples.push([
+        u * u * u * a[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * b[0],
+        u * u * u * a[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * b[1]]);
+    }
+  }
+  var coastD = d;
+  document.getElementById('s2m-land').setAttribute('d', coastD + ' L640 720 L640 -20 Z');
+  coastEl.setAttribute('d', coastD);
+
+  // Sea texture
+  var wd = '';
+  for (var y = 20; y < 700; y += 26) wd += 'M0 ' + y + ' H640 ';
+  var wp = document.createElementNS(NS, 'path');
+  wp.setAttribute('d', wd);
+  wp.setAttribute('class', 's2m-wave');
+  document.getElementById('s2m-waves').appendChild(wp);
+
+  // Seeded PRNG (mulberry32)
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  var rnd = mulberry32(11);
+
+  // Lookups: distance on a 4px grid, and one shoreline x per row
+  var GRID = 4, GW = Math.ceil(640 / GRID) + 1, GH = Math.ceil(700 / GRID) + 1, distGrid = new Float32Array(GW * GH);
+  for (var gy = 0; gy < GH; gy++) {
+    for (var gx = 0; gx < GW; gx++) {
+      var m = 1e9, px = gx * GRID, py = gy * GRID;
+      for (var j = 0; j < samples.length; j++) {
+        var ddx = samples[j][0] - px, ddy = samples[j][1] - py, q = ddx * ddx + ddy * ddy;
+        if (q < m) m = q;
+      }
+      distGrid[gy * GW + gx] = Math.sqrt(m);
+    }
+  }
+  function coastDist(x, y) { return distGrid[Math.round(y / GRID) * GW + Math.round(x / GRID)]; }
+  var xAtRow = [];
+  for (var ry = 0; ry <= 700; ry++) {
+    var bestX = samples[0][0], bd = 1e9;
+    for (var j2 = 0; j2 < samples.length; j2++) {
+      var q2 = Math.abs(samples[j2][1] - ry);
+      if (q2 < bd) { bd = q2; bestX = samples[j2][0]; }
+    }
+    xAtRow[ry] = bestX;
+  }
+  function coastXAt(y) { return xAtRow[Math.max(0, Math.min(700, Math.round(y)))]; }
+
+  // Harbor Street sits on the shore near y 372. Cafés cluster near the coast and the city.
+  var hs = coastXAt(372);
+  var harbor = [hs + 16, 378];
+  var cafes = [harbor];
+  var city = [470, 250], tries = 0;
+  while (cafes.length < 40 && tries < 400000) {
+    tries++;
+    var x = 230 + rnd() * 390, yy = 30 + rnd() * 640;
+    if (x <= coastXAt(yy) + 10) continue;
+    var dC = coastDist(x, yy);
+    var w = 0.03 + 1.6 * Math.exp(-dC / 16) + 0.4 * Math.exp(-((x - city[0]) * (x - city[0]) + (yy - city[1]) * (yy - city[1])) / (2 * 60 * 60));
+    if (rnd() > w) continue;
+    var ok = true;
+    for (var c = 0; c < cafes.length; c++) {
+      var ex = cafes[c][0] - x, ey = cafes[c][1] - yy;
+      if (ex * ex + ey * ey < 20 * 20) { ok = false; break; }
+    }
+    if (ok) cafes.push([x, yy]);
+  }
+
+  // Ripple outward from Harbor Street (nearest first)
+  var others = cafes.slice(1).map(function (p) {
+    var dx = p[0] - harbor[0], dy = p[1] - harbor[1];
+    return { x: p[0], y: p[1], r: Math.sqrt(dx * dx + dy * dy) };
+  }).sort(function (a, b) { return a.r - b.r; });
+
+  var group = document.getElementById('s2m-cafes');
+  var dots = others.map(function (p, k) {
+    var circ = document.createElementNS(NS, 'circle');
+    circ.setAttribute('cx', p.x.toFixed(1));
+    circ.setAttribute('cy', p.y.toFixed(1));
+    circ.setAttribute('r', 5.4);
+    circ.setAttribute('class', 's2m-dot');
+    circ.style.animationDelay = (700 + k * 24) + 'ms';
+    group.appendChild(circ);
+    return circ;
+  });
+  var tH = 700 + dots.length * 24 + 200;
+
+  var hd = document.getElementById('s2m-hdot');
+  hd.setAttribute('cx', harbor[0].toFixed(1));
+  hd.setAttribute('cy', harbor[1].toFixed(1));
+  hd.style.animationDelay = tH + 'ms';
+  var ring = document.getElementById('s2m-ring');
+  ring.setAttribute('cx', harbor[0].toFixed(1));
+  ring.setAttribute('cy', harbor[1].toFixed(1));
+  ring.style.animationDelay = (tH + 500) + 'ms';
+  var lx = harbor[0] - 74, ly = harbor[1] - 74;
+  var leader = document.getElementById('s2m-leader');
+  leader.setAttribute('x1', harbor[0] - 6);
+  leader.setAttribute('y1', harbor[1] - 6);
+  leader.setAttribute('x2', lx);
+  leader.setAttribute('y2', ly + 4);
+  var hl = document.getElementById('s2m-hlabel');
+  hl.setAttribute('x', lx - 6);
+  hl.setAttribute('y', ly);
+
+  var timers = [];
+  function setCount(n) { countEl.textContent = String(n); }
+  function clearTimers() { timers.forEach(function (t) { clearTimeout(t); }); timers = []; }
+  function stop() { clearTimers(); frame++; root.classList.remove('s2m-play'); }
+  var frame = 0;
+  function play() {
+    clearTimers();
+    root.classList.remove('s2m-play');
+    if (reduce) { setCount(40); root.classList.add('s2m-play'); return; }
+    setCount(0);
+    dots.forEach(function (c, k) {
+      timers.push(setTimeout(function () { setCount(k + 1); }, 700 + k * 24));
+    });
+    timers.push(setTimeout(function () { setCount(40); }, tH));
+    /* start the CSS motion on a frame after the slide is shown, so every animation gets a start time on each entry */
+    var id = ++frame;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (id !== frame || !sec.classList.contains('on')) return;
+        root.classList.add('s2m-play');
+      });
+    });
+  }
+  new MutationObserver(function () {
+    if (sec.classList.contains('on')) play(); else stop();
+  }).observe(sec, { attributes: true, attributeFilter: ['class'] });
+  if (sec.classList.contains('on')) play();
+})();
+
+/* Slide 11 (final puzzle): tag each summary row with the source the participant picked, for the colour dot. */
+(function () {
+  var root = document.querySelector('[data-qs="origin"]');
+  if (!root) return;
+  var done = root.querySelector('.qs-done');
+  var items = Array.prototype.slice.call(root.querySelectorAll('.qs-item'));
+  if (!done) return;
+  function tag() {
+    var lis = done.children;
+    for (var k = 0; k < lis.length; k++) {
+      var pick = items[k] && items[k].querySelector('.pick[aria-pressed="true"]');
+      if (pick) lis[k].setAttribute('data-src', pick.getAttribute('data-pick'));
+    }
+  }
+  new MutationObserver(tag).observe(done, { childList: true });
+  tag();
+})();
+</script>
+</body>
+</html>

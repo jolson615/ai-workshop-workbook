@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){var d=document.documentElement,n=null;d.classList.add("preload");try{n=localStorage.getItem("wb:nav")}catch(e){}if(n!==null?n==="1":innerWidth<900)d.classList.add("nav-c")})()</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 4 · Can a cheaper model do the job? · Workbook</title>
+<link rel="stylesheet" href="assets/workbook.css">
+<style>
+/* session 4 only: bars, flowchart, support desk, debrief table */
+.s4-list{list-style:none;margin:0;padding:0;font-size:clamp(28px,3.4vw,52px);font-weight:600;line-height:1.14;letter-spacing:-.02em;max-width:26ch}
+.s4-list li{padding:14px 0;border-top:1px solid var(--rule)}
+.s4-list li:last-child{border-bottom:1px solid var(--rule)}
+.s4-list .s4-k{font-weight:800}
+.s4-small{list-style:none;margin:clamp(22px,4vh,40px) 0 0;padding:0;font-size:clamp(16px,1.5vw,20px);color:var(--mute);line-height:1.5}
+.s4-small li{padding:2px 0}
+.s4-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,44px)}
+.s4-col{border-top:2px solid var(--ink);padding-top:16px}
+.s4-col p{margin:0;font-size:clamp(26px,2.8vw,42px);font-weight:700;line-height:1.1;letter-spacing:-.025em}
+.s4-print{margin:clamp(24px,5vh,56px) 0 0}
+.s4-print a{font-size:15px;color:var(--mute);text-underline-offset:3px}
+/* slide titles: short and plain, on slides whose purpose isn't obvious */
+.s4-title{margin:0 0 clamp(12px,2vh,20px);font-size:clamp(22px,2.2vw,30px);font-weight:700;letter-spacing:-.015em;line-height:1.15}
+
+/* slide 3 ways to pay less: three illustrated cards, one per step */
+.s4-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,44px);max-width:1200px}
+.s4-way{margin:0;font-weight:600;border-top:2px solid var(--ink);padding-top:14px;display:grid;gap:12px;align-content:start;transition:opacity .25s linear,transform .25s linear,color .25s}
+.s4-art{display:block;width:auto;max-width:100%;height:clamp(120px,16vh,150px)}
+.s4-art .ink{fill:none;stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.s4-art .fillc{fill:var(--card)}
+.s4-art .mute{stroke:var(--mute);stroke-dasharray:none}
+.s4-art .acc{fill:none;stroke:var(--signal);stroke-width:2.5;stroke-linecap:round}
+.s4-art .acc-f{fill:var(--signal);stroke:none}
+.s4-art .moon-cut{fill:var(--paper);stroke:none}
+.s4-art .stamp{fill:none;stroke:var(--signal);stroke-width:2}
+.s4-art .stamp-t{fill:var(--signal);font:700 13px var(--c-font);letter-spacing:.04em}
+.s4-way figcaption{display:grid;gap:6px}
+.s4-wl{font-size:clamp(20px,2vw,28px);line-height:1.15;letter-spacing:-.015em}
+.s4-ws{font-size:clamp(16px,1.5vw,20px);line-height:1.35;font-weight:400}
+.s4-wn{font-size:clamp(14px,1.3vw,17px);line-height:1.3;font-weight:400;color:var(--mute)}
+/* earlier cards drop to context emphasis (regular weight, full ink), the newest stays current */
+.s4-way.em-done{font-weight:var(--em-w-context)!important;color:var(--em-c-context)!important;opacity:var(--em-o-context)!important}
+.s4-ways ~ .qline{font-size:clamp(26px,3vw,44px);margin-top:clamp(18px,4vh,40px)}
+/* slide 3 closing explanation: one sentence of context, regular weight */
+.s4-ways ~ .qline.step{font-weight:400!important;font-size:clamp(22px,2.2vw,30px);line-height:1.3}
+@media (max-width:820px){.s4-ways{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.s4-way{transition:none}}
+
+/* slide 2 bars and takeaway, shown under the newest summary */
+.s4-bars{display:grid;gap:10px;max-width:760px;margin-top:6px}
+.s4-bl{display:block;font-size:clamp(15px,1.4vw,18px);line-height:1.25;color:var(--ink)}
+.s4-track{display:block;height:14px;margin-top:4px;background:var(--rule)}
+.s4-fill{display:block;height:100%;width:var(--w);background:var(--ink)}
+.s4-fill.low{background:var(--signal)}
+.s4-take{margin:12px 0 0;font-size:clamp(18px,1.8vw,24px);font-style:italic;font-weight:500;line-height:1.3}
+.qs-job{margin:0;font-size:15px;color:var(--mute)}
+.s4-close{margin:clamp(10px,2vh,24px) 0 0;font-size:clamp(24px,2.6vw,40px);font-weight:700;letter-spacing:-.025em;line-height:1.1;max-width:30ch}
+.s4-close em{font-style:normal;color:var(--signal)}
+.s4-close[hidden]{display:none}
+/* slide 2 closing explanation: two sentences, regular weight; the em keeps its colour */
+#s4-close.em-current{font-weight:400!important;font-size:clamp(22px,2.2vw,28px);line-height:1.3}
+/* slide 4 setup line: an instruction, so regular weight */
+.s4-setup > p.em-current{font-weight:400!important;font-size:clamp(20px,1.9vw,24px);line-height:1.35}
+.fnote-line a{color:var(--mute)}
+
+/* support desk: pickers */
+.s4-desk{display:grid;gap:clamp(18px,3vh,30px);align-content:start}
+.s4-pickers{display:grid;gap:12px;max-width:620px}
+.s4-q{margin:0;font-size:clamp(22px,2.2vw,32px);font-weight:700;line-height:1.15}
+.s4-q.em-context{font-weight:500}
+.s4-seg{display:flex;max-width:460px}
+.s4-opt{flex:1;padding:10px 14px;margin-left:-2px;background:var(--card);border:2px solid var(--ink);font-size:17px;font-weight:500}
+.s4-opt:first-child{margin-left:0}
+.s4-opt:hover:not([aria-pressed="true"]){background:#ebe7dd}
+.s4-opt[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.s4-switch{justify-self:start;background:none;border:0;padding:4px 0;font-size:15px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+.s4-view{display:grid;gap:clamp(14px,2.4vh,24px)}
+.s4-view[hidden],.s4-flow[hidden],.s4-brief[hidden],.s4-tickets[hidden],.s4-pickers[hidden]{display:none}
+
+/* rules: the flowchart, as a subway map. Branches differ by colour here and by dash pattern in print. */
+.s4-flow{--c-deny:#a2472f;--c-refund:#b38a2e;--c-replace:#2f7d4f;--c-cancel:#3f6b8c;--t-deny:#8c3a25;--t-refund:#7d5f1c;--t-replace:#256340;--t-cancel:#2f5672;display:grid;gap:clamp(6px,1.1vh,12px);max-width:1000px}
+.sw-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.sw-title{margin:0;font-size:clamp(24px,2.2vw,30px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.sw-sub{margin:0;font-size:clamp(16px,1.4vw,18px);color:var(--mute)}
+.sw-note{margin:0;font-size:clamp(16px,1.4vw,18px);color:var(--mute)}
+.sw{list-style:none;margin:0;padding:0;display:grid}
+.sw-stop,.sw-end{display:grid;grid-template-columns:minmax(0,1.45fr) 44px minmax(0,1fr) 296px;align-items:stretch;min-height:clamp(52px,7.4vh,62px)}
+.sw-qw{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right;padding-right:6px}
+.sw-n{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);line-height:1.2}
+.sw-q{margin:0;white-space:nowrap;font-size:clamp(18px,1.6vw,21px);font-weight:600;line-height:1.2;color:var(--ink)}
+.sw-rail{position:relative}
+.sw-rail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:12px;margin-left:-6px;background:var(--ink)}
+.sw-first .sw-rail::before{top:50%}
+.sw-end .sw-rail::before{bottom:50%}
+.sw-stn{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border:4px solid var(--ink);border-radius:50%;background:var(--paper);box-sizing:border-box}
+.sw-no{position:absolute;left:calc(50% + 14px);top:calc(50% + 12px);font-size:14px;font-weight:700;letter-spacing:.12em;color:var(--mute)}
+.sw-mid{position:relative;display:flex;align-items:center}
+.sw-mid svg{display:block;width:100%;height:12px;overflow:visible}
+.sw-mid line{stroke-width:10px;stroke-linecap:round}
+.sw-yes{position:absolute;left:50%;bottom:50%;margin-bottom:8px;transform:translateX(-50%);font-size:14px;font-weight:700;letter-spacing:.12em;color:var(--mute)}
+.b-deny line{stroke:var(--c-deny)}
+.b-refund line{stroke:var(--c-refund)}
+.b-replace line{stroke:var(--c-replace)}
+.b-cancel line{stroke:var(--c-cancel)}
+.sw-term{display:flex;align-items:center;gap:12px;padding-left:4px}
+.sw-tdot{flex:none;width:24px;height:24px;border-radius:50%;background:var(--c)}
+.t-deny .sw-tdot{background:var(--c-deny)} .t-refund .sw-tdot{background:var(--c-refund)} .t-replace .sw-tdot{background:var(--c-replace)} .t-cancel .sw-tdot{background:var(--c-cancel)}
+.sw-tl{font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.t-deny .sw-tl{color:var(--t-deny)} .t-refund .sw-tl{color:var(--t-refund)} .t-replace .sw-tl{color:var(--t-replace)} .t-cancel .sw-tl{color:var(--t-cancel)}
+.sw-end .sw-rail{position:relative}
+.sw-endstn{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:6px solid var(--ink);border-radius:50%;background:var(--paper);box-sizing:border-box}
+.sw-endstn::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--ink)}
+.sw-endtxt{grid-column:3 / span 2;margin:0;align-self:center;padding-left:4px;font-size:19px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+
+/* support desk: the form fields on each ticket */
+.s4-form{display:flex;flex-wrap:wrap;gap:10px}
+.s4-f{display:grid;gap:2px;min-width:170px;padding:6px 12px;border:1.5px solid var(--ink);background:var(--paper)}
+.s4-fk{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);line-height:1.2}
+.s4-fv{font-size:17px;font-weight:600;line-height:1.25}
+.s4-mk{margin:6px 0 -4px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+
+/* rules: the prompt, as a card with a comfortable measure */
+.s4-brief{position:relative;max-width:none;width:min(1000px,100%);box-sizing:border-box;background:var(--card);border:2px solid var(--ink);padding:26px 32px 28px;display:grid;gap:14px}
+.s4-brief .s4-brief-label{margin:0;font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--signal);line-height:1.2}
+.s4-brief p{margin:0;font-size:clamp(22px,1.9vw,26px);font-weight:500;line-height:1.5;letter-spacing:-.005em}
+
+/* support desk setup: three plain sentences, first current */
+.s4-setup{display:grid;gap:clamp(10px,1.8vh,16px);max-width:62ch}
+.s4-setup p{margin:0;font-size:clamp(19px,1.7vw,24px);line-height:1.4}
+
+/* debrief table: one mark per cell, the careful answer under each ticket */
+.s4-table{width:100%;max-width:1000px;border-collapse:collapse;font-size:clamp(15px,1.3vw,17px);line-height:1.3}
+.s4-table th{text-align:left;font-weight:700;padding:6px 10px;border-bottom:2px solid var(--ink)}
+.s4-table td{padding:4px 10px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.s4-table th:not(:first-child),.s4-table td:not(:first-child){width:19%}
+.s4-table td:first-child{font-weight:600}
+.s4-table tfoot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:600;padding-top:8px;white-space:nowrap;font-size:clamp(14px,1.2vw,16px)}
+.s4-table tfoot .dm,.s4-table tfoot .dm svg{width:18px;height:18px}
+.s4-table .s4-you{display:none}
+.s4-table.played .s4-you{display:table-cell}
+.dt-c{display:block;font-size:13px;font-weight:400;color:var(--mute);line-height:1.25}
+.dm{display:inline-grid;place-items:center;width:24px;height:24px;vertical-align:middle;margin-right:4px}
+.dm svg{width:24px;height:24px;overflow:visible;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.dm.ok svg{stroke:#2f7d4f}
+.dm.no svg{stroke:var(--c-mute)}
+.dm.costly svg{stroke:#c0392b}
+.s4-legend{margin:12px 0 0;font-size:clamp(14px,1.2vw,16px);color:var(--mute);max-width:1000px}
+.s4-legend .dm{width:18px;height:18px;margin-right:2px}
+.s4-legend .dm svg{width:18px;height:18px}
+/* slide 7: a plain, exploratory list, one item per step */
+.s4-plain{list-style:none;margin:0;padding:0;display:grid;gap:clamp(14px,2.6vh,26px);max-width:40ch}
+.s4-plain li{font-size:clamp(22px,2.3vw,34px);font-weight:500;line-height:1.2;letter-spacing:-.01em}
+.s4-tie{display:block;margin-top:4px;font-size:clamp(16px,1.5vw,20px);font-weight:400;color:var(--mute);line-height:1.3}
+.s4-discuss{margin:clamp(22px,4vh,40px) 0 0;font-size:clamp(17px,1.6vw,22px);color:var(--mute);line-height:1.4;max-width:52ch}
+
+@media (max-width:820px){
+  .s4-cols{grid-template-columns:1fr}
+  .fc li{grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)}
+  .s4-table th:nth-child(3),.s4-table td:nth-child(3){display:none}
+}
+</style>
+</head>
+<body data-lang="tech" data-session="4">
+<div class="app" id="app">
+
+  <aside class="nav" aria-label="Sessions">
+    <div class="nav-top">
+      <button class="nav-toggle" id="navToggle" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation ([)">[</button>
+    </div>
+    <ol class="sessions">
+      <li><a class="sess" data-l="t" href="session-1.html"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-3.html"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html" aria-current="page"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="sn" aria-hidden="true">4</div>
+      <div class="sname">Can a cheaper model do the job?</div>
+      <nav class="pips" id="pips" aria-label="Slides"></nav>
+    </header>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 Title [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="t-title">
+          <p class="big" aria-hidden="true">4</p>
+          <h1>Can a cheaper model do the job?</h1>
+        </div>
+      </section>
+
+      <!-- 2 Cost per finished task [LAPTOP] -->
+      <section class="slide tech" data-attn="laptop">
+        <h2 class="s4-title">Can a cheaper model do it?</h2>
+        <p class="prompt em-context">Each card compares two ways to do the same job. Predict which costs less per finished task.</p>
+        <div class="qs" data-qs="cost" data-on-done="s4-close">
+          <ol class="qs-done" aria-label="Answered"></ol>
+          <div class="qs-item" data-answer="mid" data-short="Real coding tasks">
+            <p class="qs-text">Real coding tasks</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="frontier" aria-pressed="false" type="button">A frontier model will cost less per task</button>
+              <button class="pick" data-pick="mid" aria-pressed="false" type="button">A mid-tier model will cost less per task</button>
+            </div>
+            <div class="qs-reveal">
+              <div class="s4-bars">
+                <div><span class="s4-bl">A frontier model: 92.3% solved, $1.19 per solved task</span><span class="s4-track"><span class="s4-fill" style="--w:100%"></span></span></div>
+                <div><span class="s4-bl">A mid-tier model: 92.8% solved, $0.22 per solved task</span><span class="s4-track"><span class="s4-fill low" style="--w:18.5%"></span></span></div>
+              </div>
+              <p class="s4-take"><em>Same quality, about a fifth of the cost.</em></p>
+            </div>
+          </div>
+          <div class="qs-item" data-answer="newer" data-short="Upgraded model version">
+            <p class="qs-text">Same model family, newer version</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="older" aria-pressed="false" type="button">The older version will cost less per task</button>
+              <button class="pick" data-pick="newer" aria-pressed="false" type="button">The newer version will cost less per task</button>
+            </div>
+            <div class="qs-reveal">
+              <div class="s4-bars">
+                <div><span class="s4-bl">Older version: 100% of the cost per solved task (baseline)</span><span class="s4-track"><span class="s4-fill" style="--w:100%"></span></span></div>
+                <div><span class="s4-bl">Newer version: 13% of that cost, and about 10 points more tasks solved</span><span class="s4-track"><span class="s4-fill low" style="--w:13%"></span></span></div>
+              </div>
+              <p class="s4-take"><em>The upgrade paid for itself: better and about 87% cheaper per solved task.</em></p>
+            </div>
+          </div>
+          <div class="qs-item" data-answer="light" data-short="Hard science questions">
+            <p class="qs-text">Hard science questions</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="light" aria-pressed="false" type="button">A lightweight model will cost less per task</button>
+              <button class="pick" data-pick="mid" aria-pressed="false" type="button">A mid-tier model will cost less per task</button>
+            </div>
+            <div class="qs-reveal">
+              <div class="s4-bars">
+                <div><span class="s4-bl">A lightweight model: 85% correct, about a twentieth of the cost per correct answer</span><span class="s4-track"><span class="s4-fill low" style="--w:5%"></span></span></div>
+                <div><span class="s4-bl">A mid-tier model: 91% correct, about 20 times the cost per correct answer</span><span class="s4-track"><span class="s4-fill" style="--w:100%"></span></span></div>
+              </div>
+              <p class="s4-take"><em>A small drop in quality for a very large saving. Is it worth it? That depends on the job.</em></p>
+            </div>
+          </div>
+          <div class="qs-item" data-answer="cheap" data-short="Coding tasks, routing">
+            <p class="qs-text">Coding tasks</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="strong" aria-pressed="false" type="button">Using the strong model on everything will cost less per task</button>
+              <button class="pick" data-pick="cheap" aria-pressed="false" type="button">Trying cheap first, then strong on failures, will cost less per task</button>
+            </div>
+            <div class="qs-reveal">
+              <div class="s4-bars">
+                <div><span class="s4-bl">Strong model on everything: 95.3% solved, $0.29 per task</span><span class="s4-track"><span class="s4-fill" style="--w:100%"></span></span></div>
+                <div><span class="s4-bl">Cheap first, strong on the failures: about 97% solved, about $0.17 per task</span><span class="s4-track"><span class="s4-fill low" style="--w:59%"></span></span></div>
+              </div>
+              <p class="s4-take"><em>Routing beats brute force.</em></p>
+            </div>
+          </div>
+          <div class="qs-item" data-answer="low" data-short="Deep research effort">
+            <p class="qs-text">Deep research, two effort settings</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="low" aria-pressed="false" type="button">Low effort will cost less per task</button>
+              <button class="pick" data-pick="high" aria-pressed="false" type="button">High effort will cost less per task</button>
+            </div>
+            <div class="qs-reveal">
+              <div class="s4-bars">
+                <div><span class="s4-bl">Low effort: 66% rubric score at $4.48 per task</span><span class="s4-track"><span class="s4-fill low" style="--w:65%"></span></span></div>
+                <div><span class="s4-bl">High effort: 65% rubric score at $6.89 per task</span><span class="s4-track"><span class="s4-fill" style="--w:100%"></span></span></div>
+              </div>
+              <p class="s4-take"><em>Trying harder didn’t help here. It just cost more.</em></p>
+            </div>
+          </div>
+          <div class="qs-item" data-answer="line" data-short="Long memo or one line">
+            <p class="qs-text">The same model, the same job</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="memo" aria-pressed="false" type="button">A detailed memo will cost less per task</button>
+              <button class="pick" data-pick="line" aria-pressed="false" type="button">One structured line will cost less per task</button>
+            </div>
+            <div class="qs-reveal">
+              <div class="s4-bars">
+                <div><span class="s4-bl">A detailed memo: $1.40 per task</span><span class="s4-track"><span class="s4-fill" style="--w:100%"></span></span></div>
+                <div><span class="s4-bl">One structured line: $0.49 per task, equally accurate</span><span class="s4-track"><span class="s4-fill low" style="--w:35%"></span></span></div>
+              </div>
+              <p class="s4-take"><em>The format you ask for drives the bill.</em></p>
+            </div>
+          </div>
+          <p class="qs-count" aria-live="polite"></p>
+        </div>
+        <p class="s4-close em-current" id="s4-close" hidden>The cheapest model isn’t always the cheapest way to get the job done. <em>Test it on your tasks.</em></p>
+        <p class="fnote-line"><a href="https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence" target="_blank" rel="noopener">Source (retrieved Oct 2026)</a></p>
+      </section>
+
+      <!-- 3 Paying less per task [UP] -->
+      <section class="slide tech" data-attn="up">
+        <h2 class="s4-title">Engineering tactics for cost reduction</h2>
+        <div class="s4-ways">
+          <figure class="s4-way step">
+            <svg class="s4-art" viewBox="0 0 160 150" aria-hidden="true">
+              <rect class="ink fillc" x="12" y="6" width="120" height="32"/>
+              <rect class="ink fillc mute" x="20" y="20" width="120" height="32"/>
+              <rect class="stamp" x="94" y="26" width="60" height="18"/>
+              <text class="stamp-t" x="124" y="39" text-anchor="middle">reused</text>
+              <rect class="ink fillc" x="20" y="52" width="120" height="92"/>
+              <line class="ink" x1="34" y1="76" x2="124" y2="76"/>
+              <line class="ink" x1="34" y1="92" x2="112" y2="92"/>
+              <line class="ink" x1="34" y1="108" x2="120" y2="108"/>
+              <line class="ink" x1="34" y1="124" x2="98" y2="124"/>
+              <circle class="acc-f" cx="34" cy="64" r="4"/>
+            </svg>
+            <figcaption>
+              <span class="s4-wl">Reuse what doesn’t change (caching)</span>
+              <span class="s4-ws">Long conversations resend everything each turn; caching makes the repeats cheap.</span>
+              <span class="s4-wn">Each resend costs about a tenth as much.</span>
+            </figcaption>
+          </figure>
+          <figure class="s4-way step">
+            <svg class="s4-art" viewBox="0 0 160 150" aria-hidden="true">
+              <rect class="ink fillc" x="6" y="50" width="58" height="60"/>
+              <line class="ink" x1="18" y1="72" x2="52" y2="72"/>
+              <line class="ink" x1="18" y1="86" x2="44" y2="86"/>
+              <path class="acc" d="M64 80 C84 80 84 30 100 30" marker-end="url(#s4arr)"/>
+              <path class="acc" d="M64 80 L100 80" marker-end="url(#s4arr)"/>
+              <path class="acc" d="M64 80 C84 80 84 130 100 130" marker-end="url(#s4arr)"/>
+              <rect class="ink fillc" x="104" y="19" width="40" height="22"/>
+              <rect class="ink fillc" x="104" y="69" width="40" height="22"/>
+              <rect class="ink fillc" x="104" y="119" width="40" height="22"/>
+              <defs>
+                <marker id="s4arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M0 0 L10 5 L0 10 z" class="acc-f"/>
+                </marker>
+              </defs>
+            </svg>
+            <figcaption>
+              <span class="s4-wl">Hand small steps to smaller models</span>
+              <span class="s4-ws">A strong model plans; lighter models do the routine steps.</span>
+            </figcaption>
+          </figure>
+          <figure class="s4-way step">
+            <svg class="s4-art" viewBox="0 0 160 150" aria-hidden="true">
+              <rect class="ink fillc" x="14" y="36" width="92" height="24"/>
+              <rect class="ink fillc" x="14" y="66" width="92" height="24"/>
+              <rect class="ink fillc" x="14" y="96" width="92" height="24"/>
+              <rect class="ink" x="22" y="42" width="10" height="10"/>
+              <rect class="ink" x="22" y="72" width="10" height="10"/>
+              <rect class="ink" x="22" y="102" width="10" height="10"/>
+              <line class="ink" x1="40" y1="47" x2="94" y2="47"/>
+              <line class="ink" x1="40" y1="77" x2="88" y2="77"/>
+              <line class="ink" x1="40" y1="107" x2="92" y2="107"/>
+              <circle class="acc-f" cx="132" cy="48" r="24"/>
+              <circle class="moon-cut" cx="142" cy="40" r="20"/>
+              <circle class="acc-f" cx="146" cy="104" r="2.5"/>
+              <circle class="acc-f" cx="118" cy="118" r="2.5"/>
+            </svg>
+            <figcaption>
+              <span class="s4-wl">Run non-urgent work in bulk (batching)</span>
+              <span class="s4-ws">If it can wait a few hours, it can usually cost less.</span>
+              <span class="s4-wn">Batching takes 50% off every token, with results within 24 hours.</span>
+            </figcaption>
+          </figure>
+        </div>
+        <p class="qline step">Knowing where these fit takes someone who knows how data moves through your business.</p>
+      </section>
+
+      <!-- 4 Support desk: setup [UP] -->
+      <section class="slide tech" data-attn="up">
+        <h2 class="s4-title">The support desk</h2>
+        <div class="s4-setup">
+          <p class="em-current">For the next few minutes, you’re running Brew Diligence’s customer support desk.</p>
+          <p class="em-context">Half the room will follow a flowchart exactly. The other half will follow a prompt and use their judgment.</p>
+          <p class="em-context">Work in small groups. Designate one person to have your flowchart or prompt ready to go. Everyone else works through the customer messages and decides what to do.</p>
+        </div>
+        <p class="s4-print"><a href="print.html">Printable version</a></p>
+      </section>
+
+      <!-- 5 Support desk: play [LAPTOP] -->
+      <section class="slide tech" data-attn="laptop">
+        <div class="s4-desk" data-widget="support">
+          <h2 class="s4-title">The support desk: play</h2>
+          <div class="s4-pickers">
+            <p class="s4-q em-current">Which team are you on?</p>
+            <div class="s4-seg" role="group" aria-label="Team">
+              <button class="s4-opt" type="button" data-team="flow" aria-pressed="false">Follow a flowchart</button>
+              <button class="s4-opt" type="button" data-team="guide" aria-pressed="false">Follow a prompt</button>
+            </div>
+            <p class="s4-q em-context">Which role?</p>
+            <div class="s4-seg" role="group" aria-label="Role">
+              <button class="s4-opt" type="button" data-role="rules" aria-pressed="false">Rules</button>
+              <button class="s4-opt" type="button" data-role="tickets" aria-pressed="false">Tickets</button>
+            </div>
+          </div>
+
+          <div class="s4-view" hidden>
+            <div class="s4-flow" hidden>
+              <header class="sw-head">
+                <h3 class="sw-title">The flowchart</h3>
+                <p class="sw-sub">Follow it exactly, even when it feels wrong.</p>
+              </header>
+              <ol class="sw" aria-label="The flowchart, as a subway map">
+<li class="sw-stop sw-first"><div class="sw-qw"><span class="sw-n">Stop 1</span><p class="sw-q">Order date more than 30 days ago?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-deny" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-deny"><span class="sw-tdot"></span><span class="sw-tl">Deny</span></div></li>
+<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 2</span><p class="sw-q">Issue type is Damaged or Missing?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-refund" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-refund"><span class="sw-tdot"></span><span class="sw-tl">Refund</span></div></li>
+<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 3</span><p class="sw-q">Issue type is Taste?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-replace" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-replace"><span class="sw-tdot"></span><span class="sw-tl">Replace</span></div></li>
+<li class="sw-stop"><div class="sw-qw"><span class="sw-n">Stop 4</span><p class="sw-q">Issue type is Cancel subscription?</p></div><div class="sw-rail"><span class="sw-stn"></span><span class="sw-no">No</span></div><div class="sw-mid"><span class="sw-yes">Yes</span><svg class="sw-b b-cancel" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="5" x2="100" y2="5" vector-effect="non-scaling-stroke"/></svg></div><div class="sw-term t-cancel"><span class="sw-tdot"></span><span class="sw-tl">Cancel subscription</span></div></li>
+<li class="sw-end"><div class="sw-qw"><span class="sw-n">None of the above</span></div><div class="sw-rail"><span class="sw-endstn"></span></div><p class="sw-endtxt">Send to a person</p></li>
+              </ol>
+              <p class="sw-note">The flowchart only sees the form fields.</p>
+            </div>
+
+            <div class="s4-brief" hidden>
+              <p class="s4-brief-label">The prompt</p>
+              <p>You answer customers for Brew Diligence, a coffee roaster.</p>
+              <p>Keep good customers happy and be fair to the business.</p>
+              <p>Refunds under $30 are fine if the story is believable.</p>
+              <p>Send anything about safety, legal threats, or a long-time customer who is upset to a person.</p>
+              <p>Don’t refund the same customer twice in 90 days.</p>
+            </div>
+
+            <div class="s4-tickets" hidden>
+              <div class="qs" data-qs="tickets" data-qs-mode="record">
+                <ol class="qs-done" aria-label="Answered"></ol>
+                <div class="qs-item" data-short="Bag arrived split open">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">3 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“My bag arrived split open, beans everywhere.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Cancel, moving abroad">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">10 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Cancel subscription</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Please cancel my subscription, moving abroad.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Tastes burnt">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">5 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Taste</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Tastes burnt. Not what I expected from you.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Ordered 34 days ago, stale">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">34 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Taste</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Ordered 34 days ago, only just opened it, it’s stale. I’ve subscribed for three years.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Damaged bag and cancel">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">6 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Bag was damaged AND I want to cancel.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Glass in the bag">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">4 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Damaged</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Found a small piece of glass in the bag.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Missing again, third time">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">8 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Missing</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Missing again. Third time this quarter, refund please.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Gift, friend hated it">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">12 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Other</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Was a gift, my friend hated it. Can I get my money back?”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Lawyer threat">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">9 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Other</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“If this isn’t fixed I’m contacting my lawyer.”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <div class="qs-item" data-short="Decaf request">
+                  <div class="s4-form" aria-label="Form fields"><div class="s4-f"><span class="s4-fk">Order date</span><span class="s4-fv">2 days ago</span></div><div class="s4-f"><span class="s4-fk">Issue type</span><span class="s4-fv">Other</span></div></div>
+                  <p class="s4-mk">Message</p>
+                  <p class="qs-text">“Love the beans! Can you do a decaf version?”</p>
+                  <div class="qs-choices s4-five">
+                    <button class="pick" data-pick="refund" aria-pressed="false" type="button">Refund</button>
+                    <button class="pick" data-pick="replace" aria-pressed="false" type="button">Replace</button>
+                    <button class="pick" data-pick="deny" aria-pressed="false" type="button">Deny</button>
+                    <button class="pick" data-pick="cancel" aria-pressed="false" type="button">Cancel subscription</button>
+                    <button class="pick" data-pick="person" aria-pressed="false" type="button">Send to a person</button>
+                  </div>
+                </div>
+                <p class="qs-count" aria-live="polite"></p>
+              </div>
+            </div>
+
+            <button class="s4-switch" type="button">Switch team or role</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 Debrief [UP] -->
+      <section class="slide tech" data-attn="up" data-widget="debrief">
+        <h2 class="s4-title">Debrief: the ten tickets</h2>
+        <table class="s4-table">
+          <thead>
+            <tr><th>Ticket</th><th>Flowchart</th><th>Prompt</th><th class="s4-you">You chose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="dt-n">1 · Bag arrived split open</span><span class="dt-c">A careful person: Refund</span></td><td><span class="dm ok" role="img" aria-label="Refund (Damaged)" title="Refund (Damaged)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Refund" title="Refund"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">2 · Cancel, moving abroad</span><span class="dt-c">A careful person: Cancel</span></td><td><span class="dm ok" role="img" aria-label="Cancel (Cancel subscription)" title="Cancel (Cancel subscription)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Cancel" title="Cancel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">3 · Tastes burnt</span><span class="dt-c">A careful person: Replace</span></td><td><span class="dm ok" role="img" aria-label="Replace (Taste)" title="Replace (Taste)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Replace" title="Replace"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">4 · Ordered 34 days ago</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm no" role="img" aria-label="Deny (34 days, over 30)" title="Deny (34 days, over 30)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Send to a person, or refund" title="Send to a person, or refund"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">5 · Damaged bag and cancel</span><span class="dt-c">A careful person: Refund and cancel</span></td><td><span class="dm no" role="img" aria-label="Refund (Damaged); cancel missed" title="Refund (Damaged); cancel missed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm no" role="img" aria-label="Refund; cancel missed" title="Refund; cancel missed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">6 · Glass in the bag</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm costly" role="img" aria-label="Refund (Damaged)" title="Refund (Damaged)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Send to a person" title="Send to a person"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">7 · Missing again, third time</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm costly" role="img" aria-label="Refund (Missing)" title="Refund (Missing)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm no" role="img" aria-label="Deny the repeat refund" title="Deny the repeat refund"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">8 · Gift, friend hated it</span><span class="dt-c">A careful person: Refund if small; else a person</span></td><td><span class="dm no" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Refund, if under $30" title="Refund, if under $30"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">9 · Lawyer threat</span><span class="dt-c">A careful person: Send to a person</span></td><td><span class="dm ok" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td><span class="dm ok" role="img" aria-label="Send to a person" title="Send to a person"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span></td><td class="s4-you"></td></tr>
+            <tr><td><span class="dt-n">10 · Decaf request</span><span class="dt-c">A careful person: Answer; no action</span></td><td><span class="dm no" role="img" aria-label="Send to a person (Other)" title="Send to a person (Other)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td><span class="dm no" role="img" aria-label="No action fits (gap)" title="No action fits (gap)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span></td><td class="s4-you"></td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td>Totals</td><td><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> 4 &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 4 &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 2 costly</td><td><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> 7 &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 3 &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> 0 costly</td><td class="s4-you"></td></tr>
+          </tfoot>
+        </table>
+        <p class="s4-legend"><span class="dm ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg></span> matches a careful person &middot; <span class="dm no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> wrong, recoverable &middot; <span class="dm costly"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span> costly enough to question the process</p>
+      </section>
+
+      <!-- 7 Three ways to automate [UP] -->
+      <section class="slide tech" data-attn="up">
+        <h2 class="s4-title">Some ways to mix rules and models</h2>
+        <ul class="s4-plain">
+          <li class="step">Fixed rules decide.<span class="s4-tie">Like the flowchart team.</span></li>
+          <li class="step">A model decides.<span class="s4-tie">Like the prompt team.</span></li>
+          <li class="step">A model sorts, and people take the hard ones.<span class="s4-tie">Like “send to a person” done well.</span></li>
+        </ul>
+        <p class="s4-discuss step">For your own problem: how good does the judgment need to be, and what mistakes would you accept in exchange for speed?</p>
+      </section>
+
+      <!-- 8 More than one lab [UP] -->
+      <section class="slide tech" data-attn="up">
+        <p class="qline">Use models from more than one lab: <em>to compare them, and so they check each other’s work.</em></p>
+      </section>
+
+      <!-- 9 Takeaways [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="take-wrap">
+          <h2 class="take-title">Key takeaways</h2>
+          <p class="take-ask">Check off the ones that feel clear to you.</p>
+          <ul class="take">
+            <li><label><input type="checkbox"><span class="tt">A cheaper model per word isn’t always cheaper per task.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Flowchart, model, or model-plus-people: the right mix depends on your business.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Be wary of one-size-fits-all answers. Understanding your problem comes before buying software.</span></label></li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="foot">
+      <button class="btn" id="prev" type="button">← Back</button>
+      <p class="attn" id="attn" data-mode="up">Eyes up front</p>
+      <button class="btn" id="next" type="button">Next →</button>
+    </footer>
+  </main>
+</div>
+<script src="assets/workbook.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  /* "You chose" as icons, compared with the careful answer. Runs after workbook.js refreshes the cells. */
+  var sec = document.querySelector('[data-widget="debrief"]');
+  if (!sec) return;
+  var WORD = { refund: 'Refund', replace: 'Replace', deny: 'Deny', cancel: 'Cancel subscription', person: 'Send to a person' };
+  var ACCEPT = [['refund'], ['cancel'], ['replace'], ['person'], [], ['person'], ['person'], ['refund', 'person'], ['person'], []];
+  var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.6l4.3 4.3L19 7.2"/></svg>', CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+  function paint() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem('wb:s4:q:tickets')); } catch (e) {}
+    var picks = saved && Array.isArray(saved.picks) ? saved.picks : [];
+    var cells = sec.querySelectorAll('td.s4-you');
+    for (var i = 0; i < cells.length; i++) {
+      var p = picks[i], td = cells[i];
+      if (!p || !WORD[p]) { td.textContent = ''; continue; }
+      var ok = ACCEPT[i].indexOf(p) > -1;
+      var label = 'You chose: ' + WORD[p] + (ok ? ' (matches)' : ' (differs)');
+      td.innerHTML = '<span class="dm ' + (ok ? 'ok' : 'no') + '" role="img" aria-label="' + label + '" title="' + label + '">' + (ok ? CHECK : CROSS) + '</span>';
+    }
+  }
+  paint();
+  if (window.MutationObserver) new MutationObserver(paint).observe(sec, { attributes: true, attributeFilter: ['class'] });
+});
+</script>
+</body>
+</html>

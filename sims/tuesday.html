@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your Tuesday</title>
+<style>
+:root{--paper:#f4efe6;--ink:#1f1b16;--amber:#a8651e;--green:#2f7d4f;--muted:#6b665e;--rule:rgba(31,27,22,.14);--card:#fbf8f2;--orange:#e07a2a}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:Georgia,"Iowan Old Style",serif;overflow:hidden}
+.wrap{height:100%;max-width:1080px;margin:0 auto;padding:18px 24px;display:flex;flex-direction:column;gap:12px}
+.embed .wrap{padding:12px 14px;gap:0;max-width:none}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.embed header{display:none}
+h1{font-weight:normal;font-size:28px;margin:0;letter-spacing:-.01em}
+.lede{margin:4px 0 0;color:var(--muted);font-size:15px}
+.link{color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:0;font-family:inherit;padding:0;align-self:flex-start}
+.main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-rows:minmax(0,1fr);gap:20px}
+
+/* calendar */
+.day{position:relative;display:grid;grid-template-columns:52px 1fr;height:100%;min-height:0;overflow:hidden}
+.hours{position:relative}
+.hours span{position:absolute;right:8px;font-size:13px;color:var(--muted);transform:translateY(-50%)}
+.track{position:relative;border-left:1px solid var(--rule)}
+.hline{position:absolute;left:0;right:0;border-top:1px dashed rgba(31,27,22,.1)}
+.blk{position:absolute;left:8px;right:8px;border-radius:6px;padding:0 10px;font-size:12.5px;line-height:1;display:flex;align-items:center;justify-content:space-between;gap:8px;overflow:hidden;white-space:nowrap}
+.meet{background:#fffdf8;border:1px solid var(--rule);border-left:4px solid var(--ink);color:var(--ink)}
+.lunch{background:transparent;color:var(--muted);border:1px dashed var(--rule)}
+.free{position:absolute;left:8px;right:8px;background:rgba(168,101,30,.12);border:1px solid rgba(168,101,30,.4);color:var(--amber);border-radius:6px;padding:0 10px;font-size:12.5px;display:flex;align-items:center;justify-content:space-between}
+.rgroup{left:14px;right:14px;display:flex;padding:0;border-radius:4px;overflow:hidden;background:var(--card);border:1px solid rgba(31,27,22,.25);animation:in .35s ease}
+.rgroup:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.rgroup{align-items:stretch}
+.stripes{display:flex;flex:0 0 auto;align-self:stretch}
+.stripes i{display:block;width:6px;flex:0 0 6px}
+.rlabel{display:flex;align-items:center;padding:0 8px;font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden}
+.rgroup.tiny{background:none;border:0}
+.rgroup.tiny .stripes{flex:1 1 auto;justify-content:flex-start}
+.rgroup.tiny .stripes i{width:auto;flex:1 1 0}
+@keyframes in{from{transform:scaleY(.2);opacity:0}to{transform:none;opacity:1}}
+
+/* panel: a guided arc, revealed in phases */
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.label{font-size:13px;color:var(--muted);letter-spacing:.02em}
+.big{font-size:30px;line-height:1;font-variant-numeric:tabular-nums;margin-top:4px}
+.big.work{color:var(--green)}
+.big.ft{color:var(--amber)}
+.sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.25}
+.meter{height:8px;margin-top:8px;background:rgba(31,27,22,.07);border-radius:4px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;transition:width .35s ease}
+.meter.work i{background:var(--green)}
+.meter.ft i{background:var(--amber)}
+.over{font-size:13px;color:var(--amber);min-height:18px;line-height:1.3;margin-top:-4px}
+.addrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn{font:inherit;font-size:15px;padding:7px 16px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
+.btn:disabled{opacity:.35;cursor:default}
+.count{font-size:14px;color:var(--muted)}
+.jobs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.jobs li{font-size:14px;line-height:1.3;padding:6px 10px;background:var(--card);border:1px solid var(--rule);border-left:6px solid var(--c,var(--green));border-radius:6px}
+.jobs li b{font-weight:normal;color:var(--ink);font-style:italic}
+.stops{display:grid;gap:6px;border-top:1px solid var(--rule);padding-top:10px}
+.opt{display:grid;grid-template-columns:18px 1fr;gap:8px;align-items:center;font-size:15px;line-height:1.25;cursor:pointer}
+.opt input{margin:0;accent-color:var(--amber);width:16px;height:16px}
+.opt.stopped{color:var(--amber)}
+.risk{margin:4px 0 0;font-size:13px;line-height:1.35;color:var(--muted)}
+.risk b{font-weight:normal;color:var(--amber)}
+.payoff{margin:0;font-size:19px;line-height:1.25;border-top:2px solid var(--green);padding-top:10px;color:var(--ink)}
+.spacer{flex:1}
+.reveal{animation:none}
+@media (prefers-reduced-motion:no-preference){
+  .reveal:not([hidden]){animation:rise .45s ease both}
+  .meter i{transition:width .35s ease}
+}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .rev{animation:none}
+  .meter i{transition:none}
+}
+
+/* short frames (the workbook embeds this in a slide that is about 560px tall) */
+@media (max-height:640px){
+  .panel{padding:10px 12px;gap:7px}
+  .payoff{padding-top:6px}
+  .big{font-size:24px}
+  .payoff{font-size:17px;padding-top:8px}
+  .opt{font-size:14px}
+  .jobs li{font-size:13px;padding:4px 8px}
+}
+/* narrow frames: calendar on top, panel below */
+@media (max-width:700px){
+  .main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .panel{overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header>
+    <div>
+      <h1>Your Tuesday</h1>
+      <p class="lede">Each agent does real work for the cafés. Add agents and watch your free time.</p>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="day" id="day">
+      <div class="hours" id="hours"></div>
+      <div class="track" id="track"></div>
+    </div>
+
+    <aside class="panel">
+      <div class="meters">
+        <div>
+          <div class="label">Work done today</div>
+          <div class="big work" id="workBig">0</div>
+          <div class="sub">items done today</div>
+          <div class="meter work"><i id="workBar"></i></div>
+        </div>
+        <div>
+          <div class="label">Your free time</div>
+          <div class="big ft" id="freeBig">3 h 45 min</div>
+          <div class="sub">left in your day</div>
+          <div class="meter ft"><i id="freeBar"></i></div>
+        </div>
+      </div>
+
+      <div class="over" id="over"></div>
+
+      <div class="addrow">
+        <button class="btn" id="add">Add an agent</button>
+        <span class="count" id="agentCount">0 of 5</span>
+      </div>
+
+      <ul class="jobs" id="jobs" hidden></ul>
+
+      <div class="stops reveal" id="stops" hidden>
+        <div class="label">Stop reviewing one kind of work</div>
+        <div id="opts"></div>
+        <p class="risk" id="risk"></p>
+      </div>
+
+      <p class="payoff reveal" id="payoff" hidden>More agents means more output, if you change how you review.</p>
+
+      <div class="spacer"></div>
+      <div><button class="link" id="reset">Start over</button></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  if (params.get('embed') === '1') document.body.classList.add('embed');
+
+  var START = 9 * 60, END = 18 * 60, SPAN = END - START;
+  var REV = 15;
+  var $ = function (s) { return document.querySelector(s); };
+
+  // fixed meetings, minutes from 9:00
+  var FIXED = [
+    { a: 0, b: 30, t: 'Team stand-up', kind: 'meet' },
+    { a: 60, b: 150, t: 'Supplier call', kind: 'meet' },
+    { a: 180, b: 225, t: 'Lunch', kind: 'lunch' },
+    { a: 270, b: 360, t: 'Café 17 budget review', kind: 'meet' },
+    { a: 390, b: 420, t: '1:1 with regional lead', kind: 'meet' },
+    { a: 450, b: 480, t: 'Quarterly numbers', kind: 'meet' }
+  ];
+
+  // each agent's named job, in the order it is added, with its daily output
+  var JOBS = [
+    { label: 'Supplier-email agent', out: 'answers 40 supplier emails', n: 40, c: '#b5483a' },
+    { label: 'Pricing agent', out: 'updates price sheets for all 40 cafés', n: 40, c: '#7d4a6b' },
+    { label: 'Scheduling agent', out: 'drafts next week’s schedules for 12 cafés', n: 12, c: '#4a6f8a' },
+    { label: 'Reviews agent', out: 'summarizes 300 customer reviews', n: 300, c: '#c9a227' },
+    { label: 'Ordering agent', out: 'drafts orders for 40 cafés', n: 40, c: '#d9774a' }
+  ];
+  var WORK_MAX = 0;
+  JOBS.forEach(function (j) { WORK_MAX += j.n; });
+
+  // each kind of review an agent sends you, and what skipping it risks
+  var TYPES = [
+    { key: 'supplier', label: 'supplier emails', risk: 'about 1 in 50 supplier emails has a mistake' },
+    { key: 'price', label: 'price sheets', risk: 'about 1 in 30 price sheets has the wrong price' },
+    { key: 'sched', label: 'staff schedules', risk: 'about 1 in 10 staff schedules has a conflict nobody sees until Monday' }
+  ];
+  var PATTERN = ['supplier', 'price', 'sched'];
+  var MAX_AGENTS = JOBS.length;
+  var FREE_MAX = SPAN - FIXED.reduce(function (s, f) { return s + (f.b - f.a); }, 0);
+
+  var S = { agents: 0, stopped: {} };
+  var SCALE = 1;
+
+  function fmt(min) {
+    var h = Math.floor(min / 60), m = min % 60;
+    var hh = ((h + 8) % 12) + 1;
+    return hh + ':' + (m < 10 ? '0' : '') + m;
+  }
+  function hm(min) {
+    if (min <= 0) return '0 min';
+    var h = Math.floor(min / 60), m = min % 60;
+    return h + ' h ' + (m < 10 ? '0' : '') + m + ' min';
+  }
+
+  // free gaps, minutes from 9:00 (built from FIXED)
+  function gaps() {
+    var out = [], cur = 0;
+    FIXED.slice().sort(function (x, y) { return x.a - y.a; }).forEach(function (f) {
+      if (f.a > cur) out.push([cur, f.a]);
+      cur = Math.max(cur, f.b);
+    });
+    if (cur < SPAN) out.push([cur, SPAN]);
+    return out;
+  }
+
+  function layoutDay() {
+    var free = gaps().map(function (g) { return g.slice(); });
+    var reviews = [];
+    var placed = [], overflow = 0;
+
+    for (var a = 0; a < S.agents; a++) {
+      PATTERN.forEach(function (type) {
+        if (!S.stopped[type]) reviews.push({ type: type, agent: a });
+      });
+    }
+
+    reviews.forEach(function (rv) {
+      var slot = null;
+      for (var g = 0; g < free.length; g++) {
+        if (free[g][1] - free[g][0] >= REV) { slot = free[g]; break; }
+      }
+      if (!slot) { overflow++; return; }
+      var s = slot[0];
+      placed.push({ a: s, b: s + REV, type: rv.type, agent: rv.agent });
+      slot[0] += REV;
+    });
+
+    var freeLeft = 0;
+    free.forEach(function (g) { freeLeft += g[1] - g[0]; });
+    return { placed: placed, overflow: overflow, freeLeft: freeLeft, remaining: free };
+  }
+
+  // fit the whole 9:00-6:00 day to the calendar's real height
+  function fitScale() {
+    var h = $('#day').clientHeight || 540;
+    return Math.max(0.5, Math.min(1.1, h / SPAN));
+  }
+
+  function buildTimeline() {
+    SCALE = fitScale();
+    var hours = $('#hours'), track = $('#track');
+    hours.innerHTML = ''; track.innerHTML = '';
+    var H = SPAN * SCALE;
+    hours.style.height = H + 'px';
+    track.style.height = H + 'px';
+    for (var h = 0; h <= 9; h++) {
+      var y = h * 60 * SCALE;
+      var lab = document.createElement('span');
+      lab.style.top = y + 'px';
+      lab.textContent = fmt(h * 60);
+      hours.appendChild(lab);
+      var ln = document.createElement('div');
+      ln.className = 'hline';
+      ln.style.top = y + 'px';
+      track.appendChild(ln);
+    }
+  }
+
+  function drawDay(L) {
+    var track = $('#track');
+    Array.prototype.slice.call(track.querySelectorAll('.blk, .free')).forEach(function (n) { n.remove(); });
+
+    FIXED.forEach(function (f) {
+      var d = document.createElement('div');
+      d.className = 'blk ' + f.kind;
+      d.style.top = (f.a * SCALE) + 'px';
+      d.style.height = ((f.b - f.a) * SCALE - 2) + 'px';
+      d.innerHTML = '<span>' + f.t + '</span><span>' + (f.b - f.a) + ' min</span>';
+      track.appendChild(d);
+    });
+
+    L.remaining.forEach(function (sg) {
+      var len = sg[1] - sg[0];
+      if (len < 5) return;
+      var d = document.createElement('div');
+      d.className = 'free';
+      d.style.top = (sg[0] * SCALE + 1) + 'px';
+      d.style.height = (len * SCALE - 2) + 'px';
+      d.innerHTML = '<span>Free</span><span>' + len + ' min</span>';
+      track.appendChild(d);
+    });
+
+    groupReviews(L.placed).forEach(function (grp) {
+      var d = document.createElement('div');
+      var len = grp.b - grp.a;
+      var n = grp.items.length;
+      var mins = n * REV;
+      d.className = 'blk rgroup' + (len * SCALE < 22 ? ' tiny' : '');
+      d.style.top = (grp.a * SCALE + 1) + 'px';
+      d.style.height = (len * SCALE - 2) + 'px';
+      d.setAttribute('tabindex', '0');
+      var detail = grp.items.map(function (it) {
+        return 'Review ' + typeLabel(it.type) + ' · ' + REV + ' min · ' + JOBS[it.agent].label;
+      }).join('\n');
+      d.title = detail;
+      d.setAttribute('aria-label', detail.replace(/\n/g, '; '));
+      var st = document.createElement('span');
+      st.className = 'stripes';
+      grp.items.forEach(function (it) {
+        var i = document.createElement('i');
+        i.style.background = JOBS[it.agent].c;
+        st.appendChild(i);
+      });
+      d.appendChild(st);
+      if (len * SCALE >= 22) {
+        var lab = document.createElement('span');
+        lab.className = 'rlabel';
+        lab.textContent = n === 1 ? 'Review · ' + mins + ' min' : n + ' reviews · ' + mins + ' min';
+        d.appendChild(lab);
+      }
+      track.appendChild(d);
+    });
+  }
+
+  function typeLabel(key) {
+    return TYPES.filter(function (t) { return t.key === key; })[0].label;
+  }
+
+  // back-to-back review blocks merge into one group
+  function groupReviews(placed) {
+    var sorted = placed.slice().sort(function (x, y) { return x.a - y.a; });
+    var groups = [];
+    sorted.forEach(function (r) {
+      var last = groups[groups.length - 1];
+      if (last && last.b === r.a) {
+        last.b = r.b;
+        last.items.push(r);
+      } else {
+        groups.push({ a: r.a, b: r.b, items: [r] });
+      }
+    });
+    return groups;
+  }
+
+  // options are built once; render() only syncs their state, so focus survives a click
+  function buildOpts() {
+    var box = $('#opts');
+    TYPES.forEach(function (t) {
+      var lab = document.createElement('label');
+      lab.className = 'opt';
+      lab.innerHTML = '<input type="checkbox" data-k="' + t.key + '"><span>Stop reviewing ' + t.label + '</span>';
+      box.appendChild(lab);
+    });
+  }
+
+  function render() {
+    var L = layoutDay();
+    drawDay(L);
+
+    var work = 0, jobsBox = $('#jobs');
+    jobsBox.innerHTML = '';
+    for (var i = 0; i < S.agents; i++) {
+      work += JOBS[i].n;
+      var li = document.createElement('li');
+      li.style.setProperty('--c', JOBS[i].c);
+      li.innerHTML = '<b>' + JOBS[i].label + '</b> ' + JOBS[i].out;
+      jobsBox.appendChild(li);
+    }
+    jobsBox.hidden = S.agents === 0;
+
+    $('#workBig').textContent = work.toLocaleString('en-US');
+    $('#workBar').style.width = (work / WORK_MAX * 100) + '%';
+
+    $('#freeBig').textContent = hm(L.freeLeft);
+    $('#freeBar').style.width = (L.freeLeft / FREE_MAX * 100) + '%';
+
+    $('#agentCount').textContent = S.agents + ' of ' + MAX_AGENTS;
+    $('#add').disabled = S.agents >= MAX_AGENTS;
+
+    var stopKeys = TYPES.filter(function (t) { return S.stopped[t.key]; });
+    var showStops = S.agents >= 2 || L.freeLeft < 60;
+    var showPayoff = stopKeys.length > 0 || L.freeLeft === 0;
+    $('#stops').hidden = !showStops;
+    $('#payoff').hidden = !showPayoff;
+
+    TYPES.forEach(function (t) {
+      var cb = document.querySelector('input[data-k="' + t.key + '"]');
+      cb.checked = !!S.stopped[t.key];
+      cb.parentNode.classList.toggle('stopped', !!S.stopped[t.key]);
+    });
+
+    var risk = $('#risk');
+    if (S.agents === 0) {
+      risk.innerHTML = '';
+    } else if (stopKeys.length === 0) {
+      risk.innerHTML = '<b>Risk:</b> none yet. Every review still reaches you.';
+    } else {
+      risk.innerHTML = '<b>Risk:</b> ' + stopKeys.map(function (t) { return t.risk; }).join('; ') +
+        '. Stopping frees time; the work still gets done.';
+    }
+
+    var over = $('#over');
+    if (L.overflow > 0) {
+      over.textContent = 'No room left today: ' + L.overflow + ' review' + (L.overflow === 1 ? '' : 's') + ' (' + (L.overflow * REV) + ' min) move to tomorrow.';
+    } else if (S.agents === 0) {
+      over.textContent = 'Add an agent to see what its work does to your day.';
+    } else {
+      over.textContent = '';
+    }
+  }
+
+  function reset() {
+    S = { agents: 0, stopped: {} };
+    render();
+  }
+
+  $('#add').addEventListener('click', function () {
+    if (S.agents < MAX_AGENTS) { S.agents++; render(); }
+  });
+  $('#opts').addEventListener('change', function (e) {
+    var k = e.target.getAttribute('data-k');
+    if (!k) return;
+    S.stopped[k] = e.target.checked;
+    render();
+  });
+  $('#reset').addEventListener('click', function (e) { e.preventDefault(); reset(); });
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { buildTimeline(); render(); }, 80);
+  });
+
+  buildOpts();
+  buildTimeline();
+  reset();
+})();
+</script>
+</body>
+</html>

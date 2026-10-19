@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Approval inbox</title>
+<style>
+:root{--paper:#f4efe6;--ink:#1f1b16;--amber:#a8651e;--green:#2f7d4f;--muted:#6b665e;--rule:rgba(31,27,22,.14);--card:#fbf8f2;--orange:#e07a2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#f4efe6}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:Georgia,"Iowan Old Style",serif;overflow:hidden}
+.wrap{height:100%;max-width:1000px;margin:0 auto;padding:20px 26px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+h1{font-weight:normal;font-size:28px;margin:0;letter-spacing:-.01em}
+.lede{margin:4px 0 0;color:var(--muted);font-size:15px}
+.hdr{display:flex;align-items:center;gap:16px}
+.link{color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:0;font-family:inherit;padding:0}
+.btn{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.on{background:var(--amber);border-color:var(--amber);color:#fff}
+.main{flex:1;min-height:0;display:grid;grid-template-columns:265px 1fr;gap:20px}
+.side{display:flex;flex-direction:column;gap:14px;min-height:0}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.label{font-size:13px;color:var(--muted);margin-bottom:10px;letter-spacing:.02em}
+.agents{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px;min-height:100px}
+.ag{display:flex;flex-direction:column;align-items:center;gap:5px}
+.av{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:13px;flex:none}
+.av.sm{width:30px;height:30px;font-size:11px}
+.ptrack{width:40px;height:3px;background:var(--rule);border-radius:2px;overflow:hidden}
+.ptrack i{display:block;height:100%;width:0;background:var(--amber)}
+.stepper{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px}
+.pips{display:flex;gap:6px;font-size:13px;color:var(--muted)}
+.pips span{min-width:26px;text-align:center;padding:3px 0;border:1px solid var(--rule);border-radius:999px}
+.pips span.on{border-color:var(--ink);color:var(--ink);font-weight:bold}
+.policies{display:flex;flex-direction:column;gap:8px}
+.pol{text-align:left;font:inherit;background:#fffdf8;border:1px solid var(--rule);border-radius:8px;padding:9px 11px;cursor:pointer;color:var(--ink)}
+.pol b{display:block;font-weight:normal;font-size:15px}
+.pol small{display:block;color:var(--muted);font-size:12.5px;margin-top:3px;line-height:1.35}
+.pol.on{border-color:var(--amber);box-shadow:inset 3px 0 0 var(--amber)}
+.note{margin:10px 0 0;font-size:13px;color:var(--muted);line-height:1.4}
+.inboxwrap{display:flex;flex-direction:column;gap:12px;min-height:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat .n{font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .n.amber{color:var(--amber)}
+.stat .k{font-size:14px;color:var(--muted);margin-top:4px}
+.bars{display:flex;flex-direction:column;gap:6px}
+.brow{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.track{height:14px;background:rgba(31,27,22,.06);border-radius:7px;overflow:hidden;position:relative}
+.track i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:7px;transition:width .3s ease}
+.track i.ink{background:var(--ink)}
+.track i.amber{background:var(--amber)}
+.sub{font-size:14px;color:var(--muted);min-height:20px}
+.inbox{flex:1;min-height:0;display:flex;flex-direction:column}
+.list{display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;overflow:hidden}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:9px 12px;border:1px solid var(--rule);border-radius:8px;background:#fffdf8}
+.row.reading{border-color:var(--amber)}
+.row .tx{font-size:16px;line-height:1.25}
+.row .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.acts{display:flex;gap:6px}
+.rb{height:4px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:6px}
+.rb i{display:block;height:100%;width:0;background:var(--amber)}
+.empty{color:var(--muted);font-size:15px;padding:18px 4px}
+.more{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Approval inbox</h1>
+      <p class="lede">Agents finish work and send it to your inbox. Approve or reject each result.</p>
+    </div>
+    <div class="hdr">
+      <button class="btn" id="stepBtn" hidden>Advance 2 seconds</button>
+      <button class="link" id="reset">Start over</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="side">
+      <section class="panel">
+        <div class="label">Your agents</div>
+        <div class="agents" id="agents"></div>
+        <div class="stepper">
+          <div class="pips" id="pips"><span data-n="1">1</span><span data-n="2">2</span><span data-n="4">4</span><span data-n="8">8</span></div>
+          <button class="btn primary" id="add">Add agents</button>
+        </div>
+      </section>
+      <section class="panel" id="policyPanel" hidden>
+        <div class="label">Eight agents. Choose a rule for the inbox.</div>
+        <div class="policies" id="policies">
+          <button class="pol" data-p="auto"><b>Approve small ones automatically</b><small>Routine tasks pass on their own. Everything else still waits for you.</small></button>
+          <button class="pol" data-p="spot"><b>Spot-check 1 in 5</b><small>You see one result in five. The rest pass without you.</small></button>
+          <button class="pol" data-p="all"><b>Keep checking everything</b><small>Every result waits for you, in order.</small></button>
+        </div>
+        <p class="note" id="policyNote"></p>
+      </section>
+    </aside>
+
+    <section class="inboxwrap">
+      <div class="stats">
+        <div class="stat"><div class="n" id="fin">0</div><div class="k">Tasks finished by agents</div></div>
+        <div class="stat"><div class="n amber" id="app">0</div><div class="k">Tasks you've approved</div></div>
+        <div class="stat"><div class="n" id="wait">0</div><div class="k">Waiting for you</div></div>
+      </div>
+      <div class="bars">
+        <div class="brow"><span>Finished</span><div class="track"><i class="ink" id="barFin"></i></div></div>
+        <div class="brow"><span>Approved</span><div class="track"><i class="amber" id="barApp"></i></div></div>
+      </div>
+      <div class="sub" id="sub"></div>
+      <div class="panel inbox">
+        <div class="label">Your inbox</div>
+        <div class="list" id="list"></div>
+        <div class="more" id="more"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var TASKS = [
+    ['Reorder oat milk for Harbor St.', true],
+    ['Draft Saturday promo email', false],
+    ['Reply to dairy invoice #4471', true],
+    ['Price sheet for cold brew, all 40 cafés', false],
+    ['Schedule barista training, Ballard', true],
+    ['Summarize 60 reviews from café 17', false],
+    ['Reorder 12-oz cups, Lakeview', true],
+    ['Rewrite holiday menu descriptions', false]
+  ];
+  var READ = 1.5;
+  var POLICY_NOTE = {
+    none: '',
+    all: 'Every result waits for you. The queue grows whenever agents outpace your reading.',
+    auto: 'Small, routine tasks now pass by rule. Larger ones still wait for you.',
+    spot: 'Only every fifth result reaches your inbox. The other four pass by rule.'
+  };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (s) { return document.querySelector(s); };
+  var S;
+
+  function fresh() {
+    return { t: 0, n: 0, agents: [], items: [], seq: 0, uid: 0, finished: 0, approved: 0, passed: 0, rejected: 0,
+             policy: 'all', readId: null, readLeft: 0, dirty: true };
+  }
+
+  function addAgent() {
+    var i = S.agents.length;
+    var el = document.createElement('div');
+    el.className = 'ag';
+    el.innerHTML = '<div class="av">A' + (i + 1) + '</div><div class="ptrack"><i></i></div>';
+    $('#agents').appendChild(el);
+    S.agents.push({ i: i, period: 3.4 + (i % 3) * 0.35, prog: (i * 0.9) % 3.0, bar: el.querySelector('.ptrack i') });
+  }
+
+  function setN(n) {
+    while (S.agents.length < n) addAgent();
+    S.n = n;
+    var pips = document.querySelectorAll('#pips span');
+    for (var k = 0; k < pips.length; k++) pips[k].classList.toggle('on', +pips[k].dataset.n === n);
+    $('#add').disabled = n >= 8;
+    $('#policyPanel').hidden = n < 8;
+  }
+
+  function finish(a) {
+    var pair = TASKS[S.seq % TASKS.length];
+    S.seq++;
+    S.finished++;
+    var p = S.policy;
+    if ((p === 'auto' && pair[1]) || (p === 'spot' && S.finished % 5 !== 0)) {
+      S.passed++;
+      return;
+    }
+    S.items.push({ id: ++S.uid, text: pair[0], small: pair[1], agent: a.i + 1, status: 'new' });
+    S.dirty = true;
+  }
+
+  function render() {
+    S.dirty = false;
+    var list = $('#list');
+    var shown = S.items.slice(0, 5);
+    if (!shown.length) {
+      list.innerHTML = '<div class="empty">Nothing waiting. Agents will send work here as it finishes.</div>';
+    } else {
+      list.innerHTML = shown.map(function (it) {
+        var av = '<span class="av sm">A' + it.agent + '</span>';
+        if (it.status === 'new') {
+          return '<div class="row">' + av +
+            '<div><div class="tx">' + it.text + '</div><div class="meta">Finished just now</div></div>' +
+            '<div class="acts"><button class="btn" data-a="rej" data-id="' + it.id + '">Reject</button>' +
+            '<button class="btn primary" data-a="ok" data-id="' + it.id + '">Approve</button></div></div>';
+        }
+        if (it.status === 'queued') {
+          return '<div class="row">' + av +
+            '<div><div class="tx">' + it.text + '</div><div class="meta">Approved, in line to be read</div></div>' +
+            '<div class="meta">in line</div></div>';
+        }
+        return '<div class="row reading">' + av +
+          '<div><div class="tx">' + it.text + '</div><div class="meta">Reading, about 1.5 seconds</div>' +
+          '<div class="rb"><i id="rb' + it.id + '"></i></div></div>' +
+          '<div class="meta">reading</div></div>';
+      }).join('');
+    }
+    $('#more').textContent = S.items.length > shown.length ? '+' + (S.items.length - shown.length) + ' more waiting behind these' : '';
+  }
+
+  function stats() {
+    $('#fin').textContent = S.finished;
+    $('#app').textContent = S.approved;
+    $('#wait').textContent = S.items.length;
+    var sc = Math.max(12, S.finished);
+    $('#barFin').style.width = (S.finished / sc * 100) + '%';
+    $('#barApp').style.width = (S.approved / sc * 100) + '%';
+    var pct = S.finished ? Math.round(S.approved / S.finished * 100) : 100;
+    $('#sub').textContent = 'You have approved ' + pct + '% of finished work. Passed by rule: ' + S.passed + '. Rejected: ' + S.rejected + '.';
+  }
+
+  function step(dt) {
+    S.t += dt;
+    for (var k = 0; k < S.agents.length; k++) {
+      var a = S.agents[k];
+      if (k >= S.n) break;
+      a.prog += dt;
+      if (a.prog >= a.period) { a.prog -= a.period; finish(a); }
+      a.bar.style.width = (a.prog / a.period * 100) + '%';
+    }
+    if (S.readId !== null) {
+      S.readLeft -= dt;
+      if (S.readLeft <= 0) {
+        S.items = S.items.filter(function (x) { return x.id !== S.readId; });
+        S.approved++;
+        S.readId = null;
+        S.dirty = true;
+      }
+    }
+    if (S.readId === null) {
+      for (var j = 0; j < S.items.length; j++) {
+        if (S.items[j].status === 'queued') {
+          S.items[j].status = 'reading';
+          S.readId = S.items[j].id;
+          S.readLeft = READ;
+          S.dirty = true;
+          break;
+        }
+      }
+    }
+    if (S.dirty) render();
+    if (S.readId !== null) {
+      var bar = document.getElementById('rb' + S.readId);
+      if (bar) bar.style.width = ((READ - S.readLeft) / READ * 100) + '%';
+    }
+    stats();
+  }
+
+  function setPolicy(p) {
+    S.policy = p;
+    var btns = document.querySelectorAll('.pol');
+    for (var k = 0; k < btns.length; k++) btns[k].classList.toggle('on', btns[k].dataset.p === p);
+    $('#policyNote').textContent = POLICY_NOTE[p];
+  }
+
+  function reset() {
+    S = fresh();
+    $('#agents').innerHTML = '';
+    setN(1);
+    setPolicy('all');
+    S.dirty = true;
+    render();
+    stats();
+  }
+
+  $('#list').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    var id = +b.dataset.id;
+    var it = S.items.filter(function (x) { return x.id === id; })[0];
+    if (!it || it.status !== 'new') return;
+    if (b.dataset.a === 'ok') {
+      it.status = 'queued';
+    } else {
+      S.items = S.items.filter(function (x) { return x.id !== id; });
+      S.rejected++;
+    }
+    S.dirty = true;
+    render();
+    stats();
+  });
+
+  $('#add').addEventListener('click', function () { if (S.n < 8) setN(S.n * 2); });
+  document.getElementById('policies').addEventListener('click', function (e) {
+    var b = e.target.closest('.pol');
+    if (b) setPolicy(b.dataset.p);
+  });
+  $('#reset').addEventListener('click', function (e) { e.preventDefault(); reset(); });
+
+  reset();
+
+  if (reduce) {
+    var sb = $('#stepBtn');
+    sb.hidden = false;
+    sb.addEventListener('click', function () { step(2); });
+  } else {
+    var last = null;
+    var loop = function (ts) {
+      if (last === null) last = ts;
+      var dt = Math.min(0.05, (ts - last) / 1000);
+      last = ts;
+      step(dt);
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+})();
+</script>
+</body>
+</html>

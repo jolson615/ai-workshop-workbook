@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){var d=document.documentElement,n=null;d.classList.add("preload");try{n=localStorage.getItem("wb:nav")}catch(e){}if(n!==null?n==="1":innerWidth<900)d.classList.add("nav-c")})()</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 1 · What is an agent? · Workbook</title>
+<link rel="stylesheet" href="assets/workbook.css">
+<style>
+/* same input, same output (session 1, slide 6). Each row repeats the input, then one output box. The outputs share a column so the eye can compare them. */
+.tech .cmp{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4vw,64px);max-width:1180px;align-items:start}
+.tech .cmp .col{display:grid;gap:clamp(12px,2vh,20px);align-content:start;min-width:0;border-top:2px solid var(--ink);padding-top:14px}
+.tech .cmp .col-title{margin:0;font-size:clamp(20px,1.9vw,26px);font-weight:600;letter-spacing:-.015em;line-height:1.1}
+.tech .cmp .runs{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.tech .cmp .runs li{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.3fr);align-items:center;gap:clamp(8px,1vw,14px);padding:clamp(6px,1.1vh,11px) 0;border-bottom:1px solid var(--rule)}
+.tech .cmp .chip{min-width:0;padding:4px 12px;border:1px dashed var(--mute);border-radius:12px;font-size:clamp(13px,1.1vw,15px);line-height:1.3;color:var(--mute);font-variant-numeric:tabular-nums}
+.tech .cmp .arr{font-size:18px;line-height:1;color:var(--mute)}
+.tech .cmp .out{min-width:0;padding:7px 12px;border:1.5px solid var(--ink);background:var(--card);font-size:clamp(16px,1.35vw,20px);line-height:1.25;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.tech .cmp .k{font-size:.72em;font-weight:500;letter-spacing:.04em;color:var(--mute);margin-right:.35em}
+.tech .cmp .cap{margin:4px 0 0;font-size:clamp(18px,1.6vw,22px);font-weight:500;line-height:1.3;text-wrap:balance}
+/* the earlier column becomes context, not done: this slide only */
+.tech .cmp .col.em-done.on{font-weight:var(--em-w-context)!important;color:var(--em-c-context)!important;opacity:var(--em-o-context)}
+
+/* eyebrow: small, muted label above a block of text. Reusable. Lunch slide uses it to flag the unplugged table activity. */
+.eyebrow{margin:0;font-size:15px;font-weight:600;letter-spacing:.08em;font-variant-caps:all-small-caps;color:var(--mute)}
+
+/* lunch slide: setup sentence is context, the question carries the weight */
+.tech .qline.em-context{font-weight:400;font-size:clamp(26px,2.6vw,38px);line-height:1.25;letter-spacing:-.01em;margin-bottom:.6em;max-width:28ch}
+
+/* instruction line under a slide title (interaction slides) */
+.tech .s1-instr{margin:0 0 18px;max-width:46ch;font-size:clamp(18px,1.8vw,24px);line-height:1.3}
+
+/* slide 10: you are the model. Tools card beside the one-question-at-a-time list */
+.s1-model{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start;max-width:1140px}
+.s1-model .qs{margin-top:0;max-width:none}
+.s1-tools{background:var(--card);border:1.5px solid var(--ink);padding:18px 20px 10px}
+.s1-tools-h{margin:0 0 6px;font-size:clamp(20px,1.8vw,26px);font-weight:700;letter-spacing:-.02em}
+.s1-tools ul{list-style:none;margin:0;padding:0}
+.s1-tools li{padding:12px 0;border-top:1px solid var(--rule)}
+.s1-tools .tn{display:block;font-size:18px;font-weight:600}
+.s1-tools .td{display:block;margin-top:2px;font-size:16px;line-height:1.3;color:var(--mute)}
+@media (max-width:820px){.s1-model{grid-template-columns:minmax(0,1fr)}}
+.s1t{display:grid;gap:12px;margin-top:0;max-width:none}
+.s1t-a,.s1t-b{display:grid;gap:8px}
+.s1t-a[hidden],.s1t-b[hidden]{display:none}
+.s1t .qs-choices .pick{flex:1 1 0;min-width:0}
+.s1t .s1t-none{justify-self:start;margin-top:2px;padding:4px 0;background:none;border:0;font-size:16px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+.s1t .s1t-none:hover:not(:disabled){color:var(--signal)}
+.s1t .s1t-none:disabled{opacity:.4;cursor:default}
+@media (max-width:820px){.s1t .qs-choices .pick{flex:1 1 100%}}
+
+/* slide 11: two three-stop range sliders per row (Read, Write). Thumb colour deepens with the value */
+.s1-cell{min-width:0}
+.s1-rng{-webkit-appearance:none;appearance:none;display:block;width:100%;height:30px;margin:0;background:transparent;cursor:pointer;--fillc:transparent;--p:0%}
+.s1-rng[data-v="1"]{--fillc:rgba(232,70,30,.45)}
+.s1-rng[data-v="2"]{--fillc:var(--signal)}
+.s1-rng::-webkit-slider-runnable-track{height:8px;border:1.5px solid var(--ink);background:linear-gradient(to right,var(--fillc) var(--p),var(--card) var(--p))}
+.s1-rng::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-7px;border:2px solid var(--ink);border-radius:50%;background:var(--card)}
+.s1-rng[data-v="1"]::-webkit-slider-thumb{background:rgba(232,70,30,.45)}
+.s1-rng[data-v="2"]::-webkit-slider-thumb{background:var(--signal)}
+.s1-rng::-moz-range-track{height:8px;border:1.5px solid var(--ink);background:var(--card)}
+.s1-rng::-moz-range-progress{height:8px;background:var(--fillc)}
+.s1-rng::-moz-range-thumb{width:19px;height:19px;border:2px solid var(--ink);border-radius:50%;background:var(--card)}
+.s1-rng[data-v="1"]::-moz-range-thumb{background:rgba(232,70,30,.45)}
+.s1-rng[data-v="2"]::-moz-range-thumb{background:var(--signal)}
+.s1-stops{display:flex;justify-content:space-between;padding:0 10px;margin-top:2px;font-size:13px;line-height:1.2;color:var(--mute);white-space:nowrap}
+</style>
+</head>
+<body data-lang="tech" data-session="1">
+<div class="app" id="app">
+
+  <aside class="nav" aria-label="Sessions">
+    <div class="nav-top">
+      <button class="nav-toggle" id="navToggle" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation ([)">[</button>
+    </div>
+    <ol class="sessions">
+      <li><a class="sess" data-l="t" href="session-1.html" aria-current="page"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-3.html"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="sn" aria-hidden="true">1</div>
+      <div class="sname">What is an agent?</div>
+      <nav class="pips" id="pips" aria-label="Slides"></nav>
+    </header>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 Title [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="t-title">
+          <p class="big" aria-hidden="true">1</p>
+          <h1>What is an agent?</h1>
+        </div>
+      </section>
+
+      <!-- 2 Warm-up [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="t-stack">
+          <p class="qline">What separates an “agent” from other AI?</p>
+        </div>
+      </section>
+
+      <!-- 3 Build an agent [LAPTOP] -->
+      <section class="slide tech" data-attn="laptop">
+        <h2 class="prompt em-context">Build an agent</h2>
+        <div class="build" data-widget="build">
+          <div class="b-left">
+            <p class="s1-instr em-context">Pick everything something needs before you’d call it an agent. Then compare with the person next to you.</p>
+            <ul class="togs">
+              <li><button class="tog" aria-pressed="false">Always on and proactive</button></li>
+              <li><button class="tog" aria-pressed="false">Decides without asking</button></li>
+              <li><button class="tog" aria-pressed="false">Loops until the job is done</button></li>
+              <li><button class="tog" aria-pressed="false">Outcome in, steps out</button></li>
+              <li><button class="tog" aria-pressed="false">Has tools and access</button></li>
+              <li><button class="tog" aria-pressed="false">Remembers across sessions</button></li>
+              <li><button class="tog" aria-pressed="false">Acts in the world, not just in text</button></li>
+              <li><button class="tog" aria-pressed="false">You can call it from where you already work</button></li>
+            </ul>
+          </div>
+          <div class="b-right">
+            <svg class="fig" viewBox="0 0 300 300" role="img" aria-label="Agent figure: parts appear as you pick them">
+              <g class="part" data-part="0">
+                <path class="shape" d="M150 62 V40"/>
+                <circle class="shape" cx="150" cy="32" r="8"/>
+              </g>
+              <g class="part" data-part="1">
+                <circle class="shape" cx="150" cy="110" r="50"/>
+              </g>
+              <g class="part" data-part="2">
+                <rect class="shape" x="118" y="176" width="64" height="70" rx="14"/>
+              </g>
+              <g class="part" data-part="3">
+                <circle class="shape" cx="248" cy="70" r="24"/>
+                <circle class="shape" cx="248" cy="70" r="8"/>
+              </g>
+              <g class="part" data-part="4">
+                <rect class="shape" x="62" y="170" width="44" height="30" rx="8"/>
+                <path class="shape" d="M106 185 H118"/>
+              </g>
+              <g class="part" data-part="5">
+                <rect class="shape" x="196" y="168" width="40" height="50" rx="4"/>
+                <path class="shape" d="M204 168 V218"/>
+              </g>
+              <g class="part" data-part="6">
+                <rect class="shape" x="126" y="252" width="18" height="44" rx="6"/>
+                <rect class="shape" x="156" y="252" width="18" height="44" rx="6"/>
+              </g>
+              <g class="part" data-part="7">
+                <rect class="shape" x="20" y="30" width="72" height="40" rx="10"/>
+              </g>
+            </svg>
+            <p class="count" aria-live="polite">Pick the parts you’d need.</p>
+            <div class="build-meter" aria-hidden="true"><span class="bm-track"><span class="bm-fill"></span></span><span class="bm-ends"><span>Easier to build</span><span>Harder to build</span></span></div>
+            <p class="ask" hidden>Did your neighbor build the same agent?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Definition [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="t-stack">
+          <h2 class="defn-title em-context">What is an agent?</h2>
+          <p class="defn">A model that decides its own next step, uses tools, and repeats until the job is done.</p>
+          <p class="fnote-line">Adapted from published definitions: <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">source 1</a> · <a href="https://openai.github.io/openai-agents-python/agents/" target="_blank" rel="noopener">source 2</a></p>
+        </div>
+      </section>
+
+      <!-- 5 Text, code, harness [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="t-stmt">
+          <p class="line step">A model only ever writes text.</p>
+          <p class="line step">Text can be code.</p>
+          <p class="line step">The <em>harness</em> is the software that runs that code.</p>
+        </div>
+      </section>
+
+      <!-- 6 Same input, same output? [UP] -->
+      <section class="slide tech" data-attn="up">
+        <h2 class="prompt em-context">Same input, same output?</h2>
+        <div class="cmp">
+          <div class="col step" data-col="det">
+            <p class="col-title">Deterministic</p>
+            <ol class="runs">
+              <li><span class="chip"><span class="k">Input:</span> 1,240 × 12</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 1:</span> 14,880</span></li>
+              <li><span class="chip"><span class="k">Input:</span> 1,240 × 12</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 2:</span> 14,880</span></li>
+              <li><span class="chip"><span class="k">Input:</span> 1,240 × 12</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 3:</span> 14,880</span></li>
+            </ol>
+            <p class="cap">Same every time: a good task for harness code.</p>
+          </div>
+          <div class="col step" data-col="prob">
+            <p class="col-title">Probabilistic</p>
+            <ol class="runs">
+              <li><span class="chip"><span class="k">Input:</span> Summarize yesterday’s board meeting in one sentence.</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 1:</span> The board approved a price increase and paused hiring until the next review.</span></li>
+              <li><span class="chip"><span class="k">Input:</span> Summarize yesterday’s board meeting in one sentence.</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 2:</span> Directors backed higher prices next quarter and held off on new hires.</span></li>
+              <li><span class="chip"><span class="k">Input:</span> Summarize yesterday’s board meeting in one sentence.</span><span class="arr" aria-hidden="true">→</span><span class="out"><span class="k">Output 3:</span> Yesterday the board agreed to raise prices and freeze hiring for now.</span></li>
+            </ol>
+            <p class="cap">Different each time, by design: a good task for an LLM.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 LLM or harness code? [LAPTOP] -->
+      <section class="slide tech" data-attn="laptop">
+        <h2 class="prompt em-context">LLM or harness code?</h2>
+        <p class="s1-instr em-context">For each task, would you hand it to the model, or to ordinary code that the harness runs?</p>
+        <div class="qs" data-qs="llm">
+          <ol class="qs-done" aria-label="Answered"></ol>
+          <div class="qs-item" data-answer="llm" data-short="Write an apology email">
+            <p class="qs-text">Write an apology email</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="llm" aria-pressed="false" type="button">LLM</button>
+              <button class="pick" data-pick="code" aria-pressed="false" type="button">Harness code</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Tone, context, judgment. This is what language models are for.</p>
+          </div>
+          <div class="qs-item" data-answer="code" data-short="Rename these 400 files to lowercase">
+            <p class="qs-text">Rename these 400 files to lowercase</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="llm" aria-pressed="false" type="button">LLM</button>
+              <button class="pick" data-pick="code" aria-pressed="false" type="button">Harness code</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>One rule, 400 times. Code does it instantly and never drifts.</p>
+          </div>
+          <div class="qs-item" data-answer="llm" data-short="Pick the kinder of these two sentences">
+            <p class="qs-text">Pick the kinder of these two sentences</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="llm" aria-pressed="false" type="button">LLM</button>
+              <button class="pick" data-pick="code" aria-pressed="false" type="button">Harness code</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>There’s no formula for kind.</p>
+          </div>
+          <div class="qs-item" data-answer="code" data-short="Add up the Q3 column">
+            <p class="qs-text">Add up the Q3 column</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="llm" aria-pressed="false" type="button">LLM</button>
+              <button class="pick" data-pick="code" aria-pressed="false" type="button">Harness code</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>A model will usually get it right. A formula always does.</p>
+          </div>
+          <div class="qs-item" data-answer="code" data-short="Count the Rs in “strawberry”">
+            <p class="qs-text">Count the Rs in “strawberry”</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="llm" aria-pressed="false" type="button">LLM</button>
+              <button class="pick" data-pick="code" aria-pressed="false" type="button">Harness code</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Models read text in chunks, not letters. One line of code counts perfectly.</p>
+          </div>
+          <div class="qs-item" data-answer="code" data-short="Check if this link works">
+            <p class="qs-text">Check if this link works</p>
+            <div class="qs-choices">
+              <button class="pick" data-pick="llm" aria-pressed="false" type="button">LLM</button>
+              <button class="pick" data-pick="code" aria-pressed="false" type="button">Harness code</button>
+            </div>
+            <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>The model can’t visit the link. It can <em>ask</em> the harness to check. That request is a tool call.</p>
+          </div>
+          <button class="btn-ink qs-next" type="button" hidden>Next question</button>
+          <p class="qs-count" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- 8 Lunch [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="t-stack">
+          <p class="eyebrow">Table activity</p>
+          <p class="qline em-context">Imagine you’re ordering lunch for everyone in this room, but you’ve left your phone and wallet at home.</p>
+          <p class="qline">What would you need to be able to <em>do</em> to get lunch here?</p>
+          <p class="smallline">Write one idea per sticky note.</p>
+        </div>
+      </section>
+
+      <!-- 9 Lunch, sorted [UP] -->
+      <section class="slide tech" data-attn="up">
+        <h2 class="prompt em-context">Lunch, sorted</h2>
+        <div class="board" id="s1-merge">
+          <section class="zone zone-info" aria-label="Get information">
+            <h3 class="zlabel">Get information</h3>
+            <div class="drop">
+              <div class="card static">Message everyone</div>
+              <div class="card static">Read their replies</div>
+              <div class="card static">Search nearby restaurants</div>
+              <div class="card static">Check a menu</div>
+              <div class="card static">Check delivery time</div>
+            </div>
+          </section>
+          <section class="zone zone-act" aria-label="Take action">
+            <h3 class="zlabel">Take action</h3>
+            <div class="drop">
+              <div class="card static">Place the order</div>
+              <div class="card static">Pay</div>
+              <div class="card static">Tell everyone it’s ordered</div>
+            </div>
+          </section>
+        </div>
+        <button class="btn-merge" id="s1-merge-btn" type="button">Merge</button>
+        <p class="reveal-line" id="s1-merge-line">To a computer, these are the same thing.</p>
+      </section>
+
+      <!-- 10 You are the model [LAPTOP]: two parts per request (answer directly or use a tool, then which tool), one request at a time -->
+      <section class="slide tech" data-attn="laptop">
+        <h2 class="prompt em-context">You are the model</h2>
+        <p class="s1-instr em-context">Decide whether to answer from your <abbr title="What the model learned during training" tabindex="0">parametric memory</abbr>, or use a tool before responding. If you use one, pick which.</p>
+        <div class="s1-model">
+          <aside class="s1-tools" aria-labelledby="s1-tools-h">
+            <h3 class="s1-tools-h" id="s1-tools-h">Your tools</h3>
+            <ul>
+              <li><span class="tn">Calendar</span><span class="td">Read the user’s calendar</span></li>
+              <li><span class="tn">Messages</span><span class="td">Send a message to a colleague</span></li>
+              <li><span class="tn">Web search</span><span class="td">Search the web</span></li>
+            </ul>
+          </aside>
+          <div class="s1t" id="s1t">
+            <ol class="qs-done" aria-label="Answered"></ol>
+            <div class="qs-item" data-answer="calendar" data-short="What’s on my calendar tomorrow?">
+              <p class="qs-text em-current">What’s on my calendar tomorrow?</p>
+              <div class="s1t-a">
+                <p class="qs-text em-context">Answer directly, or use a tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-a="direct" aria-pressed="false" type="button">Answer directly</button>
+                  <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+                </div>
+              </div>
+              <div class="s1t-b" hidden>
+                <p class="qs-text em-context">Which tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-b="calendar" aria-pressed="false" type="button">Calendar</button>
+                  <button class="pick" data-b="messages" aria-pressed="false" type="button">Messages</button>
+                  <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                </div>
+                <button class="s1t-none" data-none type="button">No tool fits: answer directly instead</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Calendar. You can’t know this without looking.</p>
+            </div>
+            <div class="qs-item" data-answer="direct" data-short="Draft a two-line thank-you note to my team.">
+              <p class="qs-text em-current">Draft a two-line thank-you note to my team.</p>
+              <div class="s1t-a">
+                <p class="qs-text em-context">Answer directly, or use a tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-a="direct" aria-pressed="false" type="button">Answer directly</button>
+                  <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+                </div>
+              </div>
+              <div class="s1t-b" hidden>
+                <p class="qs-text em-context">Which tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-b="calendar" aria-pressed="false" type="button">Calendar</button>
+                  <button class="pick" data-b="messages" aria-pressed="false" type="button">Messages</button>
+                  <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                </div>
+                <button class="s1t-none" data-none type="button">No tool fits: answer directly instead</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Writing is the model’s job, so answer directly. Sending the note would need Messages, which is a separate step.</p>
+            </div>
+            <div class="qs-item" data-answer="web" data-short="Find a lunch spot near the office that takes group bookings.">
+              <p class="qs-text em-current">Find a lunch spot near the office that takes group bookings.</p>
+              <div class="s1t-a">
+                <p class="qs-text em-context">Answer directly, or use a tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-a="direct" aria-pressed="false" type="button">Answer directly</button>
+                  <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+                </div>
+              </div>
+              <div class="s1t-b" hidden>
+                <p class="qs-text em-context">Which tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-b="calendar" aria-pressed="false" type="button">Calendar</button>
+                  <button class="pick" data-b="messages" aria-pressed="false" type="button">Messages</button>
+                  <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                </div>
+                <button class="s1t-none" data-none type="button">No tool fits: answer directly instead</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Web search. Which places are open and take groups is something you have to look up.</p>
+            </div>
+            <div class="qs-item" data-answer="messages" data-short="Tell Priya I’m running ten minutes late.">
+              <p class="qs-text em-current">Tell Priya I’m running ten minutes late.</p>
+              <div class="s1t-a">
+                <p class="qs-text em-context">Answer directly, or use a tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-a="direct" aria-pressed="false" type="button">Answer directly</button>
+                  <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+                </div>
+              </div>
+              <div class="s1t-b" hidden>
+                <p class="qs-text em-context">Which tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-b="calendar" aria-pressed="false" type="button">Calendar</button>
+                  <button class="pick" data-b="messages" aria-pressed="false" type="button">Messages</button>
+                  <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                </div>
+                <button class="s1t-none" data-none type="button">No tool fits: answer directly instead</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>Messages. Sending a message is an action, and it’s just another tool.</p>
+            </div>
+            <div class="qs-item" data-answer="direct" data-short="Pay the caterer’s invoice.">
+              <p class="qs-text em-current">Pay the caterer’s invoice.</p>
+              <div class="s1t-a">
+                <p class="qs-text em-context">Answer directly, or use a tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-a="direct" aria-pressed="false" type="button">Answer directly</button>
+                  <button class="pick" data-a="tool" aria-pressed="false" type="button">Use a tool</button>
+                </div>
+              </div>
+              <div class="s1t-b" hidden>
+                <p class="qs-text em-context">Which tool?</p>
+                <div class="qs-choices">
+                  <button class="pick" data-b="calendar" aria-pressed="false" type="button">Calendar</button>
+                  <button class="pick" data-b="messages" aria-pressed="false" type="button">Messages</button>
+                  <button class="pick" data-b="web" aria-pressed="false" type="button">Web search</button>
+                </div>
+                <button class="s1t-none" data-none type="button">No tool fits: answer directly instead</button>
+              </div>
+              <p class="qs-reveal"><span class="lean">Reasonable. Here’s why it leans the other way.</span>It looks like a tool job, but none of your tools can pay. The honest answer is “I can’t do that yet.” What an agent can do is limited to the tools it’s been given.</p>
+            </div>
+            <p class="qs-count" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11 Permissions [LAPTOP] -->
+      <section class="slide tech" data-attn="laptop">
+        <h2 class="prompt em-context">Permissions</h2>
+        <p class="s1-instr em-context">How much would you let an agent do in each system without checking with you first?</p>
+        <div class="perm" data-widget="perm2">
+          <div class="perm-head"><span></span><span>Read</span><span>Write</span></div>
+          <div class="perm-row"><span class="sys">Email</span>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="Email: read" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="Email: write" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div></div>
+          <div class="perm-row"><span class="sys">Calendar</span>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="Calendar: read" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="Calendar: write" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div></div>
+          <div class="perm-row"><span class="sys">CRM</span>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="CRM: read" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="CRM: write" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div></div>
+          <div class="perm-row"><span class="sys">Billing</span>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="Billing: read" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="Billing: write" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div></div>
+          <div class="perm-row"><span class="sys">HR records</span>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="HR records: read" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div>
+            <div class="s1-cell"><input class="s1-rng" type="range" min="0" max="2" step="1" value="0" data-v="0" aria-label="HR records: write" aria-valuetext="Never"><div class="s1-stops" aria-hidden="true"><span>Never</span><span>Ask me first</span><span>Always allow</span></div></div></div>
+        </div>
+        <p class="ask-line">Compare with your neighbor. Where did each of you draw the line?</p>
+      </section>
+
+      <!-- 12 Takeaways [UP] -->
+      <section class="slide tech" data-attn="up">
+        <div class="take-wrap">
+          <h2 class="take-title">Key takeaways</h2>
+          <p class="take-ask">Check off the ones that feel clear to you.</p>
+          <ul class="take">
+            <li><label><input type="checkbox"><span class="tt">An agent is a model using tools in a loop toward a goal.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Getting information is a kind of action.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Be jealous of outcomes, not agents.</span></label></li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="foot">
+      <button class="btn" id="prev" type="button">← Back</button>
+      <p class="attn" id="attn" data-mode="up">Eyes up front</p>
+      <button class="btn" id="next" type="button">Next →</button>
+    </footer>
+  </main>
+</div>
+<script src="assets/workbook.js"></script>
+<script>
+/* session 1, slide 11: permissions sliders (Never · Ask me first · Always allow), saved under wb:s1:perm2 as values 0-2 */
+(function () {
+  'use strict';
+  var KEY = 'wb:s1:perm2', STOPS = ['Never', 'Ask me first', 'Always allow'];
+  var root = document.querySelector('[data-widget="perm2"]');
+  if (!root) return;
+  var rngs = Array.prototype.slice.call(root.querySelectorAll('input[type="range"]'));
+  var state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY));
+    if (Array.isArray(saved) && saved.length === 10) {
+      state = saved.map(function (v) { return v === 1 || v === 2 ? v : 0; });
+    }
+  } catch (e) {}
+  function render() {
+    rngs.forEach(function (r, i) {
+      var v = state[i];
+      r.value = String(v);
+      r.setAttribute('data-v', String(v));
+      r.setAttribute('aria-valuetext', STOPS[v]);
+      r.style.setProperty('--p', (v * 50) + '%');
+    });
+  }
+  rngs.forEach(function (r, i) {
+    r.addEventListener('input', function () {
+      state[i] = Number(r.value);
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+      render();
+    });
+  });
+  render();
+})();
+</script>
+<script>
+/* session 1, slide 10: you are the model, two parts per request. Step A: answer directly or use a tool. Step B (after "Use a tool"): which tool, or "No tool fits", which switches the answer to Answer directly.
+   Scored on the final choice. Saved under wb:s1:tools2 as { a: [...], b: [...] }. Every storage call is wrapped in try/catch. */
+(function () {
+  'use strict';
+  var KEY = 'wb:s1:tools2', TOOLS = ['calendar', 'messages', 'web'];
+  var root = document.getElementById('s1t');
+  if (!root) return;
+  var items = Array.prototype.slice.call(root.querySelectorAll('.qs-item'));
+  var n = items.length;
+  var done = root.querySelector('.qs-done');
+  var count = root.querySelector('.qs-count');
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="tick" d="M5 12.6l4.3 4.3L19 7.2"/></svg>' +
+    '<i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i><i class="cf" aria-hidden="true"></i>';
+  var CROSS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+  /* a[i]: 'direct' | 'tool' | null (step A). b[i]: a tool key, 'none' (answered directly, no step B) or null (not finished) */
+  var st = { a: items.map(function () { return null; }), b: items.map(function () { return null; }) };
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ a: st.a, b: st.b })); } catch (e) {} }
+  var saved = load();
+  if (saved && Array.isArray(saved.a) && Array.isArray(saved.b) && saved.a.length === n && saved.b.length === n) {
+    for (var k = 0; k < n; k++) {
+      var a = saved.a[k] === 'direct' || saved.a[k] === 'tool' ? saved.a[k] : null;
+      var b = saved.b[k];
+      if (a === 'direct') b = 'none';
+      else if (!(a === 'tool' && TOOLS.indexOf(b) > -1)) b = null;
+      st.a[k] = a;
+      st.b[k] = b;
+    }
+  }
+  function cur() {
+    for (var i = 0; i < n; i++) if (st.b[i] === null) return i;
+    return n;
+  }
+  function toolName(i, key) {
+    var el = items[i].querySelector('[data-b="' + key + '"]');
+    return el ? el.textContent : '';
+  }
+  function correct(i) {
+    var ans = items[i].getAttribute('data-answer');
+    return ans === 'direct' ? st.a[i] === 'direct' : st.b[i] === ans;
+  }
+  function youText(i) {
+    return st.a[i] === 'direct' ? 'Answer directly' : 'Use a tool → ' + toolName(i, st.b[i]);
+  }
+  function ourText(i) {
+    var ans = items[i].getAttribute('data-answer');
+    return ans === 'direct' ? 'Answer directly' : 'Use a tool → ' + toolName(i, ans);
+  }
+  function reveal(i) {
+    var c = items[i].querySelector('.qs-reveal').cloneNode(true);
+    if (correct(i)) {
+      Array.prototype.slice.call(c.querySelectorAll('.lean')).forEach(function (x) { x.parentNode.removeChild(x); });
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'qs-note';
+    wrap.innerHTML = c.innerHTML;
+    return wrap;
+  }
+  function summary(i, fresh, latest) {
+    var ok = correct(i);
+    var li = document.createElement('li');
+    li.className = 'qs-sum em-done' + (latest ? ' latest' : '') + (fresh ? ' fresh' : '') + (ok ? ' ok' : ' no');
+    var q = document.createElement('span');
+    q.className = 'qs-q';
+    q.textContent = items[i].getAttribute('data-short');
+    var you = document.createElement('span');
+    you.className = 'qs-you';
+    you.textContent = youText(i);
+    /* when someone differs from us, show our answer too */
+    if (!ok) {
+      you.appendChild(document.createElement('br'));
+      var o = document.createElement('span');
+      o.className = 'qs-ours';
+      o.textContent = 'Our answer: ' + ourText(i);
+      you.appendChild(o);
+    }
+    var mk = document.createElement('span');
+    mk.className = 'qs-mark';
+    mk.setAttribute('role', 'img');
+    mk.setAttribute('aria-label', ok ? 'Matched' : 'Differed');
+    mk.innerHTML = ok ? CHECK_SVG : CROSS_SVG;
+    li.appendChild(q);
+    li.appendChild(you);
+    li.appendChild(mk);
+    if (latest) li.appendChild(reveal(i));
+    return li;
+  }
+  function render(fresh) {
+    var c = cur();
+    items.forEach(function (item, i) {
+      var a = st.a[i], b = st.b[i];
+      item.classList.toggle('cur', i === c);
+      Array.prototype.slice.call(item.querySelectorAll('[data-a]')).forEach(function (btn) {
+        btn.setAttribute('aria-pressed', String(btn.getAttribute('data-a') === a));
+        btn.disabled = a !== null;
+      });
+      Array.prototype.slice.call(item.querySelectorAll('[data-b]')).forEach(function (btn) {
+        btn.setAttribute('aria-pressed', String(btn.getAttribute('data-b') === b));
+        btn.disabled = b !== null;
+      });
+      var none = item.querySelector('[data-none]');
+      if (none) none.disabled = b !== null;
+      item.querySelector('.s1t-a').hidden = a !== null;
+      item.querySelector('.s1t-b').hidden = a !== 'tool';
+    });
+    done.innerHTML = '';
+    for (var i = 0; i < c; i++) done.appendChild(summary(i, i === fresh, i === c - 1));
+    done.hidden = c === 0;
+    var answered = st.b.filter(function (v) { return v !== null; }).length;
+    count.textContent = answered >= n ? 'All ' + n + ' answered.' : answered + ' of ' + n + ' answered.';
+  }
+  function focusCur() {
+    var c = cur();
+    if (c >= n) return;
+    var sel = st.a[c] === 'tool' ? '[data-b]' : '[data-a]';
+    var f = items[c].querySelector(sel);
+    if (f) f.focus({ preventScroll: true });
+  }
+  items.forEach(function (item, i) {
+    Array.prototype.slice.call(item.querySelectorAll('[data-a]')).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (cur() !== i || st.a[i] !== null) return;
+        st.a[i] = btn.getAttribute('data-a');
+        if (st.a[i] === 'direct') st.b[i] = 'none';
+        save();
+        render(st.b[i] !== null ? i : -1);
+        focusCur();
+      });
+    });
+    Array.prototype.slice.call(item.querySelectorAll('[data-b]')).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (cur() !== i || st.a[i] !== 'tool' || st.b[i] !== null) return;
+        st.b[i] = btn.getAttribute('data-b');
+        save();
+        render(i);
+        focusCur();
+      });
+    });
+    var none = item.querySelector('[data-none]');
+    if (none) none.addEventListener('click', function () {
+      if (cur() !== i || st.a[i] !== 'tool' || st.b[i] !== null) return;
+      st.a[i] = 'direct';
+      st.b[i] = 'none';
+      save();
+      render(i);
+      focusCur();
+    });
+  });
+  render(-1);
+})();
+</script>
+</body>
+</html>

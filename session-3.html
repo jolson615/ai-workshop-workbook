@@ -1,0 +1,1397 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){var d=document.documentElement,n=null;d.classList.add("preload");try{n=localStorage.getItem("wb:nav")}catch(e){}if(n!==null?n==="1":innerWidth<900)d.classList.add("nav-c")})()</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 3 · Better problem statements · Workbook</title>
+<link rel="stylesheet" href="assets/workbook.css">
+<style>
+/* Session 3 only. Chrome and the mindset sorter classes come from assets/workbook.css and the inline sorter block below. */
+
+/* the sorter's card and board styles (copied from the mockup's invoice sort) */
+.mind .m-sorter{display:grid;gap:18px;align-content:start;width:min(1040px,100%)}
+.mind .m-sorter .m-prompt{font-size:clamp(24px,2.6vw,34px);margin:0 0 4px}
+.mind .deck{display:grid;justify-items:center;gap:12px;padding:16px 16px 14px;border:1px dashed var(--rule);border-radius:18px}
+.mind .deck.gone{display:none}
+.mind .deck-slot{width:100%;min-height:64px;display:grid;justify-items:center;align-items:center}
+.mind .deck-slot .card{width:100%;max-width:460px;cursor:grab}
+.mind .deck-slot .card.in{animation:deckIn .45s var(--ease)}
+@keyframes deckIn{from{opacity:0;transform:translateY(14px) rotate(calc(var(--r,0deg) + 2deg))}to{opacity:1;transform:rotate(var(--r,0deg))}}
+.mind .deck-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.mind .deck-to{padding:8px 16px;border:1px solid var(--frame);border-radius:999px;background:var(--card);font:600 15px var(--ui);color:var(--ink)}
+.mind .deck-to:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.mind .deck-to:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.mind .deck-count{margin:0;font-size:15px;color:var(--mute)}
+.mind .tally:focus{outline:none}
+.mind .board .drop{min-height:72px}
+.mind .board{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.mind .zone{border-top:1px solid var(--frame);padding:12px 4px 0}
+.mind .zlabel{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.1vw,28px);line-height:1.1;margin:0 0 12px}
+.mind .drop{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.mind .drop .card{width:100%;max-width:460px}
+.mind .zone.over{border-color:var(--signal)}
+.mind .card{display:block;max-width:330px;padding:10px 16px;background:var(--card);border:1px solid rgba(42,38,32,.16);border-radius:10px;font:500 16px/1.25 var(--ui);color:var(--ink);cursor:pointer;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55);transform:rotate(var(--r,0deg));transition:transform .35s var(--ease),box-shadow .3s,outline-color .3s,opacity .2s}
+.mind .card:hover{transform:rotate(0deg)}
+.mind .card[aria-pressed="true"]{outline:2px solid var(--signal);outline-offset:3px;transform:rotate(0deg) translateY(-2px)}
+.mind .card.ghost{transform:rotate(-3deg);box-shadow:0 24px 36px -18px rgba(40,30,10,.5)}
+.mind .tally{margin:0;font-size:16px;color:var(--mute);min-height:1.4em}
+.mind .m-reveal{font-family:var(--display);font-size:clamp(26px,3vw,40px);line-height:1.25;margin:14px 0 0;opacity:0;transform:translateY(8px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.mind .m-reveal.on{opacity:1;transform:none}
+
+/* slide 2: one email, five systems */
+.chain-wrap{display:grid;gap:clamp(28px,5vh,48px);justify-items:stretch}
+.chain{display:flex;align-items:stretch}
+.node{flex:0 0 auto;width:clamp(92px,11vw,128px);display:flex;align-items:center;justify-content:center;padding:10px 8px;border:1.5px solid var(--ink);border-radius:10px;background:var(--card);font:600 clamp(14px,1.3vw,17px)/1.2 var(--ui);text-align:center}
+.grp{flex:1 1 0;min-width:0;display:flex;align-items:stretch;opacity:0;transform:translateY(6px);transition:opacity .25s linear,transform .25s linear}
+.grp.on{opacity:1;transform:none}
+.hop{position:relative;flex:1 1 0;min-width:28px}
+.hop::before{content:"";position:absolute;left:0;right:8px;top:50%;height:1.5px;background:var(--ink)}
+.hop::after{content:"";position:absolute;right:0;top:calc(50% - 4px);border-left:8px solid var(--ink);border-top:4px solid transparent;border-bottom:4px solid transparent}
+.hop .fig{position:absolute;left:50%;bottom:calc(50% + 8px);width:16px;height:30px;transform:translateX(-50%);transition:opacity .6s var(--ease)}
+.hop .fig::before{content:"";position:absolute;left:2px;top:0;width:12px;height:12px;border-radius:50%;background:var(--ink)}
+.hop .fig::after{content:"";position:absolute;left:0;bottom:0;width:16px;height:15px;border-radius:8px 8px 2px 2px;background:var(--ink)}
+.hop .lbl{position:absolute;left:50%;top:calc(50% + 9px);transform:translateX(-50%);white-space:nowrap;font-size:13px;line-height:1.2;color:var(--mute);display:grid}
+.hop .lbl span{grid-area:1/1;transition:opacity .6s var(--ease)}
+.hop .via{opacity:0;color:var(--ink);font-weight:600}
+.chain-wrap:has(.swap.on) .fig{opacity:0}
+.chain-wrap:has(.swap.on) .who{opacity:0}
+.chain-wrap:has(.swap.on) .via{opacity:1}
+.chain-wrap:has(.swap.on) .hop::before{height:1px}
+.swap-line{margin:0;font-family:var(--display);font-size:clamp(30px,3.6vw,50px);line-height:1.15;letter-spacing:-.015em;max-width:24ch}
+
+/* slide 5: reflection */
+.s3-ta{width:100%;min-height:160px;font-family:var(--display);font-size:clamp(22px,2.2vw,30px);line-height:1.3;color:var(--ink);background:var(--card);border:1px solid var(--frame);border-radius:6px;padding:16px 18px;resize:vertical}
+.s3-ta:focus{outline:2px solid var(--signal);outline-offset:2px}
+.s3-priv{margin:0;font-size:15px;color:var(--mute)}
+.tipwrap{position:relative;display:inline-block}
+.tipt{border-bottom:1px dotted var(--mute);cursor:help}
+.tipt:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.tip{position:absolute;left:0;bottom:calc(100% + 10px);z-index:5;display:none;width:min(440px,80vw);padding:12px 14px;border-radius:6px;background:var(--ink);color:var(--paper);font:400 15px/1.45 var(--ui);letter-spacing:0}
+.tipwrap:hover .tip,.tipt:focus + .tip{display:block}
+
+/* slide 6: a wish, taken apart */
+.m-quote{margin:0;font-family:var(--display);font-size:clamp(26px,2.9vw,40px);line-height:1.3;letter-spacing:-.01em;max-width:30ch}
+.ph{text-decoration:none;text-decoration-thickness:2px;text-underline-offset:7px;transition:text-decoration-color .4s}
+.ph.ul{text-decoration:underline;text-decoration-color:var(--signal)}
+.ph.ul.em-done{text-decoration-color:var(--mute)}
+/* annotating must never reflow the quote: phrases keep their weight; only color/underline change */
+.m-quote .ph.em-current,.m-quote .ph.em-done{font-weight:inherit!important;letter-spacing:inherit}
+.s3-labels{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.s3-labels li{display:grid;grid-template-columns:minmax(0,1.3fr) 2em minmax(0,1fr);align-items:baseline;gap:8px;padding:12px 0;border-top:1px solid var(--rule);font-size:clamp(18px,1.7vw,22px);line-height:1.3}
+.s3-labels .pq{color:var(--mute)}
+.s3-labels .ar{color:var(--signal)}
+.s3-labels .lb{font-family:var(--display);font-size:1.15em}
+.s3-close{margin:12px 0 0;font-family:var(--display);font-size:clamp(26px,2.8vw,36px);line-height:1.2}
+
+/* slide 7 and 10: checks */
+.m-check{display:grid;gap:clamp(14px,2.4vh,24px);justify-items:stretch}
+.s3-cur{margin:0;font-family:var(--display);font-size:clamp(24px,2.7vw,36px);line-height:1.25;letter-spacing:-.01em;max-width:28ch}
+.s3-checks{list-style:none;margin:0;padding:0;width:100%;max-width:860px}
+.s3-chk{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 18px;align-items:center;padding:12px 0;border-top:1px solid var(--rule)}
+.s3-chk:last-child{border-bottom:1px solid var(--rule)}
+.s3-chk .q{font-family:var(--display);font-size:clamp(19px,1.9vw,25px);line-height:1.25}
+.s3-chk .hint{grid-column:1/-1;min-height:1.2em;margin:0;font-size:15px;color:var(--signal)}
+.s3-chk .hint:empty{min-height:0}
+.s3-yn,.s3-chk .yn{display:flex;gap:8px}
+.s3-chk .yn button{appearance:none;-webkit-appearance:none;min-width:84px;padding:8px 16px;border:1.5px solid var(--frame,var(--ink));border-radius:999px;background:transparent;font:500 15px var(--ui,"Helvetica Neue",Helvetica,Arial,sans-serif);color:var(--ink);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.s3-chk .yn button:hover{background:var(--soft,rgba(0,0,0,.05))}
+.s3-chk .yn button:focus-visible{outline:3px solid var(--lane,#a8651e);outline-offset:2px}
+.s3-chk .yn button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.s3-chk .yn button[data-v="n"][aria-pressed="true"]{background:var(--lane,#a8651e);border-color:var(--lane,#a8651e);color:#fff}
+.s3-yn button{padding:7px 14px;border:1px solid var(--frame);border-radius:999px;background:none;font:600 15px var(--ui);color:var(--ink)}
+.s3-yn button:hover{background:var(--soft)}
+.s3-yn button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.s3-live .s3-chk{grid-template-columns:minmax(0,1fr)}
+.s3-cmp{margin:0;max-width:60ch;font-size:clamp(16px,1.4vw,20px);line-height:1.4;color:var(--mute)}
+.s3-checks.static .s3-chk .q{color:var(--mute)}
+
+/* slide 9: four statements */
+.s3-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2.2vh,22px);width:100%}
+.s3-card{margin:0;padding:clamp(18px,2.6vh,28px) clamp(18px,2vw,26px);background:var(--card);border:1px solid rgba(42,38,32,.16);border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55);font-family:var(--display);font-size:clamp(19px,2vw,27px);line-height:1.3}
+
+/* slide 11: try */
+.s3-try{list-style:none;margin:0;padding:0;width:100%;max-width:860px;display:grid;gap:14px}
+.s3-try li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+.s3-try input{width:100%;font-family:var(--display);font-size:clamp(20px,2vw,26px);color:var(--ink);background:var(--card);border:0;border-bottom:1.5px solid var(--frame);padding:8px 4px;border-radius:0}
+.s3-try input:focus{outline:2px solid var(--signal);outline-offset:2px}
+.s3-pick{list-style:none;margin:0;padding:0;display:grid;gap:14px;width:100%;max-width:860px}
+.s3-pick-card{position:relative;width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;background:var(--card);border:1.5px solid var(--frame);border-radius:10px;font-family:var(--display);font-size:clamp(19px,1.9vw,25px);line-height:1.3;text-align:left;color:var(--ink);cursor:pointer}
+.s3-pick-card[hidden]{display:none}
+.s3-pick-card:hover{background:var(--soft)}
+.s3-pick-card:focus-visible{outline:3px solid var(--lane);outline-offset:2px}
+.s3-pick-card[aria-pressed="true"]{border-color:var(--lane);box-shadow:0 0 0 1px var(--lane) inset}
+.s3-pick-badge{display:inline-flex;align-items:center;gap:6px;flex:none;padding:5px 12px;border-radius:999px;background:var(--lane);color:#fff;font:700 14px var(--ui);opacity:0}
+.s3-pick-card[aria-pressed="true"] .s3-pick-badge{opacity:1}
+@media (prefers-reduced-motion:no-preference){.s3-pick-card[aria-pressed="true"] .s3-pick-badge{animation:badgePop .5s var(--ease) both}}
+.s3-pick-blank{margin:8px 0 0;font-family:var(--display);font-size:clamp(19px,1.9vw,25px);line-height:1.3;color:var(--ink)}
+.s3-simple{padding:7px 14px;border:1px solid var(--frame);border-radius:999px;background:none;font:600 15px var(--ui);color:var(--ink);white-space:nowrap}
+.s3-simple:hover{background:var(--soft)}
+.s3-simple[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* slide 12: who leads this (a deliberately small flowchart) */
+.s3-flow{display:grid;justify-items:center;gap:clamp(14px,2.4vh,22px);width:100%;max-width:980px}
+.s3-q{padding:18px 26px;border:2px solid var(--ink);border-radius:8px;background:var(--card);font-family:var(--display);font-size:clamp(26px,2.9vw,38px);line-height:1.2;text-align:center}
+.s3-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.s3-pills .s3-simple{padding:9px 22px;font-size:17px}
+.s3-lead-flow{display:grid;justify-items:center;width:100%}
+.s3-lead-flow[hidden]{display:none}
+.s3-stem{width:2px;height:clamp(14px,2.4vh,26px);background:var(--ink)}
+.s3-split{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+/* each branch draws its own half of the bar and its own drop, so the chosen one can take the lane colour */
+.s3-br{position:relative;display:flex;flex-direction:column;align-items:center;padding:clamp(16px,2.6vh,28px) 10px 0;transition:opacity .4s var(--ease)}
+.s3-br::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--ink);transition:background .4s}
+.s3-br:first-child::before{left:50%}
+.s3-br:last-child::before{right:50%}
+.s3-br::after{content:"";position:absolute;top:0;left:calc(50% - 1px);width:2px;height:clamp(16px,2.6vh,28px);background:var(--ink);transition:background .4s}
+.s3-br.em-current::before,.s3-br.em-current::after{background:var(--lane)}
+.s3-lead-flow .s3-br.em-done{opacity:.45}
+.s3-lab{margin:8px 0 6px;font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--lane)}
+.s3-arr{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:11px solid var(--ink);margin-bottom:10px;transition:border-top-color .4s}
+.s3-br.em-current .s3-arr{border-top-color:var(--lane)}
+.s3-box{padding:14px 18px;border:1.5px solid var(--frame);border-radius:8px;background:var(--card);font-family:var(--display);font-size:clamp(20px,2vw,27px);line-height:1.25;text-align:center;max-width:300px;transition:transform .4s var(--ease),border-color .4s}
+.s3-br.em-current .s3-box{transform:scale(1.06);border:2px solid var(--lane)}
+@media (prefers-reduced-motion:no-preference){.s3-lead-flow{animation:leadIn .6s var(--ease)}}
+@keyframes leadIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.s3-br,.s3-br::before,.s3-br::after,.s3-arr,.s3-box{transition:none}}
+
+
+/* slide 9: annotated before and after pairs, one per step */
+.mind .s3-pairs{list-style:none;margin:0;padding:0;display:grid;gap:clamp(10px,1.6vh,16px);width:100%}
+.mind .s3-pair{padding:clamp(12px,1.9vh,20px) clamp(16px,2vw,26px);background:var(--card);border:1px solid rgba(42,38,32,.16);border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55)}
+.s3-st{display:grid;grid-template-columns:clamp(72px,8vw,96px) minmax(0,1fr);gap:12px;align-items:baseline;margin:0;padding:4px 0 14px;font-family:var(--display);font-weight:400;font-size:clamp(18px,1.75vw,24px);line-height:1.5}
+.s3-st:last-child{padding-bottom:0}
+.s3-lab{font-family:var(--ui);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.s3-after .s3-lab{color:var(--c-ok,#2f7d4f)}
+.s3-before .s3-lab{color:#a8402a}
+.s3-before .s3-txt{color:var(--mute)}
+.hl{display:inline-grid;justify-items:start;vertical-align:baseline;border-radius:3px;padding:0 .14em;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;outline:none}
+.hl-r{background:#f6d5cf;color:#7a2416;text-decoration-color:#b8432c}
+.hl-g{background:#d6ead9;color:#1f5a34;text-decoration-color:#2f7d4f}
+.hl-note{white-space:nowrap;text-decoration:none;font-family:var(--ui);font-size:13px;line-height:1.2;font-weight:600;color:var(--mute);pointer-events:none}
+.hl:hover,.hl:focus-visible{box-shadow:0 0 0 2px var(--lane)}
+.hl:hover .hl-note,.hl:focus-visible .hl-note{color:var(--ink)}
+
+
+/* before lines: numbered markers in the sentence, one tag row beneath it (no overprinting) */
+.hl-n{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:.2em;border-radius:50%;background:#7a2416;color:#fff;font:700 11px/1 var(--ui);vertical-align:super;text-decoration:none}
+.s3-tags{list-style:none;margin:-6px 0 0;padding:0 0 0 calc(clamp(72px,8vw,96px) + 12px);display:flex;flex-wrap:wrap;gap:4px 18px;font:600 14px/1.3 var(--ui);color:var(--mute)}
+.s3-tags li{white-space:nowrap;display:flex;align-items:center;gap:6px}
+.s3-tags b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#f6d5cf;color:#7a2416;font:700 11px/1 var(--ui)}
+
+/* slide 11: example, three things to try */
+.mind .s3-ex{list-style:none;margin:0;padding:0;display:grid;gap:clamp(10px,1.8vh,16px);width:100%}
+.mind .s3-ex-card{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;align-items:start;padding:clamp(14px,2vh,20px) clamp(16px,2vw,24px);background:var(--card);border:1px solid rgba(42,38,32,.16);border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55)}
+.s3-ex-card.on.em-context{opacity:.7}
+.s3-ex-n{font-family:var(--display);font-size:clamp(26px,2.6vw,36px);line-height:1;color:var(--lane)}
+.s3-ex-t{margin:0;font-family:var(--display);font-size:clamp(20px,2vw,27px);line-height:1.3}
+.s3-ex-tag{display:inline-block;margin-top:8px;padding:3px 12px;border:1px solid var(--frame);border-radius:999px;font:600 14px var(--ui);color:var(--mute)}
+.s3-ex-badge{position:absolute;top:-13px;right:18px;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--lane);color:#fff;font:700 14px var(--ui);opacity:0}
+.mind .s3-ex:has(.s3-ex-end.on) .s3-ex-badge{opacity:1}
+@media (prefers-reduced-motion:no-preference){.mind .s3-ex:has(.s3-ex-end.on) .s3-ex-badge{animation:badgePop .5s var(--ease) both}}
+@keyframes badgePop{0%{transform:scale(.6)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.s3-ex-end{margin:6px 0 0;font-family:var(--display);font-size:clamp(24px,2.5vw,34px);line-height:1.25}
+
+/* slide 13: the statement */
+.s3-final{display:grid;gap:clamp(14px,2.6vh,26px);justify-items:start}
+.s3-big{margin:0;font-family:var(--display);font-size:clamp(30px,3.6vw,50px);line-height:1.2;letter-spacing:-.015em;max-width:24ch}
+.s3-iv{margin:0;font-size:clamp(17px,1.6vw,21px);color:var(--mute)}
+.s3-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.s3-btn{padding:10px 18px;border:1px solid var(--frame);border-radius:999px;background:var(--card);font:600 16px var(--ui);color:var(--ink)}
+.s3-btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.s3-msg{font-size:15px;color:var(--mute);min-height:1.2em}
+/* slide titles: short and plain, on slides whose purpose isn't obvious */
+.mind .s3-h{margin:0 0 clamp(12px,2.2vh,22px);font-family:var(--display);font-weight:400;font-size:clamp(26px,2.8vw,40px);line-height:1.15;letter-spacing:-.01em}
+
+/* slide 8: three cards, one per check, revealed in turn */
+.mind .s3-why{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,24px);width:100%}
+.mind .s3-why li{display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(16px,2.4vh,26px) clamp(16px,1.6vw,22px) clamp(18px,2.6vh,28px);background:var(--card);border:1px solid rgba(42,38,32,.16);border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55)}
+.s3-why li.on.em-context{opacity:.7}
+.s3-ill{display:block;width:100%;max-width:200px;height:160px;margin:0 0 clamp(10px,1.8vh,18px);color:var(--ink);overflow:visible}
+.s3-ill .ink{fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.s3-ill .ac{fill:none;stroke:var(--lane);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.s3-ill .acf{fill:var(--lane)}
+.s3-ill .faint{opacity:.3}
+.s3-ill text{fill:currentColor;font-family:var(--ui);font-weight:600;font-size:18px}
+.s3-ill .q{font-family:var(--display);font-size:46px;font-weight:400}
+.s3-ill .word{font-family:var(--display);font-size:40px;font-weight:400;font-style:italic}
+.s3-why-t{margin:0 0 8px;font-family:var(--display);font-weight:inherit;font-size:clamp(22px,2.2vw,30px);line-height:1.15;letter-spacing:-.01em}
+.s3-why-s{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(18px,1.7vw,23px);line-height:1.3;max-width:24ch}
+.s3-why .s3-draw{stroke-dasharray:1;stroke-dashoffset:0}
+.s3-why li:not(.on) .s3-draw{stroke-dashoffset:1}
+@media (prefers-reduced-motion:no-preference){.s3-why .s3-draw{transition:stroke-dashoffset .8s var(--ease) .3s}}
+@media (max-width:820px){
+  .s3-why{grid-template-columns:1fr}
+}
+
+@media (max-width:820px){
+  .node{width:auto;flex:0 0 auto;padding:8px 6px;font-size:13px}
+  .hop{min-width:20px}
+  .hop .lbl{font-size:11px}
+  .s3-cards{grid-template-columns:1fr}
+  .s3-labels li{grid-template-columns:1fr;gap:2px}
+  .s3-labels .ar{display:none}
+  .s3-chk{grid-template-columns:1fr}
+  .s3-chk .yn,.s3-yn{grid-column:1}
+}
+@media (max-height:860px) and (min-width:821px){
+  .s3-ta{min-height:120px}
+  .s3-chk{padding:8px 0}
+  .s3-h{font-size:clamp(22px,2.4vw,32px);margin-bottom:10px}
+  .s3-card{padding:14px 18px}
+  .s3-cur{font-size:clamp(22px,2.3vw,30px)}
+}
+
+/* participant's own words: a quoted "input" card so it reads as theirs, not ours */
+.s3-yours{margin:4px 0 22px;padding:14px 20px 16px;background:var(--card,#fffdf8);border:1px solid var(--rule);border-left:4px solid var(--lane,#a8651e);border-radius:6px;max-width:760px}
+.s3-yours-l{font-family:var(--c-font,"Helvetica Neue",Helvetica,Arial,sans-serif);font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--c-mute);margin:0 0 6px}
+.s3-yours-l a{color:inherit;text-transform:none;letter-spacing:0}
+.s3-yours blockquote{margin:0;quotes:"“" "”"}
+.s3-yours blockquote::before{content:open-quote}
+.s3-yours blockquote::after{content:close-quote}
+
+/* steps 2 and 3: the statement takes the full width, and the three tests sit in a row below it */
+.s3-hd{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mind .s3-hd .s3-h{margin:0;min-width:0}
+.s3-badge{flex:none;white-space:nowrap;min-width:3.2em;padding:6px 16px;border:1.5px solid var(--frame);border-radius:999px;background:var(--card);font:700 clamp(15px,1.4vw,18px)/1.2 var(--ui);color:var(--mute);text-align:center;font-variant-numeric:tabular-nums}
+.s3-badge.all{background:var(--c-ok,#2f7d4f);border-color:var(--c-ok,#2f7d4f);color:#fff}
+.s3-badge.all::before{content:"✓ "}
+.s3-ctx{margin:0;font-family:var(--display);font-size:clamp(19px,1.8vw,24px);line-height:1.3;color:var(--ink)}
+.s3-tp{gap:clamp(12px,2vh,20px)}
+.s3-stmt{max-width:none;margin:0}
+.s3-stmt .s3-cur{max-width:none;font-size:clamp(22px,2.2vw,30px)}
+.s3-stmt .hl,.s3-prev .hl{display:inline}
+.s3-prev{margin:0;font-family:var(--display);font-size:clamp(18px,1.6vw,22px);line-height:1.35;color:var(--ink)}
+.s3-tests{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,22px)}
+.s3-tests .s3-chk{display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(14px,2.2vh,22px) clamp(14px,1.4vw,20px);background:var(--card);border:1.5px solid rgba(42,38,32,.16);border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55);transition:border-color .2s}
+.s3-tests .s3-chk.is-yes{border-color:var(--c-ok,#2f7d4f)}
+.s3-tests .s3-chk.is-no{border-color:#b7791f}
+.s3-tests .s3-why-t{margin:0 0 4px;font-size:clamp(19px,1.8vw,24px)}
+.s3-tests .hint{margin:0 0 12px;min-height:1.2em;font-size:15px;line-height:1.3;color:var(--signal)}
+.s3-tests .hint.ok{color:var(--c-ok,#2f7d4f)}
+.s3-tests .yn{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:auto}
+.s3-tests .yn button{min-width:0;padding:7px 14px}
+/* step 2 cards: a small-caps tag, then the real question; the detector reveal only after an answer */
+.s3-tests-q .s3-tag{margin:0 0 6px;font:700 14px/1.2 var(--ui);letter-spacing:.08em;font-variant-caps:all-small-caps;color:var(--mute)}
+.s3-tests-q .s3-why-t{margin:0 0 14px;font-size:clamp(19px,1.7vw,23px);line-height:1.25;text-wrap:balance}
+.s3-reveal{align-self:stretch;margin:12px 0 0;min-height:2.7em;font-size:15px;line-height:1.35;color:var(--mute)}
+.s3-reveal.is-differs{color:#94661c}
+.s3-hl-in{animation:none}
+@media (prefers-reduced-motion:no-preference){.s3-hl-in{animation:s3HlIn .6s ease both}}
+@keyframes s3HlIn{from{opacity:0}to{opacity:1}}
+.s3-till{display:block;width:auto;max-width:none;height:56px;margin:0 0 10px}
+/* steps 4 and 5: the latest problem statement, compact, above the ideas */
+.s3-ref{margin:0 0 6px;max-width:none;padding:10px 18px 12px}
+.s3-ref .s3-yours-l{margin-bottom:4px}
+.s3-ref .s3-ref-q{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:none;font-size:clamp(18px,1.7vw,23px);line-height:1.3}
+.s3-till .word{font-size:52px}
+.s3-till text{font-size:26px}
+#s3-s10 .s3-ta{min-height:clamp(76px,14vh,128px)}
+@media (max-width:820px){.s3-tests{grid-template-columns:1fr}}
+@media (max-height:860px) and (min-width:821px){
+  .s3-tests .s3-chk{padding:12px 14px 14px}
+  .s3-till{height:48px}
+  .s3-stmt .s3-cur{font-size:clamp(20px,2vw,26px)}
+}
+
+/* slide 9: one pair per two beats. A pair that is no longer the newest collapses to its After line. */
+.mind .s3-pairs > .s3-pair[data-state="hidden"]{display:none}
+.mind .s3-pairs > .s3-pair{transition:padding .45s var(--ease)}
+.s3-pair-beat{display:grid;grid-template-rows:1fr;transition:grid-template-rows .45s var(--ease),opacity .45s var(--ease)}
+.s3-pair-clip{min-height:0;overflow:hidden;padding:2px 2px 0;margin:-2px -2px 0}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"]{padding-top:clamp(8px,1.2vh,12px);padding-bottom:clamp(8px,1.2vh,12px)}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"] .s3-pair-beat{grid-template-rows:0fr;opacity:0}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"] .s3-beat{opacity:0}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"] .s3-after{grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:baseline;font-size:clamp(15px,1.35vw,19px);color:var(--mute)}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"] .s3-after .s3-lab{display:none}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"] .s3-after::before{content:"✓";grid-column:1;color:var(--c-ok,#2f7d4f);font-weight:700}
+.mind .s3-pairs > .s3-pair[data-state="collapsed"] .s3-after .s3-txt{color:inherit}
+.s3-end{display:none}
+@media (prefers-reduced-motion:reduce){.s3-pair-beat,.mind .s3-pairs > .s3-pair{transition:none}}
+</style>
+</head>
+<body data-lang="mind" data-session="3">
+<div class="app" id="app">
+
+  <aside class="nav" aria-label="Sessions">
+    <div class="nav-top">
+      <button class="nav-toggle" id="navToggle" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation ([)">[</button>
+    </div>
+    <ol class="sessions">
+      <li><a class="sess" data-l="t" href="session-1.html"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-3.html" aria-current="page"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-5.html"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="sn" aria-hidden="true">3</div>
+      <div class="sname">Better problem statements</div>
+      <nav class="pips" id="pips" aria-label="Slides"></nav>
+    </header>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 Title [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="m-title">
+          <span class="rule" aria-hidden="true"></span>
+          <h1>Better problem statements</h1>
+        </div>
+      </section>
+
+      <!-- 2 How information travels through your org [UP] -->
+      <section class="slide mind" data-attn="up" data-steps-start>
+        <div class="chain-wrap" id="s3-chain">
+          <h2 class="s3-h">How information travels through your org</h2>
+          <div class="chain">
+            <div class="node">Customer email</div>
+            <div class="grp step"><div class="hop"><span class="fig"></span><span class="lbl"><span class="who">a person</span><span class="via">connectors</span></span></div><div class="node">CRM record</div></div>
+            <div class="grp step"><div class="hop"><span class="fig"></span><span class="lbl"><span class="who">a person</span><span class="via">connectors</span></span></div><div class="node">Mailing list</div></div>
+            <div class="grp step"><div class="hop"><span class="fig"></span><span class="lbl"><span class="who">a person</span><span class="via">connectors</span></span></div><div class="node">Billing</div></div>
+            <div class="grp step"><div class="hop"><span class="fig"></span><span class="lbl"><span class="who">a person</span><span class="via">connectors</span></span></div><div class="node">Reply</div></div>
+          </div>
+          <p class="swap-line step swap">Today, your people are the connectors.</p>
+        </div>
+      </section>
+
+      <!-- 3 What would a new hire know? [LAPTOP] -->
+      <section class="slide mind s-sort" data-attn="laptop" id="s3-sorter">
+        <div class="m-sorter">
+          <h2 class="s3-h">What would a new hire know?</h2>
+          <h2 class="m-prompt em-current">Approving a supplier invoice. Which of these would a capable new hire know on day one?</h2>
+          <div class="deck" id="s3-deck">
+            <div class="deck-slot" id="s3-slot"></div>
+            <div class="deck-acts">
+              <button type="button" class="deck-to" data-zone="doc">Written down</button>
+              <button type="button" class="deck-to" data-zone="head">In someone’s head</button>
+            </div>
+            <p class="deck-count" id="s3-count" aria-live="polite"></p>
+          </div>
+          <div class="board">
+            <section class="zone" data-zone="doc" id="s3-doc" aria-label="Written down">
+              <h3 class="zlabel">Written down</h3>
+              <div class="drop"></div>
+            </section>
+            <section class="zone" data-zone="head" id="s3-head" aria-label="In someone’s head">
+              <h3 class="zlabel">In someone’s head</h3>
+              <div class="drop"></div>
+            </section>
+          </div>
+          <p class="tally" id="s3-tally" aria-live="polite" tabindex="-1"></p>
+          <p class="m-reveal" id="s3-reveal">An agent starts where the new hire starts.</p>
+        </div>
+      </section>
+
+      <!-- 4 Invisible work [UP] -->
+      <section class="slide mind" data-attn="up">
+        <ul class="m-take">
+          <li class="step">Your people likely do a ton of undocumented problem solving.</li>
+          <li class="step">Don’t use AI to extend the life of a broken process.</li>
+        </ul>
+      </section>
+
+      <!-- 5 Step 1: your problem [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop">
+        <div class="m-check">
+          <h2 class="s3-h">Step 1: your problem</h2>
+          <p class="m-prompt" id="s3-q5">When it comes to AI, what problem are you hoping to tackle?</p>
+          <textarea class="s3-ta" id="s3-p1" rows="4" aria-labelledby="s3-q5"></textarea>
+          <p class="s3-priv"><span class="tipwrap"><span class="tipt" tabindex="0" aria-describedby="s3-tip5">Your answers are stored in your browser only.</span><span class="tip" role="tooltip" id="s3-tip5">Answers are saved in this browser’s local storage. They are never sent anywhere. To clear them, use “Clear my saved answers” on the home page, or your browser’s site data settings.</span></span></p>
+        </div>
+      </section>
+
+      <!-- 6 A wish, taken apart [UP] -->
+      <section class="slide mind" data-attn="up" data-steps-start data-em="off" id="s3-s6">
+        <div class="m-check">
+          <h2 class="s3-h">Deconstructing a proposed agent</h2>
+          <p class="m-quote">“I wish I could <span class="ph" data-ph="0">wake up and an agent would have prepared</span> <span class="ph" data-ph="1">a daily digest</span> that tells me <span class="ph" data-ph="2">exactly</span> <span class="ph" data-ph="3">where to point my focus</span> that day.”</p>
+          <ol class="s3-labels">
+            <li class="step" data-k="0"><span class="pq">wake up and … prepared</span><span class="ar">→</span><span class="lb">Automation</span></li>
+            <li class="step" data-k="1"><span class="pq">a daily digest</span><span class="ar">→</span><span class="lb">Context</span></li>
+            <li class="step" data-k="2"><span class="pq">exactly</span><span class="ar">→</span><span class="lb">Refinement</span></li>
+            <li class="step" data-k="3"><span class="pq">where to point my focus</span><span class="ar">→</span><span class="lb">Judgment</span></li>
+          </ol>
+          <p class="s3-close step">This starts from a solution. Start from the problem.</p>
+        </div>
+      </section>
+
+      <!-- 7 Step 2: check it [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop" id="s3-s7">
+        <div class="m-check s3-tp">
+          <div class="s3-hd">
+            <h2 class="s3-h">Step 2: check it</h2>
+            <span class="s3-badge" id="s3-score7" aria-live="polite">–</span>
+          </div>
+          <p class="s3-ctx em-context">Check it against the three tests.</p>
+          <figure class="s3-yours s3-stmt">
+            <figcaption class="s3-yours-l"><span id="s3-yours7">Your statement, from step 1</span> · <a href="#5">Edit</a></figcaption>
+            <blockquote class="s3-cur em-current" id="s3-cur7"></blockquote>
+          </figure>
+          <ol class="s3-tests s3-tests-q" id="s3-checks7">
+            <li class="s3-chk" data-i="0" data-hint="num">
+              <svg class="s3-ill s3-till" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <line class="ink" x1="12" y1="46" x2="170" y2="46"/>
+              <path class="ac" d="M170 46 V14"/>
+              <path class="acf" d="M170 14 L186 20 L170 26 Z"/>
+              <circle class="acf" cx="110" cy="46" r="7"/>
+              <text class="q faint" x="50" y="124" text-anchor="middle">?</text>
+              <line class="ink" x1="110" y1="124" x2="170" y2="124"/>
+              <path class="ink" d="M110 124 V116 M122 124 V119 M134 124 V116 M146 124 V119 M158 124 V116 M170 124 V119"/>
+              <text x="140" y="150" text-anchor="middle">62%</text>
+            </svg>
+              <p class="s3-tag">Has a number</p>
+              <h3 class="s3-why-t">Does it include a number, or something you could measure?</h3>
+              <span class="yn" role="group" aria-label="Test 1: has a number"><button type="button" data-v="y" aria-pressed="false">Yes</button><button type="button" data-v="n" aria-pressed="false">Not yet</button></span>
+              <p class="s3-reveal" aria-live="polite"></p>
+            </li>
+            <li class="s3-chk" data-i="1" data-hint="ai">
+              <svg class="s3-ill s3-till" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <path class="ink" d="M40 14 V136 H182"/>
+              <path class="ac" d="M40 136 L160 16"/>
+              <circle class="acf" cx="70" cy="106" r="3.5"/>
+              <circle class="acf" cx="100" cy="76" r="3.5"/>
+              <circle class="acf" cx="130" cy="46" r="3.5"/>
+              <text x="182" y="156" text-anchor="middle">AI</text>
+              <text x="22" y="22" text-anchor="middle">AI</text>
+            </svg>
+              <p class="s3-tag">No “AI”</p>
+              <h3 class="s3-why-t">Does it avoid the word “AI”?</h3>
+              <span class="yn" role="group" aria-label="Test 2: no AI"><button type="button" data-v="y" aria-pressed="false">Yes</button><button type="button" data-v="n" aria-pressed="false">Not yet</button></span>
+              <p class="s3-reveal" aria-live="polite"></p>
+            </li>
+            <li class="s3-chk" data-i="2" data-hint="should">
+              <svg class="s3-ill s3-till" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <text class="word" x="100" y="78" text-anchor="middle">should</text>
+              <path class="ac s3-draw" pathLength="1" d="M20 72 Q100 60 184 68"/>
+              <line class="ink faint" x1="46" y1="102" x2="154" y2="102" stroke-width="1.5"/>
+            </svg>
+              <p class="s3-tag">No “should”</p>
+              <h3 class="s3-why-t">Does it avoid judgment words like “should”?</h3>
+              <span class="yn" role="group" aria-label="Test 3: no should"><button type="button" data-v="y" aria-pressed="false">Yes</button><button type="button" data-v="n" aria-pressed="false">Not yet</button></span>
+              <p class="s3-reveal" aria-live="polite"></p>
+            </li>
+          </ol>
+          <p class="s3-cmp" id="s3-cmp7" hidden>For comparison: “My team should be using AI more.” fails all three.</p>
+        </div>
+      </section>
+
+      <!-- 8 Why these three [UP] -->
+      <section class="slide mind" data-attn="up">
+        <h2 class="s3-h">Why these three checks</h2>
+        <ul class="s3-why">
+          <li class="step">
+            <svg class="s3-ill" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <line class="ink" x1="12" y1="46" x2="170" y2="46"/>
+              <path class="ac" d="M170 46 V14"/>
+              <path class="acf" d="M170 14 L186 20 L170 26 Z"/>
+              <circle class="acf" cx="110" cy="46" r="7"/>
+              <text class="q faint" x="50" y="124" text-anchor="middle">?</text>
+              <line class="ink" x1="110" y1="124" x2="170" y2="124"/>
+              <path class="ink" d="M110 124 V116 M122 124 V119 M134 124 V116 M146 124 V119 M158 124 V116 M170 124 V119"/>
+              <text x="140" y="150" text-anchor="middle">62%</text>
+            </svg>
+            <h3 class="s3-why-t">Has a number</h3>
+            <p class="s3-why-s">Without a number, you can’t tell if you’re making progress.</p>
+          </li>
+          <li class="step">
+            <svg class="s3-ill" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <path class="ink" d="M40 14 V136 H182"/>
+              <path class="ac" d="M40 136 L160 16"/>
+              <circle class="acf" cx="70" cy="106" r="3.5"/>
+              <circle class="acf" cx="100" cy="76" r="3.5"/>
+              <circle class="acf" cx="130" cy="46" r="3.5"/>
+              <text x="182" y="156" text-anchor="middle">AI</text>
+              <text x="22" y="22" text-anchor="middle">AI</text>
+            </svg>
+            <h3 class="s3-why-t">No “AI”</h3>
+            <p class="s3-why-s">If AI is in the problem, it can’t also be the solution.</p>
+          </li>
+          <li class="step">
+            <svg class="s3-ill" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <text class="word" x="100" y="78" text-anchor="middle">should</text>
+              <path class="ac s3-draw" pathLength="1" d="M20 72 Q100 60 184 68"/>
+              <line class="ink faint" x1="46" y1="102" x2="154" y2="102" stroke-width="1.5"/>
+            </svg>
+            <h3 class="s3-why-t">No “should”</h3>
+            <p class="s3-why-s">“Should” is a judgment, not a problem.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 9 Better statements, as annotated before and after pairs [UP] -->
+      <section class="slide mind" data-attn="up" id="s3-s9">
+        <h2 class="s3-h">What good statements look like</h2>
+        <ul class="s3-pairs">
+          <li class="s3-pair" data-state="hidden">
+            <div class="s3-pair-beat"><div class="s3-pair-clip">
+              <div class="step s3-beat">
+                <p class="s3-st s3-before"><span class="s3-lab">Before</span><span class="s3-txt">Our recruiters <span class="hl hl-r" tabindex="0">should<sup class="hl-n" aria-hidden="true">1</sup></span> use <span class="hl hl-r" tabindex="0">AI<sup class="hl-n" aria-hidden="true">2</sup></span> to <span class="hl hl-r" tabindex="0">keep up with<sup class="hl-n" aria-hidden="true">3</sup></span> candidates.</span></p>
+                <ol class="s3-tags" aria-label="Notes on the sentence above"><li><b aria-hidden="true">1</b>judgment word</li><li><b aria-hidden="true">2</b>solution, not problem</li><li><b aria-hidden="true">3</b>vague</li></ol>
+              </div>
+            </div></div>
+            <p class="step s3-st s3-after"><span class="s3-lab">After</span><span class="s3-txt">Our recruiters spend <span class="hl hl-g" tabindex="0">an average of 10 hours a day<small class="hl-note">a number</small></span> on candidate messages.</span></p>
+          </li>
+          <li class="s3-pair" data-state="hidden">
+            <div class="s3-pair-beat"><div class="s3-pair-clip">
+              <div class="step s3-beat">
+                <p class="s3-st s3-before"><span class="s3-lab">Before</span><span class="s3-txt">Legal <span class="hl hl-r" tabindex="0">needs AI<sup class="hl-n" aria-hidden="true">1</sup></span> to get through tickets <span class="hl hl-r" tabindex="0">faster<sup class="hl-n" aria-hidden="true">2</sup></span>.</span></p>
+                <ol class="s3-tags" aria-label="Notes on the sentence above"><li><b aria-hidden="true">1</b>solution, not problem</li><li><b aria-hidden="true">2</b>vague</li></ol>
+              </div>
+            </div></div>
+            <p class="step s3-st s3-after"><span class="s3-lab">After</span><span class="s3-txt">The legal ticket backlog is <span class="hl hl-g" tabindex="0">growing faster than we can clear it<small class="hl-note">measurable</small></span>.</span></p>
+          </li>
+          <li class="s3-pair" data-state="hidden">
+            <div class="s3-pair-beat"><div class="s3-pair-clip">
+              <div class="step s3-beat">
+                <p class="s3-st s3-before"><span class="s3-lab">Before</span><span class="s3-txt">The policy team <span class="hl hl-r" tabindex="0">should<sup class="hl-n" aria-hidden="true">1</sup></span> be <span class="hl hl-r" tabindex="0">more responsive<sup class="hl-n" aria-hidden="true">2</sup></span> to executives.</span></p>
+                <ol class="s3-tags" aria-label="Notes on the sentence above"><li><b aria-hidden="true">1</b>judgment word</li><li><b aria-hidden="true">2</b>vague</li></ol>
+              </div>
+            </div></div>
+            <p class="step s3-st s3-after"><span class="s3-lab">After</span><span class="s3-txt">Our executives need briefs faster than the policy team can write them <span class="hl hl-g" tabindex="0">at the quality we need<small class="hl-note">quality bar</small></span>.</span></p>
+          </li>
+          <li class="s3-pair" data-state="hidden">
+            <div class="s3-pair-beat"><div class="s3-pair-clip">
+              <div class="step s3-beat">
+                <p class="s3-st s3-before"><span class="s3-lab">Before</span><span class="s3-txt">We <span class="hl hl-r" tabindex="0">should<sup class="hl-n" aria-hidden="true">1</sup></span> launch an <span class="hl hl-r" tabindex="0">AI chatbot<sup class="hl-n" aria-hidden="true">2</sup></span> for customer service.</span></p>
+                <ol class="s3-tags" aria-label="Notes on the sentence above"><li><b aria-hidden="true">1</b>judgment word</li><li><b aria-hidden="true">2</b>solution, not problem</li></ol>
+              </div>
+            </div></div>
+            <p class="step s3-st s3-after"><span class="s3-lab">After</span><span class="s3-txt"><span class="hl hl-g" tabindex="0">30% of customers<small class="hl-note">a number</small></span> wait <span class="hl hl-g" tabindex="0">more than 48 hours<small class="hl-note">measurable</small></span> for an answer.</span></p>
+          </li>
+          <li class="step s3-end" aria-hidden="true"></li>
+        </ul>
+      </section>
+
+      <!-- 10 Step 3: rewrite it [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop" id="s3-s10">
+        <div class="m-check s3-tp">
+          <div class="s3-hd">
+            <h2 class="s3-h">Step 3: rewrite it</h2>
+            <span class="s3-badge" id="s3-score10" aria-live="polite">–</span>
+          </div>
+          <p class="s3-ctx em-context" id="s3-q10">Rewrite it so it passes all three tests.</p>
+          <textarea class="s3-ta em-current" id="s3-p3" rows="2" aria-labelledby="s3-q10"></textarea>
+          <p class="s3-prev" id="s3-prev10"></p>
+          <ol class="s3-tests" id="s3-checks10">
+            <li class="s3-chk" data-i="0" data-hint="num">
+              <svg class="s3-ill s3-till" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <line class="ink" x1="12" y1="46" x2="170" y2="46"/>
+              <path class="ac" d="M170 46 V14"/>
+              <path class="acf" d="M170 14 L186 20 L170 26 Z"/>
+              <circle class="acf" cx="110" cy="46" r="7"/>
+              <text class="q faint" x="50" y="124" text-anchor="middle">?</text>
+              <line class="ink" x1="110" y1="124" x2="170" y2="124"/>
+              <path class="ink" d="M110 124 V116 M122 124 V119 M134 124 V116 M146 124 V119 M158 124 V116 M170 124 V119"/>
+              <text x="140" y="150" text-anchor="middle">62%</text>
+            </svg>
+              <h3 class="s3-why-t">Has a number</h3>
+              <p class="hint" aria-live="polite"></p>
+              <span class="yn" role="group" aria-label="Test 1: has a number"><button type="button" data-v="y" aria-pressed="false">Yes</button><button type="button" data-v="n" aria-pressed="false">Not yet</button></span>
+            </li>
+            <li class="s3-chk" data-i="1" data-hint="ai">
+              <svg class="s3-ill s3-till" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <path class="ink" d="M40 14 V136 H182"/>
+              <path class="ac" d="M40 136 L160 16"/>
+              <circle class="acf" cx="70" cy="106" r="3.5"/>
+              <circle class="acf" cx="100" cy="76" r="3.5"/>
+              <circle class="acf" cx="130" cy="46" r="3.5"/>
+              <text x="182" y="156" text-anchor="middle">AI</text>
+              <text x="22" y="22" text-anchor="middle">AI</text>
+            </svg>
+              <h3 class="s3-why-t">No “AI”</h3>
+              <p class="hint" aria-live="polite"></p>
+              <span class="yn" role="group" aria-label="Test 2: no AI"><button type="button" data-v="y" aria-pressed="false">Yes</button><button type="button" data-v="n" aria-pressed="false">Not yet</button></span>
+            </li>
+            <li class="s3-chk" data-i="2" data-hint="should">
+              <svg class="s3-ill s3-till" viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+              <text class="word" x="100" y="78" text-anchor="middle">should</text>
+              <path class="ac s3-draw" pathLength="1" d="M20 72 Q100 60 184 68"/>
+              <line class="ink faint" x1="46" y1="102" x2="154" y2="102" stroke-width="1.5"/>
+            </svg>
+              <h3 class="s3-why-t">No “should”</h3>
+              <p class="hint" aria-live="polite"></p>
+              <span class="yn" role="group" aria-label="Test 3: no should"><button type="button" data-v="y" aria-pressed="false">Yes</button><button type="button" data-v="n" aria-pressed="false">Not yet</button></span>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 11 Example: three things to try [UP] -->
+      <section class="slide mind" data-attn="up">
+        <h2 class="s3-h">Example: three things to try</h2>
+        <figure class="s3-yours">
+          <figcaption class="s3-yours-l">Example statement</figcaption>
+          <blockquote>Our recruiters spend an average of 10 hours a day on candidate messages.</blockquote>
+        </figure>
+        <ol class="s3-ex">
+          <li class="step s3-ex-card">
+            <span class="s3-ex-badge" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.9L22 9.8l-5.5 4.9L18.2 22 12 18.3 5.8 22l1.7-7.3L2 9.8l7.1-.9z" fill="currentColor"/></svg>Simplest that could work</span>
+            <span class="s3-ex-n">1</span>
+            <div><p class="s3-ex-t">Auto-reply with a link to a candidate FAQ, and allow candidates to mark their own request as resolved.</p><span class="s3-ex-tag">No AI</span></div>
+          </li>
+          <li class="step s3-ex-card">
+            <span class="s3-ex-n">2</span>
+            <div><p class="s3-ex-t">A model drafts each reply, and a second check decides whether a recruiter needs to review it before it’s sent.</p><span class="s3-ex-tag">Model + review check</span></div>
+          </li>
+          <li class="step s3-ex-card">
+            <span class="s3-ex-n">3</span>
+            <div><p class="s3-ex-t">An agent answers scheduling and status questions on its own, and routes the rest to a recruiter.</p><span class="s3-ex-tag">Agent + routing</span></div>
+          </li>
+        </ol>
+        <p class="step s3-ex-end">Start here, then measure the 10 hours again in a month.</p>
+      </section>
+
+      <!-- 11 Step 4: brainstorm [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop" id="s3-s11">
+        <div class="m-check">
+          <h2 class="s3-h">Step 4: brainstorm</h2>
+          <p class="m-prompt">List three things you could try.</p>
+          <figure class="s3-yours s3-ref"><figcaption class="s3-yours-l" id="s3-refl11">Your problem statement</figcaption><blockquote class="s3-ref-q" id="s3-ref11"></blockquote></figure>
+          <ol class="s3-try">
+            <li><input type="text" id="s3-t0" aria-label="Thing to try, 1"></li>
+            <li><input type="text" id="s3-t1" aria-label="Thing to try, 2"></li>
+            <li><input type="text" id="s3-t2" aria-label="Thing to try, 3"></li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 12 Step 5: pick the simplest [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop" id="s3-s12">
+        <div class="m-check">
+          <h2 class="s3-h">Step 5: pick the simplest</h2>
+          <p class="m-prompt">Which is the simplest thing that could work?</p>
+          <figure class="s3-yours s3-ref"><figcaption class="s3-yours-l" id="s3-refl12">Your problem statement</figcaption><blockquote class="s3-ref-q" id="s3-ref12"></blockquote></figure>
+          <ol class="s3-pick" id="s3-pick">
+            <li>
+              <button class="s3-pick-card" type="button" data-i="0" aria-pressed="false"><span class="s3-pick-text"></span><span class="s3-pick-badge" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.9 6.9L22 9.8l-5.5 4.9L18.2 22 12 18.3 5.8 22l1.7-7.3L2 9.8l7.1-.9z" fill="currentColor"/></svg>Simplest</span></button>
+              <p class="s3-pick-blank" hidden>Idea 1 is blank — go back to add it.</p>
+            </li>
+            <li>
+              <button class="s3-pick-card" type="button" data-i="1" aria-pressed="false"><span class="s3-pick-text"></span><span class="s3-pick-badge" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.9 6.9L22 9.8l-5.5 4.9L18.2 22 12 18.3 5.8 22l1.7-7.3L2 9.8l7.1-.9z" fill="currentColor"/></svg>Simplest</span></button>
+              <p class="s3-pick-blank" hidden>Idea 2 is blank — go back to add it.</p>
+            </li>
+            <li>
+              <button class="s3-pick-card" type="button" data-i="2" aria-pressed="false"><span class="s3-pick-text"></span><span class="s3-pick-badge" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.9 6.9L22 9.8l-5.5 4.9L18.2 22 12 18.3 5.8 22l1.7-7.3L2 9.8l7.1-.9z" fill="currentColor"/></svg>Simplest</span></button>
+              <p class="s3-pick-blank" hidden>Idea 3 is blank — go back to add it.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 12 Who leads this? [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s3-flow">
+          <h2 class="s3-h">To discuss:</h2>
+          <div class="s3-q">Are you the right person to spearhead this?</div>
+          <div class="s3-pills" role="group" aria-label="Your answer">
+            <button class="s3-simple" type="button" data-v="yes" aria-pressed="false">Yes</button>
+            <button class="s3-simple" type="button" data-v="no" aria-pressed="false">No</button>
+            <button class="s3-simple" type="button" data-v="unsure" aria-pressed="false">Not sure</button>
+          </div>
+          <div class="s3-lead-flow" id="s3-lead-flow" hidden>
+            <div class="s3-stem" aria-hidden="true"></div>
+            <div class="s3-split">
+              <div class="s3-br" data-lead="yes">
+                <span class="s3-lab">Yes</span>
+                <span class="s3-arr" aria-hidden="true"></span>
+                <div class="s3-box">How will you approach it?</div>
+              </div>
+              <div class="s3-br" data-lead="no">
+                <span class="s3-lab">No</span>
+                <span class="s3-arr" aria-hidden="true"></span>
+                <div class="s3-box">Who should spearhead it? How will you find them?</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13 Your problem statement [UP] -->
+      <section class="slide mind" data-attn="up" data-steps-start>
+        <div class="s3-final">
+          <h2 class="s3-h">Your problem statement</h2>
+          <p class="s3-big" id="s3-final"></p>
+          <p class="s3-iv" id="s3-iv" hidden></p>
+          <div class="s3-actions">
+            <button class="s3-btn" id="s3-copy" type="button">Copy</button>
+            <button class="s3-btn" id="s3-dl" type="button">Download as text</button>
+            <span class="s3-msg" id="s3-msg" role="status" aria-live="polite"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 14 Key takeaways [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="take-wrap">
+          <h2 class="take-title">Key takeaways</h2>
+          <p class="take-ask">Check off the ones that feel clear to you.</p>
+          <ul class="take">
+            <li><label><input type="checkbox"><span class="tt">Your people do a lot of undocumented problem solving. Find it first.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">A great problem statement has a number, a scope that does not include AI, and judgment-free language.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Connect your systems, and fix broken processes rather than automating them.</span></label></li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="foot">
+      <button class="btn" id="prev" type="button">← Back</button>
+      <p class="attn" id="attn" data-mode="up">Eyes up front</p>
+      <button class="btn" id="next" type="button">Next →</button>
+    </footer>
+  </main>
+</div>
+<script src="assets/workbook.js"></script>
+<script>
+/* Session 3 widgets. Classic script, no modules, no fetch(). Every storage call is wrapped in try/catch. Keys use wb:s3:. */
+(function () {
+  'use strict';
+
+  var FALLBACK = 'My team should be using AI more.';
+  var K = { p1: 'wb:s3:p1', p3: 'wb:s3:p3', checks: 'wb:s3:checks', checks10: 'wb:s3:checks10', tries: 'wb:s3:tries', sort2: 'wb:s3:sort2', lead: 'wb:s3:lead' };
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function loadJSON(k, d) {
+    var v = load(k);
+    if (v === null) return d;
+    try { var x = JSON.parse(v); return x === null || x === undefined ? d : x; } catch (e) { return d; }
+  }
+  function storeJSON(k, v) { store(k, JSON.stringify(v)); }
+
+  /* ---------- the problem-statement thread ---------- */
+  function step1() {
+    var v = load(K.p1);
+    return v && v.trim() ? v.trim() : FALLBACK;
+  }
+  /* step 3 is prefilled with step 1 until the participant edits it; once saved, its own value wins */
+  function step3Value() {
+    var v = load(K.p3);
+    return v === null ? step1() : v;
+  }
+  function finalStatement() {
+    var v = step3Value().trim();
+    return v ? v : step1();
+  }
+
+  /* ---------- gentle hints (never block) ---------- */
+  var HINT = {
+    num: function (t) { return /[0-9%]/.test(t) ? '' : 'No numbers yet'; },
+    ai: function (t) {
+      return (/(^|[^A-Za-z])AI(?![A-Za-z])/.test(t) || /(^|[^A-Za-z])A\.I\.?(?![A-Za-z])/.test(t)) ? 'We spotted ‘AI’' : '';
+    },
+    should: function (t) {
+      var m = /\b(should(?:n[’']t)?|need to|ought to)\b/i.exec(t);
+      return m ? 'We spotted ‘' + m[1].toLowerCase() + '’' : '';
+    }
+  };
+  function paintChecks(list, text) {
+    $$('.s3-chk', list).forEach(function (li) {
+      var key = li.getAttribute('data-hint');
+      var hint = $('.hint', li);
+      if (!hint || !HINT[key]) return;
+      var msg = HINT[key](text);
+      hint.textContent = msg || 'Looks good';
+      hint.classList.toggle('ok', !msg);
+    });
+  }
+  /* the statement with each problem phrase in a soft red span; built from nodes, never innerHTML */
+  var PROBLEM_RE = /\b(should(?:n[’']t)?|need to|ought to)\b|(?<![A-Za-z])AI(?![A-Za-z])/gi;
+  function renderHL(el, text) {
+    if (!el) return;
+    el.textContent = '';
+    var re = new RegExp(PROBLEM_RE.source, 'gi'), last = 0, m;
+    while ((m = re.exec(text)) !== null) {
+      if (!m[1] && m[0] !== 'AI') continue;
+      if (m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var span = document.createElement('span');
+      span.className = 'hl hl-r';
+      span.textContent = m[0];
+      el.appendChild(span);
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+  }
+  /* a Yes tints the card green, a Not yet tints it amber */
+  function tint(list, state) {
+    $$('.s3-chk', list).forEach(function (li, i) {
+      li.classList.toggle('is-yes', state[i] === 'y');
+      li.classList.toggle('is-no', state[i] === 'n');
+    });
+  }
+  /* the badge shows a dash until all three are answered, then counts the Yes answers only */
+  function badge(el, state) {
+    if (!el) return;
+    var answered = state.filter(function (x) { return x !== null; }).length;
+    var pass = state.filter(function (x) { return x === 'y'; }).length;
+    if (answered < 3) { el.className = 's3-badge'; el.textContent = '–'; return; }
+    el.className = 's3-badge' + (pass === 3 ? ' all' : '');
+    el.textContent = pass + ' of 3';
+  }
+
+  /* ---------- slide 5: step 1 ---------- */
+  var p1 = $('#s3-p1');
+  if (p1) {
+    p1.addEventListener('input', function () { store(K.p1, p1.value); });
+  }
+  function paint5() { if (p1 && document.activeElement !== p1) p1.value = load(K.p1) || ''; }
+
+  /* ---------- slide 7: step 2 checks (Yes / Not yet) ---------- */
+  var list7 = $('#s3-checks7');
+  var state7 = loadJSON(K.checks, [null, null, null]);
+  if (!Array.isArray(state7) || state7.length !== 3) state7 = [null, null, null];
+  /* the detector behind each step 2 test: what it spots, the highlight colour, and the gentle reveal */
+  var DETECT = {
+    num: { re: /\d+(?:[.,]\d+)*%?/g, hl: 'hl-g', found: 'We spotted a number here.', none: 'No numbers spotted.', pass: function (f) { return !!f; } },
+    ai: { re: /(?<![A-Za-z])AI(?![A-Za-z])/g, hl: 'hl-r', found: function (w) { return 'We spotted ‘' + w + '’ here.'; }, none: 'Looks clear to us.', pass: function (f) { return !f; } },
+    should: { re: /\b(should(?:n[’']t)?|need to|ought to)\b/gi, hl: 'hl-r', found: function (w) { return 'We spotted ‘' + w.toLowerCase() + '’ here.'; }, none: 'Looks clear to us.', pass: function (f) { return !f; } }
+  };
+  function detectAll(key, text) {
+    var re = new RegExp(DETECT[key].re.source, DETECT[key].re.flags), out = [], m;
+    while ((m = re.exec(text)) !== null) {
+      if (!m[0].length) { re.lastIndex++; continue; }
+      out.push({ start: m.index, end: m.index + m[0].length, text: m[0] });
+    }
+    return out;
+  }
+  /* the statement is plain until a test is answered; then that test's matches get their highlight (new ones fade in) */
+  function renderTested(el, text, active, prev) {
+    if (!el) return;
+    var spans = [];
+    active.forEach(function (key) {
+      detectAll(key, text).forEach(function (m) { spans.push({ start: m.start, end: m.end, key: key }); });
+    });
+    spans.sort(function (a, b) { return a.start - b.start; });
+    el.textContent = '';
+    var last = 0;
+    spans.forEach(function (s) {
+      if (s.start < last) return;
+      if (s.start > last) el.appendChild(document.createTextNode(text.slice(last, s.start)));
+      var node = document.createElement('span');
+      node.className = 'hl ' + DETECT[s.key].hl;
+      node.setAttribute('data-test', s.key);
+      if (prev && prev.indexOf(s.key) < 0) node.classList.add('s3-hl-in');
+      node.textContent = text.slice(s.start, s.end);
+      el.appendChild(node);
+      last = s.end;
+    });
+    if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+  }
+  /* the reveal under the pills: the detector's view, and a muted note when it disagrees with the answer */
+  function revealFor(key, v, text) {
+    var d = DETECT[key];
+    var f = detectAll(key, text)[0];
+    var msg = f ? (typeof d.found === 'function' ? d.found(f.text) : d.found) : d.none;
+    var agrees = (v === 'y') === d.pass(f);
+    return agrees ? msg : msg + ' (our quick check, which can miss things)';
+  }
+  function paint7() {
+    var own = load(K.p1);
+    var hasOwn = !!(own && own.trim());
+    var text = step1();
+    var stmt = $('#s3-cur7');
+    var prevAttr = stmt ? stmt.getAttribute('data-shown') : null;
+    var active = [];
+    $$('.s3-chk', list7).forEach(function (li, i) { if (state7[i] !== null) active.push(li.getAttribute('data-hint')); });
+    renderTested(stmt, text, active, prevAttr === null ? null : prevAttr.split(',').filter(Boolean));
+    if (stmt) stmt.setAttribute('data-shown', active.join(','));
+    var lbl = $('#s3-yours7');
+    if (lbl) lbl.textContent = hasOwn ? 'Your statement, from step 1' : 'Example statement (step 1 was left blank)';
+    /* the comparison line is only for the participant's own statement, not the example */
+    var cmp = $('#s3-cmp7');
+    if (cmp) cmp.hidden = !hasOwn;
+    $$('.s3-chk', list7).forEach(function (li, i) {
+      var rv = $('.s3-reveal', li);
+      var key = li.getAttribute('data-hint');
+      if (rv) {
+        var answer = state7[i];
+        rv.textContent = answer === null ? '' : revealFor(key, answer, text);
+        rv.classList.toggle('is-differs', answer !== null && (answer === 'y') !== DETECT[key].pass(detectAll(key, text)[0]));
+      }
+    });
+    $$('.s3-chk', list7).forEach(function (li, i) {
+      $$('button', li).forEach(function (b) {
+        b.setAttribute('aria-pressed', String(state7[i] === b.getAttribute('data-v')));
+      });
+    });
+    tint(list7, state7);
+    badge($('#s3-score7'), state7);
+  }
+  $$('.s3-chk', list7).forEach(function (li, i) {
+    $$('button', li).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-v');
+        state7[i] = state7[i] === v ? null : v;
+        storeJSON(K.checks, state7);
+        paint7();
+      });
+    });
+  });
+
+  /* ---------- slide 10: step 3 (live hints, and the participant's own Yes / Not yet) ---------- */
+  var p3 = $('#s3-p3');
+  var list10 = $('#s3-checks10');
+  /* seeded from slide 7's answers until the participant changes one here; checks10 then wins */
+  function seed10() {
+    var v = loadJSON(K.checks10, null);
+    if (!Array.isArray(v) || v.length !== 3) v = loadJSON(K.checks, null);
+    return Array.isArray(v) && v.length === 3 ? v.slice() : [null, null, null];
+  }
+  var state10 = seed10();
+  var touched10 = false;
+  /* the score counts the participant's own Yes answers, never the hints */
+  function score10() {
+    tint(list10, state10);
+    badge($('#s3-score10'), state10);
+  }
+  function paint10Checks() {
+    $$('.s3-chk', list10).forEach(function (li, i) {
+      $$('button', li).forEach(function (b) {
+        b.setAttribute('aria-pressed', String(state10[i] === b.getAttribute('data-v')));
+      });
+    });
+    score10();
+  }
+  if (p3) {
+    p3.addEventListener('input', function () {
+      store(K.p3, p3.value);
+      renderHL($('#s3-prev10'), p3.value);
+      paintChecks(list10, p3.value);
+    });
+  }
+  $$('.s3-chk', list10).forEach(function (li, i) {
+    $$('button', li).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-v');
+        state10[i] = state10[i] === v ? null : v;
+        touched10 = true;
+        storeJSON(K.checks10, state10);
+        paint10Checks();
+      });
+    });
+  });
+  function paint10() {
+    if (!p3) return;
+    if (document.activeElement !== p3) p3.value = step3Value();
+    if (!touched10) state10 = seed10();
+    renderHL($('#s3-prev10'), p3.value);
+    paintChecks(list10, p3.value);
+    paint10Checks();
+  }
+
+  /* ---------- slide 6: underline each phrase when its label is revealed ---------- */
+  var s6 = $('#s3-s6');
+  /* only the newest revealed label and its phrase are em-current; earlier ones are em-done */
+  function setEm(el, st) {
+    var cur = el.classList.contains('em-current') ? 'em-current' : el.classList.contains('em-done') ? 'em-done' : null;
+    if (cur === st) return;
+    el.classList.remove('em-current', 'em-done');
+    if (st) el.classList.add(st);
+  }
+  function sync6() {
+    if (!s6) return;
+    var labels = $$('[data-k]', s6);
+    var newest = -1;
+    labels.forEach(function (s) {
+      if (s.classList.contains('on')) newest = Math.max(newest, Number(s.getAttribute('data-k')));
+    });
+    labels.forEach(function (s) {
+      var k = s.getAttribute('data-k');
+      var on = s.classList.contains('on');
+      var st = !on ? null : Number(k) === newest ? 'em-current' : 'em-done';
+      setEm(s, st);
+      $$('[data-ph="' + k + '"]', s6).forEach(function (p) { p.classList.toggle('ul', on); setEm(p, st); });
+    });
+  }
+  if (s6 && window.MutationObserver) {
+    var mo6 = new MutationObserver(sync6);
+    $$('[data-k]', s6).forEach(function (s) { mo6.observe(s, { attributes: true, attributeFilter: ['class'] }); });
+  }
+
+  /* ---------- slide 11: three things to try, one marked simplest ---------- */
+  var tries = loadJSON(K.tries, null);
+  if (!tries || !Array.isArray(tries.t) || tries.t.length !== 3) tries = { t: ['', '', ''], s: -1 };
+  var tryInputs = [0, 1, 2].map(function (i) { return $('#s3-t' + i); });
+  var pickList = $('#s3-pick');
+  var pickItems = pickList ? $$(':scope > li', pickList) : [];
+  function paint11() {
+    tryInputs.forEach(function (inp, i) {
+      if (inp && document.activeElement !== inp) inp.value = tries.t[i] || '';
+    });
+    pickItems.forEach(function (li, i) {
+      var text = (tries.t[i] || '').trim();
+      var btn = $('.s3-pick-card', li);
+      btn.hidden = !text;
+      $('.s3-pick-blank', li).hidden = !!text;
+      $('.s3-pick-text', li).textContent = text;
+      btn.setAttribute('aria-pressed', String(tries.s === i));
+    });
+  }
+  tryInputs.forEach(function (inp, i) {
+    if (!inp) return;
+    inp.addEventListener('input', function () { tries.t[i] = inp.value; storeJSON(K.tries, tries); });
+  });
+  pickItems.forEach(function (li, i) {
+    $('.s3-pick-card', li).addEventListener('click', function () {
+      tries.s = tries.s === i ? -1 : i;
+      storeJSON(K.tries, tries);
+      paint11();
+    });
+  });
+
+  /* ---------- slide 13: copy and download ---------- */
+  function finalText() {
+    var t = finalStatement();
+    var simple = tries.s > -1 && tries.t[tries.s] ? tries.t[tries.s].trim() : '';
+    return simple ? t + '\n\nFirst thing to try: ' + simple : t;
+  }
+  function paint13() {
+    var big = $('#s3-final');
+    if (big) big.textContent = finalStatement();
+    var iv = $('#s3-iv');
+    var simple = tries.s > -1 && tries.t[tries.s] ? tries.t[tries.s].trim() : '';
+    if (iv) {
+      iv.hidden = !simple;
+      iv.textContent = simple ? 'First thing to try: ' + simple : '';
+    }
+  }
+  var msg = $('#s3-msg');
+  function say(text) {
+    if (!msg) return;
+    msg.textContent = text;
+    setTimeout(function () { if (msg.textContent === text) msg.textContent = ''; }, 2200);
+  }
+  function copyText(text, done) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+  var copyBtn = $('#s3-copy');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      copyText(finalText(), function (ok) {
+        say(ok ? 'Copied.' : 'Could not copy. Select the text and copy it.');
+      });
+    });
+  }
+  var dlBtn = $('#s3-dl');
+  if (dlBtn) {
+    dlBtn.addEventListener('click', function () {
+      try {
+        var blob = new Blob([finalText() + '\n'], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'problem-statement.txt';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+        say('Saved as problem-statement.txt.');
+      } catch (e) {
+        say('Could not download. Use Copy instead.');
+      }
+    });
+  }
+
+  /* ---------- sorter (slide 3): one card at a time from a deck onto two piles ---------- */
+  /* Order: easy to hard, alternating likely piles so the answer isn't predictable from position */
+  var S3_CARDS = [
+    { id: 'url', t: 'The web address of the finance system' },
+    { id: 'chase', t: 'Chase the budget owner on chat because they ignore email' },
+    { id: 'approve', t: 'Approve it in the finance system' },
+    { id: 'twice', t: 'Know that one supplier always invoices twice' },
+    { id: 'limit', t: 'Check the amount is under the approval limit' },
+    { id: 'match', t: 'Match the invoice to a purchase order' },
+    { id: 'hold', t: 'Hold anything from a new supplier until finance calls them' },
+    { id: 'send', t: 'Send it to the budget owner' },
+    { id: 'skip', t: 'Skip the purchase order for the cleaning contract' }
+  ];
+  var DECK_ROT = [-2.4, 1.6, -0.9, 2.2, -1.5, 0.8, -2.0, 1.2, -1.1];
+  var PILE_ROT = [-1.2, 0.9, -0.6, 1.1, -0.8, 0.5, -1.0, 0.7, -0.4];
+  var S3_KNOWN = {};
+  S3_CARDS.forEach(function (c, i) { S3_KNOWN[c.id] = { t: c.t, r: DECK_ROT[i % DECK_ROT.length] }; });
+
+  (function sorter() {
+    var root = $('#s3-sorter');
+    var deckEl = $('#s3-deck'), slot = $('#s3-slot'), count = $('#s3-count');
+    var tally = $('#s3-tally'), reveal = $('#s3-reveal'), prompt = $('#s3-sorter .m-prompt');
+    var zones = { doc: $('#s3-doc'), head: $('#s3-head') };
+    var drag = null, justDragged = false;
+    var state = restore();
+
+    /* state: q = unsorted ids (front is the card on the deck), doc / head = sorted ids in pile order */
+    function restore() {
+      var saved = loadJSON(K.sort2, null);
+      var seen = {};
+      function take(arr) {
+        var out = [];
+        (Array.isArray(arr) ? arr : []).forEach(function (id) {
+          if (S3_KNOWN[id] && !seen[id]) { seen[id] = true; out.push(id); }
+        });
+        return out;
+      }
+      var doc = take(saved && saved.d), head = take(saved && saved.h), q = take(saved && saved.q);
+      S3_CARDS.forEach(function (c) { if (!seen[c.id]) q.push(c.id); });
+      return { q: q, doc: doc, head: head };
+    }
+    function save() { storeJSON(K.sort2, { q: state.q, d: state.doc, h: state.head }); }
+    function reduced() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+
+    function cardEl(id, r, pile) {
+      var b = document.createElement(pile ? 'button' : 'div');
+      b.className = 'card';
+      if (pile) { b.type = 'button'; b.title = 'Move back to the deck'; }
+      b.textContent = S3_KNOWN[id].t;
+      b.setAttribute('data-id', id);
+      b.setAttribute('data-r', String(r));
+      b.style.setProperty('--r', r + 'deg');
+      return b;
+    }
+    /* where a card sits right now, so it can be flown from there after a re-render */
+    function snap(id) {
+      var el = root.querySelector('[data-id="' + id + '"]');
+      if (!el) return null;
+      return { rect: el.getBoundingClientRect(), r: parseFloat(el.getAttribute('data-r')) || 0 };
+    }
+
+    function render(opt) {
+      opt = opt || {};
+      slot.innerHTML = '';
+      ['doc', 'head'].forEach(function (k) { zones[k].querySelector('.drop').innerHTML = ''; });
+
+      if (state.q.length) {
+        var d = cardEl(state.q[0], S3_KNOWN[state.q[0]].r, false);
+        d.className = 'card deck-card' + (opt.enter && !opt.fly ? ' in' : '');
+        d.addEventListener('pointerdown', onDown);
+        slot.appendChild(d);
+      }
+      ['doc', 'head'].forEach(function (k) {
+        var drop = zones[k].querySelector('.drop');
+        state[k].forEach(function (id, i) {
+          drop.appendChild(cardEl(id, PILE_ROT[i % PILE_ROT.length], true));
+        });
+      });
+
+      var sorted = state.doc.length + state.head.length;
+      var done = state.q.length === 0;
+      deckEl.classList.toggle('gone', done);
+      root.classList.toggle('done', done);
+      count.textContent = Math.min(sorted + 1, S3_CARDS.length) + ' of ' + S3_CARDS.length;
+      prompt.classList.toggle('em-current', sorted === 0);
+      prompt.classList.toggle('em-context', sorted !== 0);
+      tally.textContent = done ? state.head.length + ' of ' + S3_CARDS.length + ' are in someone’s head.' : '';
+      reveal.classList.toggle('on', done);
+
+      if (opt.fly && opt.from && !reduced()) {
+        var el = root.querySelector('[data-id="' + opt.fly + '"]');
+        if (el && el.animate) {
+          var to = el.getBoundingClientRect();
+          var dx = opt.from.rect.left - to.left, dy = opt.from.rect.top - to.top;
+          el.animate([
+            { transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(' + opt.from.r + 'deg)' },
+            { transform: 'rotate(' + (parseFloat(el.getAttribute('data-r')) || 0) + 'deg)' }
+          ], { duration: 600, easing: 'cubic-bezier(.2,.7,.2,1)' });
+        }
+      }
+      if (done && opt.focusTally) { tally.focus({ preventScroll: true }); }
+    }
+
+    function sortTo(k) {
+      if (!state.q.length) return;
+      var id = state.q[0];
+      var from = snap(id);
+      state.q.shift();
+      state[k].push(id);
+      save();
+      render({ fly: id, from: from, enter: true, focusTally: !state.q.length });
+    }
+    function moveBack(id) {
+      var k = state.doc.indexOf(id) >= 0 ? 'doc' : 'head';
+      var from = snap(id);
+      state[k].splice(state[k].indexOf(id), 1);
+      state.q.unshift(id);
+      save();
+      render({ fly: id, from: from });
+    }
+
+    ['doc', 'head'].forEach(function (k) {
+      zones[k].addEventListener('click', function (e) {
+        if (justDragged) return;
+        var card = e.target.closest ? e.target.closest('[data-id]') : null;
+        if (card && zones[k].contains(card)) { moveBack(card.getAttribute('data-id')); return; }
+        sortTo(k);
+      });
+    });
+    $$('.deck-to').forEach(function (b) {
+      b.addEventListener('click', function () { sortTo(b.getAttribute('data-zone')); });
+    });
+
+    /* drag the deck card onto a group */
+    function zoneUnder(x, y) {
+      var el = document.elementFromPoint(x, y);
+      var z = el && el.closest ? el.closest('[data-zone]') : null;
+      var k = z ? z.getAttribute('data-zone') : null;
+      return k === 'doc' || k === 'head' ? k : null;
+    }
+    function highlight(k) {
+      ['doc', 'head'].forEach(function (kk) { zones[kk].classList.toggle('over', kk === k); });
+    }
+    function onDown(e) {
+      if (e.button !== 0 || !state.q.length) return;
+      drag = { id: state.q[0], el: e.currentTarget, x: e.clientX, y: e.clientY, live: false };
+    }
+    window.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      if (!drag.live) {
+        if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
+        drag.live = true;
+        var r = drag.el.getBoundingClientRect();
+        var g = drag.el.cloneNode(true);
+        g.className = 'card ghost';
+        g.style.width = r.width + 'px';
+        drag.off = { x: drag.x - r.left, y: drag.y - r.top };
+        drag.ghost = g;
+        document.body.appendChild(g);
+        drag.el.style.opacity = '.3';
+      }
+      drag.ghost.style.left = (e.clientX - drag.off.x) + 'px';
+      drag.ghost.style.top = (e.clientY - drag.off.y) + 'px';
+      highlight(zoneUnder(e.clientX, e.clientY));
+    });
+    function endDrag() {
+      var d = drag;
+      drag = null;
+      highlight(null);
+      if (!d || !d.live) return null;
+      d.ghost.remove();
+      d.el.style.opacity = '';
+      return d;
+    }
+    window.addEventListener('pointerup', function (e) {
+      var d = endDrag();
+      if (!d) return;
+      justDragged = true;
+      setTimeout(function () { justDragged = false; }, 0);
+      var k = zoneUnder(e.clientX, e.clientY);
+      if (k && d.id === state.q[0]) sortTo(k);
+    });
+    window.addEventListener('pointercancel', function () { endDrag(); });
+
+    render({});
+  })();
+
+  /* ---------- paint everything the thread touches; run on load and whenever a slide is shown ---------- */
+  /* steps 4 and 5: the latest problem statement (step 3 if written, else step 1, else the example) */
+  function paintRef() {
+    var p3v = load(K.p3), p1v = load(K.p1);
+    var r = (p3v && p3v.trim()) ? { t: p3v.trim(), l: 'Your problem statement' }
+          : (p1v && p1v.trim()) ? { t: p1v.trim(), l: 'Your problem statement' }
+          : { t: FALLBACK, l: 'Example statement' };
+    ['11', '12'].forEach(function (k) {
+      var q = $('#s3-ref' + k), l = $('#s3-refl' + k);
+      if (q) q.textContent = r.t;
+      if (l) l.textContent = r.l;
+    });
+  }
+  /* slide 12: pick Yes, No or Not sure. The flowchart appears on the first pick; Yes and No emphasise their own branch, Not sure leaves both equal */
+  var LEADS = ['yes', 'no', 'unsure'];
+  var leadVal = load(K.lead);
+  if (LEADS.indexOf(leadVal) < 0) leadVal = null;
+  var leadFlow = $('#s3-lead-flow');
+  var leadBtns = $$('.s3-pills button');
+  var leadBranches = $$('.s3-br[data-lead]');
+  function paintLead() {
+    if (!leadFlow) return;
+    leadFlow.hidden = !leadVal;
+    leadBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === leadVal)); });
+    leadBranches.forEach(function (br) {
+      var on = br.getAttribute('data-lead') === leadVal;
+      br.classList.toggle('em-current', on);
+      br.classList.toggle('em-done', !!leadVal && leadVal !== 'unsure' && !on);
+    });
+  }
+  leadBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      leadVal = b.getAttribute('data-v');
+      store(K.lead, leadVal);
+      paintLead();
+    });
+  });
+  paintLead();
+
+  function paintAll() {
+    paintLead();
+    paintRef();
+    paint5();
+    paint7();
+    paint10();
+    paint11();
+    paint13();
+  }
+  paintAll();
+
+  var slides = $$('#stage > .slide');
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(function (records) {
+      var shown = records.some(function (r) { return r.target.classList.contains('on'); });
+      if (shown) paintAll();
+    });
+    slides.forEach(function (s) { mo.observe(s, { attributes: true, attributeFilter: ['class'] }); });
+  }
+  /* slides 8 and 9: the newest card or pair is em-current; earlier ones are em-context (dimmed), not em-done */
+  var whyCards = $$('.s3-why li, .s3-ex-card, .s3-ex-end');
+  function whyEm(el) {
+    var c = el.classList;
+    /* only touch classes that actually change: a no-op remove still fires a mutation, which would loop */
+    if (c.contains('em-current')) { if (c.contains('em-context')) c.remove('em-context'); }
+    else if (c.contains('em-done')) { c.remove('em-done'); c.add('em-context'); }
+  }
+  whyCards.forEach(whyEm);
+  if (window.MutationObserver) {
+    var moWhy = new MutationObserver(function (recs) { recs.forEach(function (r) { whyEm(r.target); }); });
+    whyCards.forEach(function (li) { moWhy.observe(li, { attributes: true, attributeFilter: ['class'] }); });
+  }
+
+  /* slide 9: a pair is hidden until its Before beat, open while it is the newest, and collapsed after that.
+     Steps are 1 Before, 2 After per pair, and a final empty step that collapses pair 4. */
+  var s9 = $('#s3-s9');
+  function syncPairs() {
+    if (!s9) return;
+    var n = $$('.step.on', s9).length;
+    $$('.s3-pair', s9).forEach(function (li, i) {
+      var st = n < 2 * i + 1 ? 'hidden' : n >= 2 * i + 3 ? 'collapsed' : 'open';
+      if (li.getAttribute('data-state') !== st) li.setAttribute('data-state', st);
+    });
+  }
+  if (s9 && window.MutationObserver) {
+    new MutationObserver(syncPairs).observe(s9, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  syncPairs();
+
+  sync6();
+})();
+</script>
+</body>
+</html>

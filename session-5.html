@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="en">
+<head><script>(function(){var d=document.documentElement,n=null;d.classList.add("preload");try{n=localStorage.getItem("wb:nav")}catch(e){}if(n!==null?n==="1":innerWidth<900)d.classList.add("nav-c")})()</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session 5 · Ambition and the frontier · Workbook</title>
+<link rel="stylesheet" href="assets/workbook.css">
+<style>
+/* Session 5 only. Chrome, the shared .qs, .take and emphasis classes come from assets/workbook.css. */
+
+.mind .s5-h{margin:0 0 clamp(12px,2.2vh,22px);font-family:var(--display);font-weight:400;font-size:clamp(26px,2.8vw,40px);line-height:1.15;letter-spacing:-.01em}
+.s5-inst{margin:0;font-family:var(--display);font-size:clamp(20px,2vw,28px);line-height:1.3;max-width:44ch}
+.s5-wrap{display:grid;gap:clamp(14px,2.4vh,24px);justify-items:stretch;width:100%}
+.s5-close{margin:clamp(10px,2vh,20px) 0 0;font-family:var(--display);font-size:clamp(26px,3vw,40px);line-height:1.2;max-width:24ch}
+.s5-big{margin:0;font-family:var(--display);font-size:clamp(30px,3.4vw,48px);line-height:1.22;letter-spacing:-.01em;max-width:26ch}
+.s5-quiet{margin:0;font-size:15px;color:var(--c-mute)}
+
+/* a participant's own words, quoted so they read as theirs */
+.s5-yours{margin:0;padding:14px 20px 16px;background:var(--card,#fffdf8);border:1px solid var(--rule);border-left:4px solid var(--lane);border-radius:6px;max-width:760px}
+.s5-yours-l{margin:0 0 6px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--c-mute)}
+.s5-yours blockquote{margin:0;font-family:var(--display);font-size:clamp(20px,2vw,27px);line-height:1.3;quotes:"\201C" "\201D"}
+.s5-yours blockquote::before{content:open-quote}
+.s5-yours blockquote::after{content:close-quote}
+
+/* slide 3: four kinds of ambition */
+.s5-four{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2vw,22px);width:100%}
+.s5-four li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 18px;align-items:center;padding:clamp(16px,2.4vh,24px) clamp(16px,2vw,24px);background:var(--card);border:1px solid rgba(42,38,32,.16);border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 22px -16px rgba(60,40,20,.55)}
+.s5-four h3{margin:0 0 6px;font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,30px);line-height:1.15}
+.s5-four p{margin:0;font-family:var(--display);font-size:clamp(18px,1.7vw,23px);line-height:1.3}
+.s5-ill{display:block;width:100%;max-width:110px;height:auto;color:var(--ink);overflow:visible}
+.s5-ill .ink{fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.s5-ill .ac{fill:none;stroke:var(--lane);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.s5-ill .faint{opacity:.3}
+.s5-cite{margin:0;max-width:60ch;font-size:16px;line-height:1.45;color:var(--c-mute)}
+.s5-cite a{color:inherit;text-underline-offset:3px}
+.s5-credit{margin:0;font-size:15px;color:var(--c-mute)}
+.s5-credit a{color:inherit;text-underline-offset:3px}
+
+/* shared .qs pills for this (mindset) language */
+.mind .qs-choices .pick{flex:1 1 170px;padding:10px 16px;background:var(--card);border:1.5px solid var(--frame);border-radius:999px;font:600 16px var(--ui);color:var(--ink);cursor:pointer}
+.mind .qs-choices .pick:hover:not(:disabled){background:var(--soft)}
+.mind .qs-choices .pick[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.mind .qs-choices .pick:disabled{cursor:default}
+.mind .qs-choices .pick:disabled:not([aria-pressed="true"]){opacity:.45}
+.mind .qs-text{font-family:var(--display);font-weight:700}
+
+/* slide 4: altitude ordering */
+.s5-order{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(18px,3vw,36px);align-items:start;width:100%}
+.s5-sub{margin:0 0 12px;font-family:var(--ui);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c-mute)}
+.s5-order.done{grid-template-columns:minmax(0,1fr)}
+.s5-order.done>div:last-child{display:none}
+.s5-pool{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.s5-card{width:100%;text-align:left;padding:14px 18px;background:var(--card);border:1.5px solid var(--frame);border-radius:10px;font-family:var(--display);font-size:clamp(18px,1.7vw,22px);line-height:1.3;color:var(--ink);cursor:pointer;transition:background .2s,border-color .2s}
+.s5-card:hover{background:var(--soft);border-color:var(--lane)}
+.s5-card:focus-visible{outline:3px solid var(--lane);outline-offset:2px}
+.s5-slots{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.s5-slot{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:66px;padding:10px 16px;border:1.5px dashed var(--rule);border-radius:10px;font-family:var(--display);font-size:clamp(18px,1.7vw,22px);line-height:1.25}
+.s5-slot.filled{border:1.5px solid var(--ink);background:var(--card)}
+/* the next empty slot: lane border, a slow soft pulse, and a bolder label. Hovering a request previews its short name here. */
+.s5-slot.next{border:1.5px solid var(--lane);background:var(--card);animation:s5-next 1.6s ease-in-out infinite}
+.s5-slot.next .s5-num,.s5-slot.next .s5-slot-n{font-weight:700}
+.s5-slot.ghost .s5-slot-t::before{content:attr(data-ghost);color:var(--c-mute);opacity:.5}
+@keyframes s5-next{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--lane) 18%,transparent)}}
+.s5-num{font-family:var(--display);font-size:clamp(26px,2.6vw,36px);line-height:1;color:var(--lane)}
+.s5-slot-n{font-family:var(--ui);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--c-mute);white-space:nowrap}
+.s5-result{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule);max-width:none}
+.s5-result .qs-sum{font-size:clamp(16px,1.4vw,19px);padding:12px 0}
+.s5-again{justify-self:start;margin:0;padding:4px 0;background:none;border:0;font-size:15px;color:var(--c-mute);text-decoration:underline;text-underline-offset:3px}
+.s5-again:hover{color:var(--signal)}
+
+/* slide 6: roles */
+.s5-roles{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:clamp(22px,2.3vw,32px);line-height:1.2}
+.s5-roles li{padding:7px 0;border-top:1px solid var(--rule)}
+
+/* slide 7: worked example. Rewrites are step cards; the newest is em-current, earlier ones read as context. */
+.s5-rw{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+.s5-rw li{padding:clamp(9px,1.5vh,14px) clamp(14px,1.8vw,20px);background:var(--card);border:1px solid rgba(42,38,32,.16);border-left:4px solid var(--lane);border-radius:8px}
+#s5-s7 .s5-yours blockquote{font-size:clamp(20px,1.9vw,25px)}
+#s5-s7 .s5-yours{padding:10px 18px 12px}
+#s5-s7 .s5-h{margin-bottom:clamp(8px,1.4vh,14px)}
+@media (max-height:940px) and (min-width:821px){#s5-s7.s5-wrap,#s5-s7 .s5-wrap{gap:12px}}
+/* slide 12 (make your problem more ambitious): one problem fans out to four rewrites */
+#s5-s7 .s5-wrap{width:min(1080px,100%)}
+#s5-s7 .s5-prob{max-width:none}
+#s5-s7 .s5-fan{width:100%}
+#s5-s7 .s5-fan-h{margin:0 0 6px;text-align:center;font-family:var(--ui);font-size:14px;font-weight:700;letter-spacing:.08em;font-variant-caps:all-small-caps;color:var(--c-mute)}
+#s5-s7 .s5-trunk{width:2px;height:10px;margin:0 auto;background:var(--c-mute);opacity:.6}
+#s5-s7 .s5-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:14px}
+#s5-s7 .s5-bar span{position:relative}
+#s5-s7 .s5-bar span::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--c-mute);opacity:.6}
+#s5-s7 .s5-bar span:first-child::before{left:50%}
+#s5-s7 .s5-bar span:last-child::before{right:50%}
+#s5-s7 .s5-bar span::after{content:"";position:absolute;top:0;left:50%;width:2px;height:14px;margin-left:-1px;background:var(--c-mute);opacity:.6}
+#s5-s7 .s5-rw{grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+#s5-s7 .s5-rw li{margin:0 6px;padding:10px 14px 12px;border-radius:8px}
+#s5-s7 .s5-rw-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#s5-s7 .s5-axis{margin:0}
+#s5-s7 .s5-ill.s5-ill-sm{width:40px;max-width:40px;flex:none}
+#s5-s7 .s5-ill-sm .ink{stroke-width:6}
+#s5-s7 .s5-ill-sm .ac{stroke-width:7}
+#s5-s7 .s5-rw-t{font-size:clamp(17px,1.4vw,20px);line-height:1.28}
+#s5-s7 .s5-try-d{margin:0}
+#s5-s7 .s5-try-d > summary{cursor:pointer;list-style:none;display:inline-block}
+#s5-s7 .s5-try-d > summary::-webkit-details-marker{display:none}
+#s5-s7 .s5-try-d > summary::before{content:"+ ";}
+#s5-s7 .s5-try-d[open] > summary::before{content:"\2212  "}
+#s5-s7 .s5-try-d .s5-ta{margin-top:6px}
+.s5-rw li.step.on.em-done{opacity:1}
+.s5-rw li.em-done{font-weight:var(--em-w-context)!important;color:var(--em-c-context)!important}
+.s5-axis{display:block;margin:0 0 6px;font-family:var(--ui);font-size:14px;font-weight:700;letter-spacing:.08em;font-variant-caps:all-small-caps;color:var(--mute)}
+.s5-rw-t{margin:0;font-family:var(--display);font-size:clamp(18px,1.6vw,22px);line-height:1.28}
+.s5-try{display:grid;gap:6px;width:100%}
+.s5-try-l{font-family:var(--ui);font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c-mute)}
+.s5-prev{margin:0;font-size:15px;line-height:1.4;color:var(--c-mute)}
+.s5-prev-l{font-variant-caps:all-small-caps;letter-spacing:.06em}
+.s5-ta{width:100%;min-height:74px;font-family:var(--display);font-size:clamp(20px,2vw,26px);line-height:1.3;color:var(--ink);background:var(--card);border:1px solid var(--frame);border-radius:6px;padding:14px 16px;resize:vertical}
+.s5-ta:focus{outline:2px solid var(--signal);outline-offset:2px}
+
+/* slide 10: the abundance question. Chips of repetitive work fade and drift away on the step, then the question appears. */
+.s5-abund-field{position:relative;width:100%;min-height:min(56vh,460px)}
+.s5-chip{position:absolute;left:var(--x);top:var(--y);padding:6px 14px;border:1px solid var(--rule);border-radius:999px;background:rgba(20,19,17,.05);font-family:var(--ui);font-size:15px;line-height:1.2;color:var(--c-mute);white-space:nowrap;transform:rotate(var(--r));opacity:.95;transition:opacity .9s ease,transform 1.4s ease;transition-delay:var(--d,0s)}
+.s5-abund:has(.s5-q.on) .s5-chip{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}
+.s5-q{position:absolute;inset:0;margin:auto;height:max-content;display:grid;place-content:center;text-align:center;font-family:var(--display);font-size:clamp(36px,4.4vw,62px);line-height:1.18;letter-spacing:-.015em;max-width:22ch;justify-self:center;transition-delay:.9s}
+.s5-q.step:not(.on){transition-delay:0s}
+
+/* slide 12: embedded "Your Tuesday" sim (self-contained page in sims/, ?embed=1 hides its own header).
+   The slide is a fixed-height column, so the frame takes whatever height the stage leaves. */
+.s5-tue{height:100%;grid-template-rows:minmax(0,1fr);align-content:stretch;padding-top:clamp(12px,2.2vh,22px);padding-bottom:clamp(10px,1.6vh,16px)}
+.slide.mind>.s5-tue-wrap{width:min(1080px,100%)}
+.s5-tue-wrap{display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:clamp(8px,1.6vh,14px);height:100%;min-height:0}
+.s5-tue-wrap .s5-h{margin:0}
+.s5-tue-inst{margin:0;font-family:var(--display);font-size:clamp(18px,1.7vw,22px);line-height:1.3;color:var(--ink)}
+.s5-sim{display:block;width:100%;height:100%;min-height:0;border:1px solid var(--rule);border-radius:8px;background:#f4efe6}
+
+/* slide 12: takeaways sized to leave room for your work below them */
+.s5-take .tt{font-size:clamp(20px,2vw,28px)}
+.s5-line{font-size:clamp(22px,2.2vw,30px)}
+.s5-take label{padding:12px 0}
+.s5-take label{gap:14px}
+.s5-mine{margin-top:clamp(20px,3.5vh,36px);display:grid;gap:12px}
+.s5-mine-h{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,30px);line-height:1.15}
+.s5-dl{margin:0;display:grid;gap:0}
+.s5-dl>div{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:18px;padding:12px 0;border-top:1px solid var(--rule)}
+.s5-dl dt{margin:0;padding-top:5px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--c-mute)}
+.s5-dl dd{margin:0;font-family:var(--display);font-size:clamp(18px,1.7vw,22px);line-height:1.35}
+.s5-dl dd.none{font-style:italic;color:var(--c-mute)}
+.s5-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.s5-btn{padding:10px 18px;background:var(--card);border:1px solid var(--frame);border-radius:999px;font:600 16px var(--ui);color:var(--ink);cursor:pointer}
+.s5-btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.s5-btn:focus-visible{outline:3px solid var(--lane);outline-offset:2px}
+.s5-msg{min-height:1.2em;font-size:15px;color:var(--mute)}
+
+/* short viewports (about 1280x800): tighten the altitude and takeaway slides so their last line stays in view */
+@media (max-height:860px) and (min-width:821px){
+  .s5-wrap{gap:12px}
+  .s5-inst{font-size:clamp(18px,1.7vw,22px)}
+  .s5-slot{min-height:56px}
+  .s5-card{padding:10px 14px}
+  .s5-close{margin-top:10px}
+  .s5-take label{padding:8px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .s5-chip{transform:none!important;transition:none!important}
+  .s5-slot.next{animation:none}
+}
+/* Depth closing line: multi-clause sentence, so regular weight at a readable size */
+#s5-depth-close{font-weight:400;font-size:clamp(20px,2vw,26px);line-height:1.35;max-width:36ch}
+/* Speed slide and the landing slides before Altitude, Depth and Range: calm, generous, nothing interactive */
+.s5-speed{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,240px);gap:clamp(24px,4vw,64px);align-items:center;width:100%}
+.s5-speed .s5-big{max-width:30ch}
+.s5-speed .s5-quiet{margin-top:clamp(12px,2vh,20px);font-size:17px}
+.s5-land{justify-items:center;text-align:center;align-content:center}
+.mind .s5-name{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(56px,6.4vw,96px);line-height:1.02;letter-spacing:-.02em}
+.s5-def{margin:0;font-family:var(--display);font-size:clamp(24px,2.4vw,34px);line-height:1.25;max-width:26ch}
+.s5-ill-lg{max-width:200px;margin:clamp(12px,3vh,36px) auto 0}
+.s5-ill-lg .ink{stroke-width:1.5}
+.s5-ill-lg .ac{stroke-width:2}
+.s5-ill-lg.speed{margin:0 auto}
+
+@media (max-width:820px){
+  .s5-speed{grid-template-columns:1fr}
+  .s5-rw{grid-template-columns:1fr}
+  .s5-chip:nth-child(n+13){display:none}
+  .s5-order{grid-template-columns:1fr}
+  .s5-four{grid-template-columns:1fr}
+  .s5-dl>div{grid-template-columns:1fr;gap:4px}
+}
+
+/* range: role vs methods comparison */
+.s5-roles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0 10px;max-width:900px}
+.s5-role{background:var(--card,#fffdf8);border:1px solid var(--rule);border-radius:8px;padding:20px 24px}
+.s5-role.on{border-color:var(--lane,#a8651e);box-shadow:inset 4px 0 0 var(--lane,#a8651e)}
+.s5-role-k{margin:0 0 6px;font:600 12px/1.2 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c-mute,#6b665e)}
+.s5-role-p{margin:0 0 10px;font-family:var(--display,Georgia,serif);font-size:clamp(21px,2.1vw,30px);line-height:1.25}
+.s5-role-r{margin:0;font-size:18px;color:var(--c-mute,#6b665e)}
+.s5-role.on .s5-role-r{color:var(--ink);font-weight:600}
+@media (max-width:900px){.s5-roles{grid-template-columns:1fr}}
+/* slide 2: front-of-room discussion question. Generous space, nothing interactive. */
+.s5-disc{align-content:center;justify-items:start;text-align:left;min-height:100%}
+.s5-spark{display:block;width:clamp(40px,3.4vw,52px);height:auto;margin:0 0 clamp(12px,2.4vh,26px);overflow:visible}
+.s5-spark .ac{fill:none;stroke:var(--lane);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.s5-disc-q{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(32px,3.8vw,54px);line-height:1.18;letter-spacing:-.015em;max-width:24ch}
+.s5-disc-g{margin:clamp(16px,2.8vh,28px) 0 0;font-family:var(--ui);font-weight:400;font-size:clamp(17px,1.5vw,20px);line-height:1.45;color:var(--c-mute);max-width:52ch}
+/* slide 16 (Dantzig): impact build. Beats are shared .step elements; the chalk art mirrors them via a small script */
+#s5-dz .s5-dz-wrap{width:min(1080px,100%);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center}
+#s5-dz .s5-board{display:block;width:100%;height:auto}
+#s5-dz .s5-board-fig{margin:0}
+#s5-dz .chalk path,#s5-dz .check path{fill:none;stroke:#f4f1e8;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s ease}
+#s5-dz .chalk.is-on path,#s5-dz .check.is-on path{stroke-dashoffset:0}
+#s5-dz .chalk:not(.is-on),#s5-dz .check:not(.is-on){opacity:0}
+#s5-dz .stamp{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(1.7);transition:transform .18s cubic-bezier(.2,.9,.3,1.25),opacity .12s linear}
+#s5-dz .stamp.is-on{opacity:1;transform:scale(1)}
+#s5-dz .s5-story{display:grid;gap:.45em}
+#s5-dz .s5-story .s5-beat{margin:0;font-family:var(--display);font-size:clamp(22px,2.2vw,30px);line-height:1.3;font-weight:400}
+#s5-dz .s5-beat.em-current{font-weight:400!important}
+#s5-dz .s5-story .s5-punch{margin-top:.5em;font-size:clamp(32px,3.4vw,46px);line-height:1.15;letter-spacing:-.01em;transition-delay:0s}
+#s5-dz .s5-story .s5-punch.on{transition-delay:.3s}
+@media (prefers-reduced-motion:reduce){
+  #s5-dz .chalk path,#s5-dz .check path,#s5-dz .stamp,#s5-dz .s5-beat{transition:none!important}
+}
+</style>
+</head>
+<body data-lang="mind" data-session="5">
+<div class="app" id="app">
+
+  <aside class="nav" aria-label="Sessions">
+    <div class="nav-top">
+      <button class="nav-toggle" id="navToggle" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation ([)">[</button>
+    </div>
+    <ol class="sessions">
+      <li><a class="sess" data-l="t" href="session-1.html"><span class="n">1</span><span class="label">What is an agent?</span></a></li>
+      <li><a class="sess" data-l="t" href="session-2.html"><span class="n">2</span><span class="label">Why is the model wrong sometimes?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-3.html"><span class="n">3</span><span class="label">Better problem statements</span></a></li>
+      <li><a class="sess" data-l="t" href="session-4.html"><span class="n">4</span><span class="label">Can a cheaper model do the job?</span></a></li>
+      <li><a class="sess" data-l="m" href="session-5.html" aria-current="page"><span class="n">5</span><span class="label">Ambition and the frontier</span></a></li>
+    </ol>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div class="sn" aria-hidden="true">5</div>
+      <div class="sname">Ambition and the frontier</div>
+      <nav class="pips" id="pips" aria-label="Slides"></nav>
+    </header>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 Title [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="m-title">
+          <span class="rule" aria-hidden="true"></span>
+          <h1>Ambition and the frontier</h1>
+          <p class="s5-cite">Based on <a href="https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/" target="_blank" rel="noopener">Felix Rieseberg, “How to be more ambitious: A tutorial for humans with models”</a></p>
+        </div>
+      </section>
+
+      <!-- 2 To discuss [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap s5-disc">
+          <svg class="s5-spark" viewBox="0 0 64 56" aria-hidden="true" focusable="false">
+            <path class="ac" d="M6 48C18 44 28 36 36 24S50 12 58 6"/>
+            <path class="ac" d="M46 6h12v12"/>
+          </svg>
+          <h2 class="s5-h">To discuss:</h2>
+          <p class="s5-disc-q">What’s the most ambitious <em>successful</em> use of AI you’ve seen?</p>
+          <p class="s5-disc-g">This could be in your own work, or out in the world.</p>
+        </div>
+      </section>
+
+      <!-- 3 Where the frontier is [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap">
+          <h2 class="s5-h">Rieseberg, on ambition:</h2>
+          <ul class="m-take">
+            <li class="step">Spend some of your time on tasks the model can’t do yet.</li>
+            <li class="step">The next model probably can, and you’ll be ready.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4 Four kinds of ambition [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap">
+          <h2 class="s5-h">Four ways to be more ambitious</h2>
+          <ul class="s5-four">
+            <li class="step">
+              <svg class="s5-ill" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="ink" d="M46 12h20M56 12v10"/>
+                <circle class="ink" cx="66" cy="54" r="30"/>
+                <path class="ac" d="M66 54l13-13"/>
+                <path class="ink faint" d="M6 40h22M2 54h26M10 68h18"/>
+              </svg>
+              <div><h3>Speed</h3><p>Do it much faster than you thought reasonable.</p></div>
+            </li>
+            <li class="step">
+              <svg class="s5-ill" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="ink" d="M8 84h24V64h24V44h24V24h24"/>
+                <path class="ac" d="M98 30l6-8 6 8"/>
+              </svg>
+              <div><h3>Altitude</h3><p>Ask for the outcome, not the task.</p></div>
+            </li>
+            <li class="step">
+              <svg class="s5-ill" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="ac" d="M60 8v38"/>
+                <path class="ac" d="M52 38l8 9 8-9"/>
+                <path class="ink" d="M14 62h92"/>
+                <path class="ink faint" d="M26 76h68"/>
+                <path class="ink faint" d="M40 90h40"/>
+              </svg>
+              <div><h3>Depth</h3><p>Push until an expert could learn something from the result.</p></div>
+            </li>
+            <li class="step">
+              <svg class="s5-ill" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <circle class="ink" cx="46" cy="38" r="22"/>
+                <circle class="ink" cx="74" cy="38" r="22"/>
+                <circle class="ac" cx="60" cy="62" r="22"/>
+              </svg>
+              <div><h3>Range</h3><p>Bring in more fields than you’d normally pay for.</p></div>
+            </li>
+          </ul>
+          <p class="s5-credit">Adapted from <a href="https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/" target="_blank" rel="noopener">Felix Rieseberg, “How to be more ambitious”</a></p>
+        </div>
+      </section>
+
+      <!-- 5 Speed [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap">
+          <h2 class="s5-h">Speed</h2>
+          <div class="s5-speed">
+            <div>
+              <p class="s5-big">Speed is the bread and butter of AI right now: do what you’ve been doing, but several times faster, with fewer human bottlenecks.</p>
+              <p class="s5-quiet">We won’t belabor this.</p>
+            </div>
+            <svg class="s5-ill s5-ill-lg speed" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+              <path class="ink" d="M46 12h20M56 12v10"/>
+              <circle class="ink" cx="66" cy="54" r="30"/>
+              <path class="ac" d="M66 54l13-13"/>
+              <path class="ink faint" d="M6 40h22M2 54h26M10 68h18"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 Altitude landing [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap s5-land">
+          <h2 class="s5-name">Altitude</h2>
+          <p class="s5-def">Ask for the outcome, not the task.</p>
+          <svg class="s5-ill s5-ill-lg" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+            <path class="ink" d="M8 84h24V64h24V44h24V24h24"/>
+            <path class="ac" d="M98 30l6-8 6 8"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 7 Altitude [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop" id="s5-alt">
+        <div class="s5-wrap">
+          <h2 class="s5-h">Altitude</h2>
+          <p class="s5-inst em-context">Brew Diligence’s quarterly review is coming up. Put these three requests in order, from lowest to highest altitude. Click the lowest one first.</p>
+          <div class="s5-order" id="s5-order">
+            <div>
+              <h3 class="s5-sub">Your order, lowest first</h3>
+              <ol class="s5-slots" aria-label="Your order">
+                <li class="s5-slot"><span class="s5-num">1</span><span class="s5-slot-t"></span><span class="s5-slot-n">Lowest altitude</span></li>
+                <li class="s5-slot"><span class="s5-num">2</span><span class="s5-slot-t"></span><span class="s5-slot-n"></span></li>
+                <li class="s5-slot"><span class="s5-num">3</span><span class="s5-slot-t"></span><span class="s5-slot-n">Highest altitude</span></li>
+              </ol>
+            </div>
+            <div>
+              <h3 class="s5-sub">Requests</h3>
+              <ul class="s5-pool" id="s5-pool">
+                <li><button class="s5-card" type="button" data-k="low">“Here’s our sales data. What changed this quarter, and why?”</button></li>
+                <li><button class="s5-card" type="button" data-k="mid">“What are the three most urgent decisions, with the case for and against each?”</button></li>
+                <li><button class="s5-card" type="button" data-k="high">“Design a better way than a quarterly review to catch problems early, test it against our last two years, and run it alongside the current process for a quarter.”</button></li>
+              </ul>
+            </div>
+          </div>
+          <ol class="s5-result" id="s5-result" aria-live="polite" hidden></ol>
+          <button class="s5-again" id="s5-again" type="button" hidden>Start over</button>
+          <p class="s5-close" id="s5-alt-close" hidden>The higher you go, the less often you need to step in.</p>
+        </div>
+      </section>
+
+      <!-- 8 Depth landing [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap s5-land">
+          <h2 class="s5-name">Depth</h2>
+          <p class="s5-def">Push until an expert could learn something from the result.</p>
+          <svg class="s5-ill s5-ill-lg" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+            <path class="ac" d="M60 8v38"/>
+            <path class="ac" d="M52 38l8 9 8-9"/>
+            <path class="ink" d="M14 62h92"/>
+            <path class="ink faint" d="M26 76h68"/>
+            <path class="ink faint" d="M40 90h40"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 9 Depth [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop">
+        <div class="s5-wrap">
+          <h2 class="s5-h">Depth</h2>
+          <p class="s5-inst em-context">You’ve asked, “Why are loyalty members visiting less?” Which of these would a top analyst add to the request? Pick all that apply.</p>
+          <div class="qs" data-qs="depth" data-on-done="s5-depth-close">
+            <ol class="qs-done" aria-label="Answered"></ol>
+            <div class="qs-item" data-answer="add" data-short="Raw transaction data">
+              <p class="qs-text">Start from the raw transaction data, not a summary.</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="add" aria-pressed="false" type="button">Add it</button>
+                <button class="pick" data-pick="skip" aria-pressed="false" type="button">Skip it</button>
+              </div>
+              <p class="qs-reveal">A summary has already decided what matters.</p>
+            </div>
+            <div class="qs-item" data-answer="add" data-short="Seasonal dip">
+              <p class="qs-text">Test whether it’s really a seasonal dip before explaining it.</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="add" aria-pressed="false" type="button">Add it</button>
+                <button class="pick" data-pick="skip" aria-pressed="false" type="button">Skip it</button>
+              </div>
+              <p class="qs-reveal">Check the pattern before you explain it.</p>
+            </div>
+            <div class="qs-item" data-answer="add" data-short="Last year’s data">
+              <p class="qs-text">Check the answer against last year’s data you haven’t seen.</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="add" aria-pressed="false" type="button">Add it</button>
+                <button class="pick" data-pick="skip" aria-pressed="false" type="button">Skip it</button>
+              </div>
+              <p class="qs-reveal">An outside judge catches what the model would miss.</p>
+            </div>
+            <div class="qs-item" data-answer="skip" data-short="Sound confident">
+              <p class="qs-text">Make it sound confident.</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="add" aria-pressed="false" type="button">Add it</button>
+                <button class="pick" data-pick="skip" aria-pressed="false" type="button">Skip it</button>
+              </div>
+              <p class="qs-reveal">That changes the tone, not the thinking.</p>
+            </div>
+            <div class="qs-item" data-answer="skip" data-short="Three bullet points">
+              <p class="qs-text">Keep it to three bullet points.</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="add" aria-pressed="false" type="button">Add it</button>
+                <button class="pick" data-pick="skip" aria-pressed="false" type="button">Skip it</button>
+              </div>
+              <p class="qs-reveal">That’s a format choice. It doesn’t add depth.</p>
+            </div>
+            <div class="qs-item" data-answer="add" data-short="Earliest lapse signal">
+              <p class="qs-text">Find the earliest signal that a member is about to lapse.</p>
+              <div class="qs-choices">
+                <button class="pick" data-pick="add" aria-pressed="false" type="button">Add it</button>
+                <button class="pick" data-pick="skip" aria-pressed="false" type="button">Skip it</button>
+              </div>
+              <p class="qs-reveal">Looking earlier in the data is depth.</p>
+            </div>
+            <p class="qs-count" aria-live="polite"></p>
+          </div>
+          <p class="s5-close" id="s5-depth-close" hidden>A deeper request asks for the raw material, tests the assumption, and checks the answer against something outside the model.</p>
+        </div>
+      </section>
+
+      <!-- 10 Range landing [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap s5-land">
+          <h2 class="s5-name">Range</h2>
+          <p class="s5-def">Bring in more fields than you’d normally pay for.</p>
+          <svg class="s5-ill s5-ill-lg" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+            <circle class="ink" cx="46" cy="38" r="22"/>
+            <circle class="ink" cx="74" cy="38" r="22"/>
+            <circle class="ac" cx="60" cy="62" r="22"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 11 Range [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap">
+          <h2 class="s5-h">Range</h2>
+          <p class="s5-inst">Brew Diligence is planning a new seasonal drink. Who would you put on the team?</p>
+          <ol class="s5-roles">
+            <li class="step">A supply-chain analyst</li>
+            <li class="step">A food scientist</li>
+            <li class="step">A skeptical regular customer</li>
+            <li class="step">A short seller looking for the flaw</li>
+            <li class="step">A barista trainer</li>
+            <li class="step">A sound designer for the in-store experience</li>
+            <li class="step">A forensic accountant</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Range: role vs methods [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap">
+          <h2 class="s5-h">More than role-play</h2>
+          <div class="s5-roles">
+            <div class="s5-role"><p class="s5-role-k">Naming a role</p><p class="s5-role-p">“You are the world’s best food scientist.”</p><p class="s5-role-r">Sounds like a food scientist.</p></div>
+            <div class="s5-role on"><p class="s5-role-k">Naming the methods</p><p class="s5-role-p">“Use the methods the world’s best food scientist would use: blind taste panels, shelf-life tests, cost per cup.”</p><p class="s5-role-r">Works like one.</p></div>
+          </div>
+          <p class="s5-close s5-line step">Naming a role mostly changes the tone. Naming the methods changes what the model actually does.</p>
+        </div>
+      </section>
+
+      <!-- 12 Make your problem more ambitious [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop" id="s5-s7" data-steps-start>
+        <div class="s5-wrap">
+          <h2 class="s5-h">Make your problem more ambitious</h2>
+          <figure class="s5-yours s5-prob">
+            <figcaption class="s5-yours-l">The problem</figcaption>
+            <blockquote>Our recruiters spend an average of 10 hours a day on candidate messages.</blockquote>
+          </figure>
+          <div class="s5-fan">
+            <p class="s5-fan-h">Four ways to raise the ambition</p>
+            <div class="s5-trunk" aria-hidden="true"></div>
+            <div class="s5-bar" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <ol class="s5-rw" aria-label="Four rewrites">
+            <li class="step"><span class="s5-rw-h"><svg class="s5-ill s5-ill-sm" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="ink" d="M46 12h20M56 12v10"/>
+                <circle class="ink" cx="66" cy="54" r="30"/>
+                <path class="ac" d="M66 54l13-13"/>
+                <path class="ink faint" d="M6 40h22M2 54h26M10 68h18"/>
+              </svg><span class="s5-axis">Speed</span></span><p class="s5-rw-t">Reply to every candidate within an hour, without adding recruiters.</p></li>
+            <li class="step"><span class="s5-rw-h"><svg class="s5-ill s5-ill-sm" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="ink" d="M8 84h24V64h24V44h24V24h24"/>
+                <path class="ac" d="M98 30l6-8 6 8"/>
+              </svg><span class="s5-axis">Altitude</span></span><p class="s5-rw-t">Make candidates feel looked after from first message to first day.</p></li>
+            <li class="step"><span class="s5-rw-h"><svg class="s5-ill s5-ill-sm" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <path class="ac" d="M60 8v38"/>
+                <path class="ac" d="M52 38l8 9 8-9"/>
+                <path class="ink" d="M14 62h92"/>
+                <path class="ink faint" d="M26 76h68"/>
+                <path class="ink faint" d="M40 90h40"/>
+              </svg><span class="s5-axis">Depth</span></span><p class="s5-rw-t">Find which messages actually change whether a candidate accepts, and spend recruiter time only there.</p></li>
+            <li class="step"><span class="s5-rw-h"><svg class="s5-ill s5-ill-sm" viewBox="0 0 120 96" aria-hidden="true" focusable="false">
+                <circle class="ink" cx="46" cy="38" r="22"/>
+                <circle class="ink" cx="74" cy="38" r="22"/>
+                <circle class="ac" cx="60" cy="62" r="22"/>
+              </svg><span class="s5-axis">Range</span></span><p class="s5-rw-t">What would a hotel concierge, a sales-development rep, and a support lead each change about how we talk to candidates?</p></li>
+            </ol>
+          </div>
+          <div class="s5-try">
+            <p class="s5-prev" id="s5-prev" hidden><span class="s5-prev-l">From session 3</span> <span id="s5-prev-t"></span></p>
+            <details class="s5-try-d">
+              <summary class="s5-try-l">Try it on yours (optional)</summary>
+              <textarea class="s5-ta" id="s5-amb" rows="3" aria-label="Try it on yours"></textarea>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13 Human attention is the next bottleneck [LAPTOP] -->
+      <section class="slide mind s5-tue" data-attn="laptop">
+        <div class="s5-wrap s5-tue-wrap">
+          <h2 class="s5-h">Human attention is the next bottleneck</h2>
+          <p class="s5-tue-inst">Add agents and watch your free time.</p>
+          <iframe class="s5-sim" src="sims/tuesday.html?embed=1" title="Your Tuesday simulation" loading="lazy"></iframe>
+        </div>
+      </section>
+
+      <!-- 14 The slowest step [UP] -->
+      <section class="slide mind" data-attn="up">
+        <div class="s5-wrap">
+          <ul class="m-take">
+            <li class="step">When the work gets faster, the slowest step decides the pace.</li>
+            <li class="step">More and more, that step is a person’s attention.</li>
+            <li class="step">Deciding what to delegate, and which risks to accept, is emerging as a critical facet of the future of work.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 15 What would your people do? [UP] -->
+      <section class="slide mind s5-abund" data-attn="up" data-steps-start>
+        <div class="s5-wrap">
+          <h2 class="s5-h">Where should your people spend their time?</h2>
+          <div class="s5-abund-field">
+            <!-- decorative: small grey chips of repetitive work; they fade and drift away on the step -->
+            <span class="s5-chip" aria-hidden="true" style="--x:1%;--y:2%;--r:-2deg;--dx:-70px;--dy:-60px;--d:0s">copy</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:19%;--y:6%;--r:1.5deg;--dx:-30px;--dy:-110px;--d:.05s">chase</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:37%;--y:1%;--r:-1deg;--dx:20px;--dy:-120px;--d:.1s">reformat</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:55%;--y:5%;--r:2deg;--dx:50px;--dy:-100px;--d:.03s">re-key</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:73%;--y:2%;--r:-1.5deg;--dx:90px;--dy:-70px;--d:.08s">reconcile</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:88%;--y:7%;--r:1deg;--dx:110px;--dy:-40px;--d:.12s">remind</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:4%;--y:34%;--r:1deg;--dx:-120px;--dy:-10px;--d:.06s">paste</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:22%;--y:38%;--r:-2deg;--dx:-60px;--dy:40px;--d:.14s">check again</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:40%;--y:33%;--r:1.5deg;--dx:-10px;--dy:-80px;--d:.02s">rename</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:58%;--y:39%;--r:-1deg;--dx:30px;--dy:70px;--d:.09s">forward</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:76%;--y:34%;--r:2.5deg;--dx:100px;--dy:20px;--d:.16s">resend</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:92%;--y:40%;--r:-1.5deg;--dx:130px;--dy:-30px;--d:.04s">log</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:2%;--y:66%;--r:-1deg;--dx:-110px;--dy:60px;--d:.11s">sort</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:19%;--y:71%;--r:1.5deg;--dx:-40px;--dy:110px;--d:.07s">match</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:38%;--y:67%;--r:-2deg;--dx:0px;--dy:120px;--d:.15s">update tracker</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:58%;--y:72%;--r:1deg;--dx:40px;--dy:100px;--d:.1s">follow up</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:76%;--y:66%;--r:-1.5deg;--dx:90px;--dy:80px;--d:.05s">file</span>
+            <span class="s5-chip" aria-hidden="true" style="--x:90%;--y:72%;--r:2deg;--dx:120px;--dy:50px;--d:.13s">retype</span>
+            <p class="s5-big s5-q step">If the repetitive work disappeared tomorrow, what would your best people spend their time on?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 16 Believing it’s possible [UP] · impact build: five beats on one click each -->
+      <section class="slide mind s5-dz" data-attn="up" id="s5-dz">
+        <div class="s5-dz-wrap">
+          <figure class="s5-board-fig">
+            <svg class="s5-board" viewBox="0 0 400 300" role="img" aria-label="A chalkboard in a wooden frame. Two problems are written on it.">
+              <defs>
+                <linearGradient id="s5-wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b07a45"/><stop offset="1" stop-color="#7a4f25"/></linearGradient>
+              </defs>
+              <rect x="4" y="4" width="392" height="292" rx="12" fill="url(#s5-wood)"/>
+              <rect x="20" y="20" width="360" height="256" rx="4" fill="#1d2620"/>
+              <rect x="60" y="280" width="280" height="8" rx="3" fill="#8a5a2b"/>
+              <!-- beat 2: two chalk equations draw themselves (abstract marks, no real maths) -->
+              <g class="chalk" data-beat="2">
+                <path pathLength="1" d="M46 84 c8 -18 14 18 22 0 s14 -18 22 0" style="transition-delay:0s"/>
+                <path pathLength="1" d="M96 76 h18 M96 90 h18" style="transition-delay:.2s"/>
+                <path pathLength="1" d="M124 84 c6 -14 12 14 18 0 c6 -14 10 14 16 0" style="transition-delay:.35s"/>
+                <path pathLength="1" d="M46 186 c10 -16 16 16 26 0 s12 -16 20 0" style="transition-delay:.5s"/>
+                <path pathLength="1" d="M100 178 l14 14 M114 178 l-14 14" style="transition-delay:.65s"/>
+                <path pathLength="1" d="M136 184 c8 -14 14 14 22 0" style="transition-delay:.8s"/>
+              </g>
+              <!-- beat 3: two chalk check marks beside the problems -->
+              <g class="check" data-beat="3">
+                <path pathLength="1" d="M186 86 l8 9 l16 -20" style="transition-delay:0s"/>
+                <path pathLength="1" d="M186 188 l8 9 l16 -20" style="transition-delay:.3s"/>
+              </g>
+              <!-- beat 4: UNSOLVED stamp thunks on -->
+              <g class="stamp" data-beat="4">
+                <g transform="rotate(-8 300 218)">
+                  <rect x="232" y="196" width="138" height="44" rx="4" fill="none" stroke="#c4552b" stroke-width="4"/>
+                  <text x="301" y="226" text-anchor="middle" style="font-family:var(--ui)" font-weight="700" font-size="21" letter-spacing="3" fill="#c4552b">UNSOLVED</text>
+                </g>
+              </g>
+            </svg>
+          </figure>
+          <div class="s5-story">
+            <p class="s5-beat step">In 1939, a graduate student named George Dantzig arrived late to class…</p>
+            <p class="s5-beat step">…copied two problems from the board…</p>
+            <p class="s5-beat step">…and solved them as homework.</p>
+            <p class="s5-beat step">They were famous unsolved problems in statistics.</p>
+            <p class="s5-beat s5-punch step">Nobody had told him they couldn’t be solved.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 17 Key takeaways and a copy to keep [LAPTOP] -->
+      <section class="slide mind" data-attn="laptop">
+        <div class="take-wrap">
+          <h2 class="take-title">Key takeaways</h2>
+          <p class="take-ask">Check off the ones that feel clear to you.</p>
+          <ul class="take s5-take">
+            <li><label><input type="checkbox"><span class="tt">Look for what the model can’t do yet.</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Go faster (speed), ask for outcomes (altitude), push further (depth), and bring in more fields (range).</span></label></li>
+            <li><label><input type="checkbox"><span class="tt">Your attention is the next bottleneck. Decide where to spend it.</span></label></li>
+          </ul>
+
+          <section class="s5-mine" aria-labelledby="s5-mine-h">
+            <h3 class="s5-mine-h" id="s5-mine-h">Keep a copy of your work from this morning.</h3>
+            <dl class="s5-dl">
+              <div><dt>Your problem statement</dt><dd id="s5-m-stmt"></dd></div>
+              <div><dt>First thing to try</dt><dd id="s5-m-try"></dd></div>
+              <div><dt>Your ambitious version</dt><dd id="s5-m-amb"></dd></div>
+            </dl>
+            <div class="s5-actions">
+              <button class="s5-btn" id="s5-copy" type="button">Copy</button>
+              <button class="s5-btn" id="s5-dl" type="button">Download as text</button>
+              <span class="s5-msg" id="s5-msg" role="status" aria-live="polite"></span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+    </div>
+
+    <footer class="foot">
+      <button class="btn" id="prev" type="button">← Back</button>
+      <p class="attn" id="attn" data-mode="up">Eyes up front</p>
+      <button class="btn" id="next" type="button">Next →</button>
+    </footer>
+  </main>
+</div>
+<script src="assets/workbook.js"></script>
+<script>
+/* Session 5 widgets. Classic script, no modules, no fetch(). Every storage call is wrapped in try/catch. Keys use wb:s5:. */
+(function () {
+  'use strict';
+
+  var KEY = { ambition: 'wb:s5:ambition', order: 'wb:s5:order' };
+  var S3 = { p3: 'wb:s3:p3', p1: 'wb:s3:p1', tries: 'wb:s3:tries' };
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function loadJSON(k, d) {
+    var v = load(k);
+    if (v === null) return d;
+    try { var x = JSON.parse(v); return x === null || x === undefined ? d : x; } catch (e) { return d; }
+  }
+  function storeJSON(k, v) { store(k, JSON.stringify(v)); }
+  function clean(v) { return typeof v === 'string' ? v.trim() : ''; }
+
+  /* ---------- session 3 values: the final statement (p3, else step 1 p1), and the simplest pick ---------- */
+  function s3Statement() {
+    var a = clean(load(S3.p3));
+    if (a) return { text: a, from: 'final' };
+    var b = clean(load(S3.p1));
+    if (b) return { text: b, from: 'step1' };
+    return null;
+  }
+  function s3Try() {
+    var t = loadJSON(S3.tries, null);
+    if (!t || !Array.isArray(t.t) || typeof t.s !== 'number' || t.s < 0) return '';
+    return clean(t.t[t.s]);
+  }
+  function ambition() { return clean(load(KEY.ambition)); }
+
+  /* ---------- slide 4: altitude. Click the lowest request first, then the next ---------- */
+  var ORDER = ['low', 'mid', 'high'];
+  var ALT_SHORT = { low: 'Sales data question', mid: 'Three decisions', high: 'Redesign the review' };
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="tick" d="M5 12.6l4.3 4.3L19 7.2"/></svg>';
+  var CROSS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+
+  function shuffled() {
+    var a, i, j, t;
+    do {
+      a = ORDER.slice();
+      for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+    } while (a.join() === ORDER.join());
+    return a;
+  }
+  function isOrder(a) {
+    return Array.isArray(a) && a.length === 3 && ORDER.every(function (k) { return a.indexOf(k) > -1; });
+  }
+
+  function initAlt() {
+    var box = $('#s5-order');
+    if (!box) return;
+    var saved = loadJSON(KEY.order, null);
+    var shuf = saved && isOrder(saved.s) ? saved.s : shuffled();
+    var picks = [];
+    if (saved && Array.isArray(saved.p)) {
+      picks = saved.p.filter(function (k, i, arr) {
+        return ORDER.indexOf(k) > -1 && arr.indexOf(k) === i;
+      }).slice(0, 3);
+    }
+    var pool = $('#s5-pool');
+    var cards = $$('.s5-card', pool);
+    var byKey = {};
+    cards.forEach(function (b) { byKey[b.getAttribute('data-k')] = b; });
+    shuf.forEach(function (k) { pool.appendChild(byKey[k].parentNode); });
+
+    var slots = $$('.s5-slot');
+    var res = $('#s5-result'), close = $('#s5-alt-close'), again = $('#s5-again');
+    var fresh = false;
+
+    function save() { storeJSON(KEY.order, { s: shuf, p: picks }); }
+    function paint() {
+      cards.forEach(function (b) {
+        b.hidden = picks.indexOf(b.getAttribute('data-k')) > -1;
+      });
+      slots.forEach(function (s, i) {
+        var k = picks[i];
+        $('.s5-slot-t', s).textContent = k ? ALT_SHORT[k] : '';
+        s.classList.toggle('filled', !!k);
+        s.classList.remove('next', 'ghost');
+        s.removeAttribute('data-ghost');
+      });
+      var done = picks.length === ORDER.length;
+      var nx = nextSlot();
+      if (nx && !done) nx.classList.add('next');
+      box.classList.toggle('done', done);
+      res.hidden = !done;
+      close.hidden = !done;
+      again.hidden = !done;
+      if (!done) { res.innerHTML = ''; return; }
+      var ok = picks.join() === ORDER.join();
+      var you = 'Your order: ' + picks.map(function (k) { return ALT_SHORT[k]; }).join(' → ');
+      var ours = ok ? '' : '<br><span class="qs-ours">Our order: ' + ORDER.map(function (k) { return ALT_SHORT[k]; }).join(' → ') + '</span>';
+      res.innerHTML = '<li class="qs-sum em-done ' + (ok ? 'ok' : 'no') + (fresh ? ' fresh' : '') + '">' +
+        '<span class="qs-q">Lowest to highest</span>' +
+        '<span class="qs-you">' + you + ours + '</span>' +
+        '<span class="qs-mark" role="img" aria-label="' + (ok ? 'Matched' : 'Differed') + '">' + (ok ? CHECK_SVG : CROSS_SVG) + '</span>' +
+        '</li>';
+    }
+
+    function nextSlot() {
+      return slots.filter(function (s) { return !s.classList.contains('filled'); })[0] || null;
+    }
+    /* hovering or focusing a request previews its short name in the next empty slot */
+    function preview(b, on) {
+      var t = nextSlot();
+      if (!t) return;
+      if (on && picks.length < ORDER.length) {
+        t.setAttribute('data-ghost', ALT_SHORT[b.getAttribute('data-k')]);
+        t.classList.add('ghost');
+      } else {
+        t.classList.remove('ghost');
+        t.removeAttribute('data-ghost');
+      }
+    }
+    cards.forEach(function (b) {
+      b.addEventListener('mouseenter', function () { preview(b, true); });
+      b.addEventListener('mouseleave', function () { preview(b, false); });
+      b.addEventListener('focus', function () { preview(b, true); });
+      b.addEventListener('blur', function () { preview(b, false); });
+      b.addEventListener('click', function () {
+        var k = b.getAttribute('data-k');
+        if (picks.length >= ORDER.length || picks.indexOf(k) > -1) return;
+        picks.push(k);
+        save();
+        fresh = picks.length === ORDER.length;
+        paint();
+        fresh = false;
+      });
+    });
+    again.addEventListener('click', function () {
+      picks = [];
+      save();
+      paint();
+    });
+    /* no save on load: the first pick writes the order, so a fresh page registers nothing and offers no Reset */
+    paint();
+  }
+
+  /* ---------- slide 7: your ambitious version ---------- */
+  var amb = $('#s5-amb');
+  if (amb) amb.addEventListener('input', function () { store(KEY.ambition, amb.value); });
+  function paintAmb() {
+    if (amb && document.activeElement !== amb) amb.value = load(KEY.ambition) || '';
+  }
+  /* the participant's session 3 statement, shown small above the optional box; the line hides when there is none */
+  function paintPrev() {
+    var box = $('#s5-prev'), t = $('#s5-prev-t');
+    var st = s3Statement();
+    if (t) t.textContent = st ? st.text : '';
+    if (box) box.hidden = !st;
+  }
+  function paint7() {
+    paintPrev();
+    paintAmb();
+  }
+
+  /* ---------- slide 12: your work, copy and download ---------- */
+  function fill(el, text, empty) {
+    if (!el) return;
+    el.textContent = text || empty || 'Not written yet.';
+    el.classList.toggle('none', !text);
+  }
+  function paint12() {
+    var st = s3Statement();
+    fill($('#s5-m-stmt'), st ? st.text : '');
+    fill($('#s5-m-try'), s3Try());
+    fill($('#s5-m-amb'), ambition(), 'Optional: not written');
+  }
+  function workText() {
+    var out = [];
+    var st = s3Statement();
+    if (st) out.push('Problem statement:\n' + st.text);
+    var tr = s3Try();
+    if (tr) out.push('First thing to try:\n' + tr);
+    var am = ambition();
+    if (am) out.push('My ambitious version:\n' + am);
+    return out.join('\n\n');
+  }
+  var msg = $('#s5-msg');
+  function say(text) {
+    if (!msg) return;
+    msg.textContent = text;
+    setTimeout(function () { if (msg.textContent === text) msg.textContent = ''; }, 2200);
+  }
+  function copyText(text, done) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+  var copyBtn = $('#s5-copy');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var t = workText();
+      if (!t) { say('Nothing to copy yet.'); return; }
+      copyText(t, function (ok) {
+        say(ok ? 'Copied.' : 'Could not copy. Select the text and copy it.');
+      });
+    });
+  }
+  var dlBtn = $('#s5-dl');
+  if (dlBtn) {
+    dlBtn.addEventListener('click', function () {
+      var t = workText();
+      if (!t) { say('Nothing to download yet.'); return; }
+      try {
+        var blob = new Blob([t + '\n'], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'session-5-my-work.txt';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+        say('Saved as session-5-my-work.txt.');
+      } catch (e) {
+        say('Could not download. Use Copy instead.');
+      }
+    });
+  }
+
+  /* ---------- paint on load and whenever a slide is shown ---------- */
+  function paintAll() {
+    paint7();
+    paint12();
+  }
+
+  initAlt();
+  paintAll();
+
+  var slides = $$('#stage > .slide');
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(function (records) {
+      var shown = records.some(function (r) { return r.target.classList.contains('on'); });
+      if (shown) paintAll();
+    });
+    slides.forEach(function (s) { mo.observe(s, { attributes: true, attributeFilter: ['class'] }); });
+  }
+})();
+</script>
+<script>
+/* slide 16 (Dantzig): the chalk art follows the shared beats. Beat k is on when the k-th .s5-beat step is .on */
+(function () {
+  'use strict';
+  var sec = document.getElementById('s5-dz');
+  if (!sec) return;
+  var beats = Array.prototype.slice.call(sec.querySelectorAll('.s5-beat'));
+  var art = Array.prototype.slice.call(sec.querySelectorAll('[data-beat]'));
+  function sync() {
+    art.forEach(function (g) {
+      var k = Number(g.getAttribute('data-beat'));
+      var b = beats[k - 1];
+      g.classList.toggle('is-on', !!(b && b.classList.contains('on')));
+    });
+  }
+  /* observe only the beats (not the art), so syncing the art cannot re-trigger the observer */
+  var mo = new MutationObserver(sync);
+  beats.forEach(function (b) { mo.observe(b, { attributes: true, attributeFilter: ['class'] }); });
+  sync();
+})();
+</script>
+</body>
+</html>
